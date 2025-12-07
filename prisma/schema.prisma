@@ -1,0 +1,351 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CREATOR
+  DESIGNER
+}
+
+model User {
+  id             String         @id @default(cuid())
+  email          String         @unique
+  emailVerified  DateTime?
+  hashedPassword String
+  role           UserRole
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  profile              Profile?
+  conversationsAsCreator  Conversation[] @relation("creator_conversations")
+  conversationsAsDesigner Conversation[] @relation("designer_conversations")
+  messagesSent            Message[]      @relation("messages_sent")
+  verificationTokens   EmailVerificationToken[]
+  missions             Mission[]      // Missions créées (pour les créateurs)
+  proposals            Proposal[]     // Propositions envoyées (pour les designers)
+  
+  // Livraisons sécurisées
+  deliveriesSent       MissionDelivery[] @relation("deliveries_sent")     // Livraisons envoyées (freelance)
+  deliveriesReceived   MissionDelivery[] @relation("deliveries_received") // Livraisons reçues (créateur)
+
+  stripeCustomerId String?
+  subscriptions    Subscription[]
+}
+
+model Profile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
+
+  displayName String
+  bio         String?
+  avatarUrl   String?
+
+  // Créateur
+  contentTypes String?
+  needs        String?
+
+  // Graphiste / monteur
+  skills       String?
+  portfolioUrl String?
+  rate         String?
+  availability String?
+
+  // Portfolio images
+  portfolioImages PortfolioImage[]
+}
+
+model PortfolioImage {
+  id          String   @id @default(cuid())
+  profileId   String
+  profile     Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  url         String
+  filename    String
+  title       String?
+  description String?
+  order       Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  VIDEO
+  FILE
+  SYSTEM
+  FINAL_DELIVERY
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+}
+
+enum AttachmentKind {
+  IMAGE
+  VIDEO
+  FILE
+}
+
+model Conversation {
+  id              String   @id @default(cuid())
+  missionId       String
+  mission         Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+
+  creatorId       String
+  creator         User     @relation("creator_conversations", fields: [creatorId], references: [id])
+
+  designerId      String
+  designer        User     @relation("designer_conversations", fields: [designerId], references: [id])
+
+  lastMessageAt    DateTime @default(now())
+  lastMessagePreview String?
+  unreadForCreator Int      @default(0)
+  unreadForDesigner Int      @default(0)
+
+  messages        Message[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([missionId, creatorId, designerId])
+  @@index([missionId])
+  @@index([lastMessageAt])
+}
+
+model Message {
+  id             String        @id @default(cuid())
+  conversationId String
+  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  senderId       String
+  sender         User          @relation("messages_sent", fields: [senderId], references: [id], onDelete: Cascade)
+
+  type           MessageType
+  content        String?
+  status         MessageStatus @default(SENT)
+  createdAt      DateTime      @default(now())
+  readAt         DateTime?
+
+  replyToId      String?
+  replyTo        Message?      @relation("message_replies", fields: [replyToId], references: [id])
+  replies        Message[]     @relation("message_replies")
+
+  attachments    Attachment[]
+
+  @@index([conversationId, createdAt])
+  @@index([senderId])
+}
+
+model Attachment {
+  id             String         @id @default(cuid())
+  messageId      String
+  message        Message        @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  url            String?
+  protectedUrl   String?
+  unlockedUrl    String?
+  kind           AttachmentKind
+  mimeType       String?
+  size           Int?
+  width          Int?
+  height         Int?
+  durationMs     Int?
+  isProtected    Boolean        @default(false)
+  isUnlocked     Boolean        @default(false)
+
+  createdAt      DateTime       @default(now())
+
+  @@index([messageId])
+}
+
+model Subscription {
+  id                   String   @id @default(cuid())
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id])
+
+  stripeSubscriptionId String @unique
+  stripePriceId        String
+  status               String
+  currentPeriodEnd     DateTime
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+}
+
+enum MissionStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum MissionType {
+  MINIATURE_YOUTUBE
+  MONTAGE_VIDEO
+  DESIGN_BANNIERE
+  MOTION_DESIGN
+  RETOUCHE_PHOTO
+  AUTRE
+}
+
+enum BudgetRange {
+  LESS_THAN_20
+  BETWEEN_20_50
+  BETWEEN_50_150
+  MORE_THAN_150
+  CUSTOM
+}
+
+model Mission {
+  id          String        @id @default(cuid())
+  creatorId   String
+  creator     User          @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  
+  title       String
+  description String
+  type        MissionType
+  deadline    DateTime?
+  budgetRange BudgetRange?
+  budgetCustom Int?
+  
+  attachments MissionAttachment[]
+  proposals   Proposal[]
+  deliveries  MissionDelivery[]   // Livraisons pour cette mission
+  
+  // Freelance assigné (après acceptation d'une proposition)
+  assignedFreelancerId String?
+  
+  status      MissionStatus @default(OPEN)
+  
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+// =============================================
+// PROPOSITIONS DES GRAPHISTES/MONTEURS
+// =============================================
+
+enum ProposalStatus {
+  PENDING     // En attente de réponse du créateur
+  ACCEPTED    // Acceptée par le créateur
+  REJECTED    // Refusée par le créateur
+  WITHDRAWN   // Retirée par le graphiste
+}
+
+model Proposal {
+  id          String         @id @default(cuid())
+  missionId   String
+  mission     Mission        @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  
+  designerId  String
+  designer    User           @relation(fields: [designerId], references: [id], onDelete: Cascade)
+  
+  message     String         // Message de présentation du graphiste
+  price       Int?           // Prix proposé (optionnel)
+  
+  status      ProposalStatus @default(PENDING)
+  
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  
+  @@unique([missionId, designerId]) // Un graphiste ne peut proposer qu'une fois par mission
+}
+
+enum AttachmentType {
+  ATTACHMENT
+  REFERENCE
+}
+
+model MissionAttachment {
+  id          String         @id @default(cuid())
+  missionId   String
+  mission     Mission        @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  
+  url         String
+  filename    String
+  type        AttachmentType @default(ATTACHMENT)
+  
+  createdAt   DateTime       @default(now())
+}
+
+// =============================================
+// SYSTÈME DE LIVRAISON SÉCURISÉE
+// =============================================
+
+enum DeliveryStatus {
+  PENDING           // En attente de livraison
+  PROTECTED_SENT    // Version protégée envoyée
+  NEEDS_REVISION    // Modifications demandées
+  VALIDATED         // Validé par le créateur (en attente paiement)
+  PAID              // Paiement reçu
+  FINAL_SENT        // Version finale envoyée
+  COMPLETED         // Mission terminée
+}
+
+enum PaymentStatus {
+  UNPAID            // Non payé
+  PENDING           // Paiement en cours
+  PAID              // Payé
+  REFUNDED          // Remboursé
+}
+
+model MissionDelivery {
+  id              String         @id @default(cuid())
+  missionId       String
+  mission         Mission        @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  
+  freelancerId    String
+  freelancer      User           @relation("deliveries_sent", fields: [freelancerId], references: [id], onDelete: Cascade)
+  
+  creatorId       String
+  creator         User           @relation("deliveries_received", fields: [creatorId], references: [id], onDelete: Cascade)
+  
+  // Version protégée (filigranée / preview)
+  protectedUrl    String?        // URL de la version protégée
+  protectedType   String?        // "image" ou "video"
+  protectedNote   String?        // Note du freelance
+  
+  // Version finale (après paiement)
+  finalUrl        String?        // URL de la version finale HQ
+  finalFilename   String?        // Nom du fichier final
+  finalNote       String?        // Note accompagnant la version finale
+  
+  // Statuts
+  status          DeliveryStatus @default(PENDING)
+  paymentStatus   PaymentStatus  @default(UNPAID)
+  
+  // Paiement
+  amount          Int            // Montant en centimes
+  stripePaymentId String?        // ID du paiement Stripe
+  paidAt          DateTime?      // Date du paiement
+  
+  // Demande de révision
+  revisionNote    String?        // Note du créateur pour les modifications
+  revisionCount   Int            @default(0)
+  
+  // Expiration des liens
+  protectedExpiresAt DateTime?   // Expiration lien protégé (2h)
+  finalExpiresAt     DateTime?   // Expiration lien final (7 jours)
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  
+  @@unique([missionId, freelancerId]) // Une seule livraison par freelance par mission
+}

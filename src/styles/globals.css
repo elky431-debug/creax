@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  height: 100%;
+  background-color: #0a0a0a;
+  color: #048B9A;
+}
+
+a {
+  color: #048B9A;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #0a0a0a, 0 0 0 4px #048B9A;
+}
+
+/* =============================================
+   PROTECTION ANTI-SCREENSHOT POUR MÉDIAS SÉCURISÉS
+   ============================================= */
+
+.secure-media-container {
+  /* Empêcher la sélection et le copier-coller */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  
+  /* Accélération matérielle pour protection DRM-like */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  
+  /* Propriétés qui peuvent déclencher la protection sur certains navigateurs */
+  -webkit-filter: blur(0);
+  filter: blur(0);
+  
+  /* Empêcher le drag */
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
+.secure-media-container * {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
+.secure-media-container img,
+.secure-media-container video {
+  pointer-events: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
+/* Empêcher l'impression de la page avec les médias protégés */
+@media print {
+  .secure-media-container {
+    display: none !important;
+  }
+  
+  .secure-media-container::after {
+    content: "Contenu protégé - Impression non autorisée - © CREAX";
+    display: block;
+    font-size: 24px;
+    color: #000;
+    text-align: center;
+    padding: 100px 20px;
+    background: #fff;
+  }
+}
