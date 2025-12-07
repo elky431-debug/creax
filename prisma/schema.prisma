@@ -225,9 +225,10 @@ model Mission {
   budgetRange BudgetRange?
   budgetCustom Int?
   
-  attachments MissionAttachment[]
-  proposals   Proposal[]
-  deliveries  MissionDelivery[]   // Livraisons pour cette mission
+  attachments   MissionAttachment[]
+  proposals     Proposal[]
+  deliveries    MissionDelivery[]   // Livraisons pour cette mission
+  conversations Conversation[]      // Conversations liées à cette mission
   
   // Freelance assigné (après acceptation d'une proposition)
   assignedFreelancerId String?
