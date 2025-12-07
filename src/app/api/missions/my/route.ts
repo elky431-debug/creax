@@ -48,8 +48,18 @@ export async function GET(req: Request) {
       include: {
         _count: {
           select: { proposals: true }
-        },
-        assignedFreelancer: {
+        }
+      }
+    });
+
+    // Récupérer les infos des freelances assignés
+    const freelancerIds = missions
+      .map(m => m.assignedFreelancerId)
+      .filter((id): id is string => id !== null);
+
+    const freelancers = freelancerIds.length > 0
+      ? await prisma.user.findMany({
+          where: { id: { in: freelancerIds } },
           select: {
             id: true,
             profile: {
@@ -59,25 +69,32 @@ export async function GET(req: Request) {
               }
             }
           }
-        }
-      }
-    });
+        })
+      : [];
+
+    const freelancerMap = new Map(freelancers.map(f => [f.id, f]));
 
     // Formatter les missions
-    const formattedMissions = missions.map((mission) => ({
-      id: mission.id,
-      title: mission.title,
-      description: mission.description,
-      type: mission.type,
-      status: mission.status,
-      createdAt: mission.createdAt.toISOString(),
-      proposalCount: mission._count.proposals,
-      assignedFreelancer: mission.assignedFreelancer ? {
-        id: mission.assignedFreelancer.id,
-        displayName: mission.assignedFreelancer.profile?.displayName || "Freelance",
-        avatarUrl: mission.assignedFreelancer.profile?.avatarUrl || null
-      } : null
-    }));
+    const formattedMissions = missions.map((mission) => {
+      const freelancer = mission.assignedFreelancerId 
+        ? freelancerMap.get(mission.assignedFreelancerId) 
+        : null;
+
+      return {
+        id: mission.id,
+        title: mission.title,
+        description: mission.description,
+        type: mission.type,
+        status: mission.status,
+        createdAt: mission.createdAt.toISOString(),
+        proposalCount: mission._count.proposals,
+        assignedFreelancer: freelancer ? {
+          id: freelancer.id,
+          displayName: freelancer.profile?.displayName || "Freelance",
+          avatarUrl: freelancer.profile?.avatarUrl || null
+        } : null
+      };
+    });
 
     return NextResponse.json({ missions: formattedMissions });
   } catch (error) {
