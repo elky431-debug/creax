@@ -102,7 +102,7 @@ export function Header() {
   return (
     <header className="border-b border-creax-blue/20 bg-creax-black sticky top-0 z-50">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" className="flex items-center">
+        <Link href="/" className="flex items-center gap-2">
           <Image
             src="/logo.png"
             alt="CREAX"
@@ -110,6 +110,7 @@ export function Header() {
             height={44}
             className="rounded-lg"
           />
+          <span className="text-xl font-bold text-creax-blue tracking-tight">CREAX</span>
         </Link>
 
         <nav className="flex items-center gap-4 text-sm">
