@@ -13,39 +13,68 @@ export async function GET() {
 
     const userId = session.user.id;
 
-    // Trouver tous les utilisateurs avec qui on a échangé des messages
-    const conversations = await prisma.user.findMany({
+    // Trouver toutes les conversations où l'utilisateur est créateur ou designer
+    const conversations = await prisma.conversation.findMany({
       where: {
         OR: [
-          {
-            messagesReceived: {
-              some: { senderId: userId }
-            }
-          },
-          {
-            messagesSent: {
-              some: { receiverId: userId }
+          { creatorId: userId },
+          { designerId: userId }
+        ]
+      },
+      include: {
+        creator: {
+          select: {
+            id: true,
+            email: true,
+            role: true,
+            profile: {
+              select: {
+                displayName: true,
+                avatarUrl: true
+              }
             }
           }
-        ],
-        NOT: {
-          id: userId
+        },
+        designer: {
+          select: {
+            id: true,
+            email: true,
+            role: true,
+            profile: {
+              select: {
+                displayName: true,
+                avatarUrl: true
+              }
+            }
+          }
+        },
+        mission: {
+          select: {
+            id: true,
+            title: true
+          }
         }
       },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        profile: {
-          select: {
-            displayName: true,
-            avatarUrl: true
-          }
-        }
+      orderBy: {
+        lastMessageAt: "desc"
       }
     });
 
-    return NextResponse.json({ conversations });
+    // Formater pour retourner l'autre utilisateur de la conversation
+    const formattedConversations = conversations.map((conv) => {
+      const otherUser = conv.creatorId === userId ? conv.designer : conv.creator;
+      return {
+        id: conv.id,
+        missionId: conv.mission.id,
+        missionTitle: conv.mission.title,
+        lastMessageAt: conv.lastMessageAt,
+        lastMessagePreview: conv.lastMessagePreview,
+        unreadCount: conv.creatorId === userId ? conv.unreadForCreator : conv.unreadForDesigner,
+        otherUser
+      };
+    });
+
+    return NextResponse.json({ conversations: formattedConversations });
   } catch (error) {
     console.error("Erreur conversations:", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
