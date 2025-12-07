@@ -139,10 +139,14 @@ export async function DELETE() {
     // Supprimer toutes les données liées à l'utilisateur
     // L'ordre est important à cause des contraintes de clés étrangères
     await prisma.$transaction([
-      // Supprimer les messages
+      // Supprimer les messages envoyés par l'utilisateur
       prisma.message.deleteMany({
+        where: { senderId: userId }
+      }),
+      // Supprimer les conversations où l'utilisateur participe
+      prisma.conversation.deleteMany({
         where: {
-          OR: [{ senderId: userId }, { receiverId: userId }]
+          OR: [{ creatorId: userId }, { designerId: userId }]
         }
       }),
       // Supprimer les livraisons

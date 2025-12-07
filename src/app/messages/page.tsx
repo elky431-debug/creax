@@ -7,10 +7,22 @@ import SubscriptionGuard from "@/components/SubscriptionGuard";
 
 type Message = {
   id: string;
-  body: string;
+  content: string | null;
   senderId: string;
-  receiverId: string;
   createdAt: string;
+  type: string;
+  sender?: {
+    id: string;
+    profile: {
+      displayName: string;
+      avatarUrl: string | null;
+    } | null;
+  };
+  attachments?: Array<{
+    id: string;
+    url: string | null;
+    kind: string;
+  }>;
 };
 
 type UploadedAttachment = {
@@ -30,15 +42,24 @@ type ConversationUser = {
   } | null;
 };
 
+type ConversationItem = {
+  id: string;
+  missionId: string;
+  missionTitle: string;
+  lastMessageAt: string;
+  lastMessagePreview: string | null;
+  unreadCount: number;
+  otherUser: ConversationUser;
+};
+
 export default function MessagesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const otherUserIdParam = searchParams.get("with");
 
   const [userId, setUserId] = useState<string | null>(null);
-  const [conversations, setConversations] = useState<ConversationUser[]>([]);
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(otherUserIdParam);
-  const [selectedUser, setSelectedUser] = useState<ConversationUser | null>(null);
+  const [conversations, setConversations] = useState<ConversationItem[]>([]);
+  const [selectedConversation, setSelectedConversation] = useState<ConversationItem | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [body, setBody] = useState("");
   const [loading, setLoading] = useState(true);
@@ -109,37 +130,16 @@ export default function MessagesPage() {
         const profileData = await profileRes.json();
         setUserId(profileData.user?.id || "current");
 
-        fetch("/api/messages/read-all", { method: "POST" }).then(() => {
-          window.dispatchEvent(new Event("refresh-notifications"));
-        }).catch(() => {});
-
         const convRes = await fetch("/api/conversations");
-        let existingConversations: ConversationUser[] = [];
+        let existingConversations: ConversationItem[] = [];
         if (convRes.ok) {
           const convData = await convRes.json();
           existingConversations = convData.conversations || [];
         }
 
-        if (otherUserIdParam) {
-          const existingUser = existingConversations.find(u => u.id === otherUserIdParam);
-          if (existingUser) {
-            setSelectedUser(existingUser);
-          } else {
-            const userRes = await fetch(`/api/users/${otherUserIdParam}`);
-            if (userRes.ok) {
-              const userData = await userRes.json();
-              if (userData.user) {
-                const newUser: ConversationUser = {
-                  id: userData.user.id,
-                  email: userData.user.email,
-                  role: userData.user.role,
-                  profile: userData.user.profile
-                };
-                setSelectedUser(newUser);
-                existingConversations = [newUser, ...existingConversations];
-              }
-            }
-          }
+        // Sélectionner la première conversation par défaut
+        if (existingConversations.length > 0 && !selectedConversation) {
+          setSelectedConversation(existingConversations[0]);
         }
 
         setConversations(existingConversations);
@@ -150,13 +150,13 @@ export default function MessagesPage() {
       }
     }
     fetchData();
-  }, [router, otherUserIdParam]);
+  }, [router, selectedConversation]);
 
   useEffect(() => {
-    if (!selectedUserId) return;
+    if (!selectedConversation) return;
 
     async function fetchMessages() {
-      const res = await fetch(`/api/messages?with=${encodeURIComponent(selectedUserId!)}`);
+      const res = await fetch(`/api/messages?conversationId=${encodeURIComponent(selectedConversation!.id)}`);
       if (res.ok) {
         const data = await res.json();
         setMessages(data.messages || []);
@@ -166,7 +166,7 @@ export default function MessagesPage() {
 
     const interval = setInterval(fetchMessages, 5000);
     return () => clearInterval(interval);
-  }, [selectedUserId]);
+  }, [selectedConversation]);
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -226,7 +226,7 @@ export default function MessagesPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!selectedUserId || (!body.trim() && attachments.length === 0) || !selectedUser) return;
+    if (!selectedConversation || (!body.trim() && attachments.length === 0)) return;
     setSending(true);
 
     try {
@@ -234,7 +234,7 @@ export default function MessagesPage() {
         const res = await fetch("/api/messages", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ toUserId: selectedUserId, body })
+          body: JSON.stringify({ conversationId: selectedConversation.id, content: body })
         });
         if (res.ok) {
           const data = await res.json();
@@ -246,7 +246,7 @@ export default function MessagesPage() {
         const res = await fetch("/api/messages", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ toUserId: selectedUserId, body: att.url })
+          body: JSON.stringify({ conversationId: selectedConversation.id, content: att.url })
         });
         if (res.ok) {
           const data = await res.json();
@@ -257,19 +257,14 @@ export default function MessagesPage() {
       setBody("");
       setAttachments([]);
 
-      if (!conversations.find(u => u.id === selectedUserId)) {
-        setConversations(prev => [selectedUser, ...prev]);
-      }
-
       window.dispatchEvent(new Event("refresh-notifications"));
     } finally {
       setSending(false);
     }
   }
 
-  function handleSelectConversation(user: ConversationUser) {
-    setSelectedUserId(user.id);
-    setSelectedUser(user);
+  function handleSelectConversation(conv: ConversationItem) {
+    setSelectedConversation(conv);
   }
 
   function removeAttachment(url: string) {
@@ -333,41 +328,50 @@ export default function MessagesPage() {
             {/* Conversations */}
             <div className="flex-1 overflow-y-auto p-2">
               {conversations.length > 0 ? (
-                conversations.map((user) => (
+                conversations.map((conv) => (
                   <button
-                    key={user.id}
+                    key={conv.id}
                     type="button"
-                    onClick={() => handleSelectConversation(user)}
+                    onClick={() => handleSelectConversation(conv)}
                     className={`w-full rounded-xl p-3 text-left transition-all flex items-center gap-3 mb-1 ${
-                      selectedUserId === user.id
+                      selectedConversation?.id === conv.id
                         ? "bg-gradient-to-r from-cyan-500/10 to-emerald-500/10 border border-cyan-500/20"
                         : "hover:bg-white/[0.03] border border-transparent"
                     }`}
                   >
                     <div className="relative">
                       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 text-sm font-bold text-slate-900 overflow-hidden">
-                        {user.profile?.avatarUrl ? (
+                        {conv.otherUser.profile?.avatarUrl ? (
                           <Image
-                            src={user.profile.avatarUrl}
-                            alt={user.profile?.displayName || "Avatar"}
+                            src={conv.otherUser.profile.avatarUrl}
+                            alt={conv.otherUser.profile?.displayName || "Avatar"}
                             width={48}
                             height={48}
                             className="h-full w-full object-cover"
                           />
                         ) : (
-                          (user.profile?.displayName || user.email).charAt(0).toUpperCase()
+                          (conv.otherUser.profile?.displayName || conv.otherUser.email).charAt(0).toUpperCase()
                         )}
                       </div>
-                      {/* Online indicator */}
-                      <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-500 border-2 border-[#0a0a0a]" />
+                      {/* Unread indicator */}
+                      {conv.unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-[10px] font-bold text-white flex items-center justify-center">
+                          {conv.unreadCount > 9 ? "9+" : conv.unreadCount}
+                        </span>
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-white text-sm truncate">
-                        {user.profile?.displayName || user.email}
+                        {conv.otherUser.profile?.displayName || conv.otherUser.email}
                       </p>
                       <p className="text-xs text-white/40 truncate">
-                        {user.role === "CREATOR" ? "👤 Créateur" : "🎨 Designer"}
+                        {conv.missionTitle}
                       </p>
+                      {conv.lastMessagePreview && (
+                        <p className="text-xs text-white/30 truncate mt-0.5">
+                          {conv.lastMessagePreview}
+                        </p>
+                      )}
                     </div>
                   </button>
                 ))
@@ -387,39 +391,38 @@ export default function MessagesPage() {
 
           {/* Chat area */}
           <section className="flex-1 rounded-2xl bg-[#0a0a0a] border border-white/[0.06] flex flex-col overflow-hidden">
-            {selectedUser ? (
+            {selectedConversation ? (
               <>
                 {/* Chat header */}
                 <div className="border-b border-white/[0.06] p-4 flex items-center justify-between bg-white/[0.01]">
                   <div className="flex items-center gap-3">
                     <div className="relative">
                       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 text-sm font-bold text-slate-900 overflow-hidden">
-                        {selectedUser.profile?.avatarUrl ? (
+                        {selectedConversation.otherUser.profile?.avatarUrl ? (
                           <Image
-                            src={selectedUser.profile.avatarUrl}
-                            alt={selectedUser.profile?.displayName || "Avatar"}
+                            src={selectedConversation.otherUser.profile.avatarUrl}
+                            alt={selectedConversation.otherUser.profile?.displayName || "Avatar"}
                             width={44}
                             height={44}
                             className="h-full w-full object-cover"
                           />
                         ) : (
-                          (selectedUser.profile?.displayName || selectedUser.email).charAt(0).toUpperCase()
+                          (selectedConversation.otherUser.profile?.displayName || selectedConversation.otherUser.email).charAt(0).toUpperCase()
                         )}
                       </div>
                       <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-500 border-2 border-[#0a0a0a]" />
                     </div>
                     <div>
                       <p className="font-semibold text-white text-[15px]">
-                        {selectedUser.profile?.displayName || selectedUser.email}
+                        {selectedConversation.otherUser.profile?.displayName || selectedConversation.otherUser.email}
                       </p>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-emerald-400 flex items-center gap-1">
-                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                          En ligne
+                        <span className="text-xs text-cyan-400">
+                          {selectedConversation.missionTitle}
                         </span>
                         <span className="text-white/20">•</span>
                         <span className="text-xs text-white/40">
-                          {selectedUser.role === "CREATOR" ? "Créateur" : "Designer"}
+                          {selectedConversation.otherUser.role === "CREATOR" ? "Créateur" : "Designer"}
                         </span>
                       </div>
                     </div>
@@ -465,16 +468,16 @@ export default function MessagesPage() {
                         >
                           {!isMine && showAvatar ? (
                             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 text-xs font-bold text-slate-900 overflow-hidden">
-                              {selectedUser.profile?.avatarUrl ? (
+                              {selectedConversation.otherUser.profile?.avatarUrl ? (
                                 <Image
-                                  src={selectedUser.profile.avatarUrl}
+                                  src={selectedConversation.otherUser.profile.avatarUrl}
                                   alt=""
                                   width={32}
                                   height={32}
                                   className="h-full w-full object-cover"
                                 />
                               ) : (
-                                (selectedUser.profile?.displayName || selectedUser.email).charAt(0).toUpperCase()
+                                (selectedConversation.otherUser.profile?.displayName || selectedConversation.otherUser.email).charAt(0).toUpperCase()
                               )}
                             </div>
                           ) : !isMine ? (
@@ -489,7 +492,7 @@ export default function MessagesPage() {
                                   : "bg-white/[0.05] border border-white/[0.08] text-white rounded-bl-md"
                               }`}
                             >
-                              {renderMessageBody(m.body, isMine)}
+                              {renderMessageBody(m.content || "", isMine)}
                             </div>
                             <p className={`text-[10px] mt-1 ${isMine ? "text-right text-white/30" : "text-white/30"}`}>
                               {new Date(m.createdAt).toLocaleTimeString("fr-FR", {

@@ -12,14 +12,35 @@ export async function GET() {
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
 
-    const count = await prisma.message.count({
+    const userId = session.user.id;
+
+    // Compter les messages non lus dans toutes les conversations
+    // où l'utilisateur est créateur ou designer
+    const conversations = await prisma.conversation.findMany({
       where: {
-        receiverId: session.user.id,
-        read: false
+        OR: [
+          { creatorId: userId },
+          { designerId: userId }
+        ]
+      },
+      select: {
+        creatorId: true,
+        designerId: true,
+        unreadForCreator: true,
+        unreadForDesigner: true
       }
     });
 
-    return NextResponse.json({ unreadCount: count });
+    // Calculer le total des messages non lus
+    const unreadCount = conversations.reduce((total, conv) => {
+      if (conv.creatorId === userId) {
+        return total + conv.unreadForCreator;
+      } else {
+        return total + conv.unreadForDesigner;
+      }
+    }, 0);
+
+    return NextResponse.json({ unreadCount });
   } catch (error) {
     console.error("Erreur unread messages:", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
