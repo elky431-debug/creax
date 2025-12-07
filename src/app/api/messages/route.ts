@@ -5,8 +5,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 const postSchema = z.object({
-  toUserId: z.string().min(1),
-  body: z.string().min(1).max(2000)
+  conversationId: z.string().min(1),
+  content: z.string().min(1).max(2000)
 });
 
 export async function GET(req: Request) {
@@ -18,33 +18,59 @@ export async function GET(req: Request) {
     }
 
     const { searchParams } = new URL(req.url);
-    const otherUserId = searchParams.get("with");
+    const conversationId = searchParams.get("conversationId");
 
-    if (!otherUserId) {
+    if (!conversationId) {
       return NextResponse.json(
-        { error: "Paramètre 'with' manquant" },
+        { error: "Paramètre 'conversationId' manquant" },
         { status: 400 }
       );
     }
 
-    const messages = await prisma.message.findMany({
+    // Vérifier que l'utilisateur fait partie de la conversation
+    const conversation = await prisma.conversation.findFirst({
       where: {
+        id: conversationId,
         OR: [
-          { senderId: session.user.id, receiverId: otherUserId },
-          { senderId: otherUserId, receiverId: session.user.id }
+          { creatorId: session.user.id },
+          { designerId: session.user.id }
         ]
+      }
+    });
+
+    if (!conversation) {
+      return NextResponse.json(
+        { error: "Conversation non trouvée" },
+        { status: 404 }
+      );
+    }
+
+    const messages = await prisma.message.findMany({
+      where: { conversationId },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            profile: {
+              select: {
+                displayName: true,
+                avatarUrl: true
+              }
+            }
+          }
+        },
+        attachments: true
       },
       orderBy: { createdAt: "asc" }
     });
 
-    // Marquer les messages reçus comme lus
-    await prisma.message.updateMany({
-      where: {
-        senderId: otherUserId,
-        receiverId: session.user.id,
-        read: false
-      },
-      data: { read: true }
+    // Marquer les messages comme lus
+    const isCreator = conversation.creatorId === session.user.id;
+    await prisma.conversation.update({
+      where: { id: conversationId },
+      data: isCreator 
+        ? { unreadForCreator: 0 }
+        : { unreadForDesigner: 0 }
     });
 
     return NextResponse.json({ messages });
@@ -72,25 +98,60 @@ export async function POST(req: Request) {
       );
     }
 
-    const { toUserId, body: text } = parsed.data;
+    const { conversationId, content } = parsed.data;
 
-    // Vérifier que le destinataire existe
-    const targetUser = await prisma.user.findUnique({
-      where: { id: toUserId }
+    // Vérifier que l'utilisateur fait partie de la conversation
+    const conversation = await prisma.conversation.findFirst({
+      where: {
+        id: conversationId,
+        OR: [
+          { creatorId: session.user.id },
+          { designerId: session.user.id }
+        ]
+      }
     });
-    
-    if (!targetUser) {
+
+    if (!conversation) {
       return NextResponse.json(
-        { error: "Destinataire introuvable" },
+        { error: "Conversation non trouvée" },
         { status: 404 }
       );
     }
 
+    // Créer le message
     const message = await prisma.message.create({
       data: {
+        conversationId,
         senderId: session.user.id,
-        receiverId: toUserId,
-        body: text
+        type: "TEXT",
+        content
+      },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            profile: {
+              select: {
+                displayName: true,
+                avatarUrl: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Mettre à jour la conversation
+    const isCreator = conversation.creatorId === session.user.id;
+    await prisma.conversation.update({
+      where: { id: conversationId },
+      data: {
+        lastMessageAt: new Date(),
+        lastMessagePreview: content.substring(0, 100),
+        ...(isCreator 
+          ? { unreadForDesigner: { increment: 1 } }
+          : { unreadForCreator: { increment: 1 } }
+        )
       }
     });
 
