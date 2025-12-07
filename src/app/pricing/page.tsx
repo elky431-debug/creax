@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function PricingPage() {
+function PricingContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -325,5 +325,13 @@ export default function PricingPage() {
         }
       `}</style>
     </div>
+  );
+}
+
+export default function PricingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#000] flex items-center justify-center text-white">Chargement...</div>}>
+      <PricingContent />
+    </Suspense>
   );
 }

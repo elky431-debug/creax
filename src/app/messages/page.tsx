@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, DragEvent, ChangeEvent } from "react";
+import { Suspense, useEffect, useState, useRef, DragEvent, ChangeEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import SubscriptionGuard from "@/components/SubscriptionGuard";
@@ -52,7 +52,7 @@ type ConversationItem = {
   otherUser: ConversationUser;
 };
 
-export default function MessagesPage() {
+function MessagesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const otherUserIdParam = searchParams.get("with");
@@ -618,5 +618,13 @@ export default function MessagesPage() {
       </div>
     </div>
     </SubscriptionGuard>
+  );
+}
+
+export default function MessagesPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#000] flex items-center justify-center text-white">Chargement...</div>}>
+      <MessagesContent />
+    </Suspense>
   );
 }
