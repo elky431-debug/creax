@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 /**
  * API pour récupérer les missions assignées à un freelance
  * 

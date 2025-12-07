@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 /**
  * API pour récupérer les propositions envoyées par un designer
  * 

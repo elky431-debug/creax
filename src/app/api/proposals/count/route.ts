@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 /**
  * API pour compter les propositions en attente (notifications)
  * 
