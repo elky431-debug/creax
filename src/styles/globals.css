@@ -73,7 +73,7 @@ textarea:focus-visible {
   }
   
   .secure-media-container::after {
-    content: "Contenu protégé - Impression non autorisée - © CREAX";
+    content: "Contenu protégé - Impression non autorisée - © CREIX";
     display: block;
     font-size: 24px;
     color: #000;
