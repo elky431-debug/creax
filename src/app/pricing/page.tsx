@@ -134,7 +134,7 @@ function PricingContent() {
             </span>
           </h1>
           <p className="text-xl text-white/50 max-w-xl mx-auto leading-relaxed">
-            Rejoignez la communauté CREAX. Zéro commission, zéro surprise.
+            Rejoignez la communauté CREIX. Zéro commission, zéro surprise.
           </p>
         </div>
 

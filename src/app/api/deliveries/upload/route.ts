@@ -4,12 +4,12 @@
  * POST /api/deliveries/upload
  * 
  * Fonctionnalités :
- * - Upload d'images (jpg, png, webp) → watermark automatique CREAX
+ * - Upload d'images (jpg, png, webp) → watermark automatique CREIX
  * - Upload de vidéos (mp4, mov, webm) → compression + watermark texte
  * - Stockage sur le serveur (ou S3 en production)
  * 
  * Le watermark inclut :
- * - Logo/texte "CREAX"
+ * - Logo/texte "CREIX"
  * - Nom du freelance
  * - Mention "VERSION PROTÉGÉE"
  */
@@ -50,7 +50,7 @@ function generateWatermarkSVG(freelancerName: string, width: number, height: num
   // Échapper le nom pour éviter les erreurs XML
   const safeName = escapeXml(freelancerName);
   
-  // Taille ÉNORME pour CREAX au centre
+  // Taille ÉNORME pour CREIX au centre
   const hugeFontSize = Math.max(80, Math.min(width, height) / 4);
   const mediumFontSize = hugeFontSize * 0.3;
   const smallFontSize = hugeFontSize * 0.2;
@@ -59,18 +59,18 @@ function generateWatermarkSVG(freelancerName: string, width: number, height: num
   const svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
 ${generateRepeatedWatermarks(width, height, smallFontSize)}
 <g transform="rotate(-25, ${width/2}, ${height/2})">
-      <text x="${width/2 + 4}" y="${height/2 + 4}" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="${hugeFontSize}px" font-weight="900" fill="rgba(0,0,0,0.5)">CREAX</text>
-      <text x="${width/2}" y="${height/2}" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="${hugeFontSize}px" font-weight="900" fill="rgba(255,255,255,0.7)">CREAX</text>
-      <text x="${width/2}" y="${height/2}" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="${hugeFontSize}px" font-weight="900" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="2">CREAX</text>
+      <text x="${width/2 + 4}" y="${height/2 + 4}" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="${hugeFontSize}px" font-weight="900" fill="rgba(0,0,0,0.5)">CREIX</text>
+      <text x="${width/2}" y="${height/2}" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="${hugeFontSize}px" font-weight="900" fill="rgba(255,255,255,0.7)">CREIX</text>
+      <text x="${width/2}" y="${height/2}" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="${hugeFontSize}px" font-weight="900" fill="none" stroke="rgba(0,0,0,0.4)" stroke-width="2">CREIX</text>
 <text x="${width/2}" y="${height/2 + mediumFontSize * 1.5}" text-anchor="middle" font-family="Arial, sans-serif" font-size="${mediumFontSize}px" font-weight="bold" fill="rgba(255,255,255,0.6)">VERSION PROTEGEE</text>
 <text x="${width/2}" y="${height/2 + mediumFontSize * 2.5}" text-anchor="middle" font-family="Arial, sans-serif" font-size="${smallFontSize}px" font-weight="bold" fill="rgba(255,255,255,0.5)">${safeName}</text>
 </g>
-      <text x="15" y="30" font-family="Arial, sans-serif" font-size="${smallFontSize}px" font-weight="bold" fill="rgba(255,255,255,0.6)">CREAX ${year}</text>
-      <text x="${width - 15}" y="30" text-anchor="end" font-family="Arial, sans-serif" font-size="${smallFontSize}px" font-weight="bold" fill="rgba(255,255,255,0.6)">CREAX</text>
-      <text x="15" y="${height - 60}" font-family="Arial, sans-serif" font-size="${smallFontSize}px" font-weight="bold" fill="rgba(255,255,255,0.6)">CREAX</text>
+      <text x="15" y="30" font-family="Arial, sans-serif" font-size="${smallFontSize}px" font-weight="bold" fill="rgba(255,255,255,0.6)">CREIX ${year}</text>
+      <text x="${width - 15}" y="30" text-anchor="end" font-family="Arial, sans-serif" font-size="${smallFontSize}px" font-weight="bold" fill="rgba(255,255,255,0.6)">CREIX</text>
+      <text x="15" y="${height - 60}" font-family="Arial, sans-serif" font-size="${smallFontSize}px" font-weight="bold" fill="rgba(255,255,255,0.6)">CREIX</text>
 <text x="${width - 15}" y="${height - 60}" text-anchor="end" font-family="Arial, sans-serif" font-size="${smallFontSize}px" font-weight="bold" fill="rgba(255,255,255,0.6)">${year}</text>
 <rect x="0" y="${height - 45}" width="${width}" height="45" fill="rgba(0,0,0,0.6)"/>
-      <text x="${width/2}" y="${height - 18}" text-anchor="middle" font-family="Arial, sans-serif" font-size="${smallFontSize * 1.2}px" font-weight="bold" fill="rgba(255,255,255,0.9)">CREAX ${year} - TELECHARGEMENT INTERDIT</text>
+      <text x="${width/2}" y="${height - 18}" text-anchor="middle" font-family="Arial, sans-serif" font-size="${smallFontSize * 1.2}px" font-weight="bold" fill="rgba(255,255,255,0.9)">CREIX ${year} - TELECHARGEMENT INTERDIT</text>
 </svg>`;
   
   return Buffer.from(svg);
@@ -88,7 +88,7 @@ function generateRepeatedWatermarks(width: number, height: number, fontSize: num
   for (let y = -height * 0.3; y < height * 1.3; y += spacing) {
     const xOffset = (rowIndex % 2) * (spacing / 2);
     for (let x = -width * 0.3 + xOffset; x < width * 1.3; x += spacing) {
-      const text = rowIndex % 2 === 0 ? "CREAX" : `${year}`;
+      const text = rowIndex % 2 === 0 ? "CREIX" : `${year}`;
       texts.push(`<text x="${x}" y="${y}" font-family="Arial, sans-serif" font-size="${fontSize * 1.2}px" font-weight="900" fill="rgba(255,255,255,0.25)" transform="rotate(-25, ${x}, ${y})">${text}</text>`);
     }
     rowIndex++;

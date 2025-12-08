@@ -100,21 +100,21 @@ export function Header() {
   const isLoggedIn = status === "authenticated";
 
   return (
-    <header className="border-b border-creax-blue/20 bg-creax-black sticky top-0 z-50">
+    <header className="border-b border-creix-blue/20 bg-creix-black sticky top-0 z-50">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <Link href="/" className="flex items-center gap-2">
           <Image
             src="/logo.png"
-            alt="CREAX"
+            alt="CREIX"
             width={44}
             height={44}
             className="rounded-lg"
           />
-          <span className="text-xl font-bold text-creax-blue tracking-tight">CREAX</span>
+          <span className="text-xl font-bold text-creix-blue tracking-tight">CREIX</span>
         </Link>
 
         <nav className="flex items-center gap-4 text-sm">
-          <Link href="/pricing" className="hover:underline text-creax-blue">
+          <Link href="/pricing" className="hover:underline text-creix-blue">
             Tarifs
           </Link>
 
@@ -124,7 +124,7 @@ export function Header() {
               <div className="relative" ref={missionsMenuRef}>
                 <button
                   onClick={() => setMissionsMenuOpen(!missionsMenuOpen)}
-                  className="relative flex items-center gap-2 text-creax-blue hover:underline"
+                  className="relative flex items-center gap-2 text-creix-blue hover:underline"
                   >
                     <svg
                       className="h-5 w-5"
@@ -157,13 +157,13 @@ export function Header() {
 
                 {/* Dropdown menu */}
                 {missionsMenuOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-52 rounded-lg bg-creax-black border border-creax-blue/20 shadow-lg py-2 z-50">
+                  <div className="absolute top-full left-0 mt-2 w-52 rounded-lg bg-creix-black border border-creix-blue/20 shadow-lg py-2 z-50">
                     {userRole === "CREATOR" ? (
                       <>
                         <Link
                           href="/missions/my"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-creax-blue hover:bg-creax-blue/10 transition"
+                          className="flex items-center gap-2 px-4 py-2 text-creix-blue hover:bg-creix-blue/10 transition"
                         >
                           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -173,7 +173,7 @@ export function Header() {
                         <Link
                           href="/proposals"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="relative flex items-center gap-2 px-4 py-2 text-creax-blue hover:bg-creax-blue/10 transition"
+                          className="relative flex items-center gap-2 px-4 py-2 text-creix-blue hover:bg-creix-blue/10 transition"
                         >
                           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -185,11 +185,11 @@ export function Header() {
                             </span>
                           )}
                         </Link>
-                        <div className="my-2 border-t border-creax-blue/10" />
+                        <div className="my-2 border-t border-creix-blue/10" />
                         <Link
                           href="/deliveries"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-creax-blue hover:bg-creax-blue/10 transition"
+                          className="flex items-center gap-2 px-4 py-2 text-creix-blue hover:bg-creix-blue/10 transition"
                         >
                           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -202,7 +202,7 @@ export function Header() {
                   <Link
                     href="/missions"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-creax-blue hover:bg-creax-blue/10 transition"
+                          className="flex items-center gap-2 px-4 py-2 text-creix-blue hover:bg-creix-blue/10 transition"
                   >
                           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -212,7 +212,7 @@ export function Header() {
                         <Link
                           href="/missions/assigned"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-creax-blue hover:bg-creax-blue/10 transition"
+                          className="flex items-center gap-2 px-4 py-2 text-creix-blue hover:bg-creix-blue/10 transition"
                         >
                           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -222,7 +222,7 @@ export function Header() {
                   <Link
                     href="/my-proposals"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="relative flex items-center gap-2 px-4 py-2 text-creax-blue hover:bg-creax-blue/10 transition"
+                          className="relative flex items-center gap-2 px-4 py-2 text-creix-blue hover:bg-creix-blue/10 transition"
                   >
                           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -234,11 +234,11 @@ export function Header() {
                       </span>
                     )}
                   </Link>
-                        <div className="my-2 border-t border-creax-blue/10" />
+                        <div className="my-2 border-t border-creix-blue/10" />
               <Link
                 href="/deliveries"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-creax-blue hover:bg-creax-blue/10 transition"
+                          className="flex items-center gap-2 px-4 py-2 text-creix-blue hover:bg-creix-blue/10 transition"
               >
                           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -254,7 +254,7 @@ export function Header() {
               {/* Bouton Messagerie avec notification */}
               <Link
                 href="/messages"
-                className="relative flex items-center gap-2 text-creax-blue hover:underline"
+                className="relative flex items-center gap-2 text-creix-blue hover:underline"
               >
                 <svg
                   className="h-5 w-5"
@@ -277,13 +277,13 @@ export function Header() {
                 )}
               </Link>
 
-              <Link href="/dashboard" className="hover:underline text-creax-blue">
+              <Link href="/dashboard" className="hover:underline text-creix-blue">
                 Dashboard
               </Link>
 
               <Link
                 href="/profile"
-                className="flex items-center gap-2 rounded-full bg-creax-blue px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-creax-black shadow-sm hover:bg-creax-blueDark transition"
+                className="flex items-center gap-2 rounded-full bg-creix-blue px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-creix-black shadow-sm hover:bg-creix-blueDark transition"
               >
                 {profile?.avatarUrl ? (
                   <div className="relative h-6 w-6 rounded-full overflow-hidden">
@@ -296,7 +296,7 @@ export function Header() {
                     />
                   </div>
                 ) : (
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-creax-black/20 text-[10px] font-bold">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-creix-black/20 text-[10px] font-bold">
                     {(profile?.displayName || session?.user?.email || "U").charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -305,12 +305,12 @@ export function Header() {
             </>
           ) : (
             <>
-              <Link href="/login" className="hover:underline text-creax-blue">
+              <Link href="/login" className="hover:underline text-creix-blue">
                 Connexion
               </Link>
               <Link
                 href="/signup"
-                className="rounded-full bg-creax-blue px-4 py-2 text-xs font-semibold uppercase tracking-wide text-creax-black shadow-sm hover:bg-creax-blueDark transition"
+                className="rounded-full bg-creix-blue px-4 py-2 text-xs font-semibold uppercase tracking-wide text-creix-black shadow-sm hover:bg-creix-blueDark transition"
               >
                 Créer un compte
               </Link>

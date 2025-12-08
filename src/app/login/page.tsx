@@ -40,11 +40,11 @@ function LoginContent() {
 
   return (
     <div className="mx-auto flex min-h-[calc(100vh-200px)] max-w-md flex-col justify-center px-4 py-12">
-      <div className="rounded-2xl border border-creax-blue/20 bg-creax-black p-8 shadow-lg">
-        <h1 className="text-center text-2xl font-bold text-creax-blue">
-          Connexion à CREAX
+      <div className="rounded-2xl border border-creix-blue/20 bg-creix-black p-8 shadow-lg">
+        <h1 className="text-center text-2xl font-bold text-creix-blue">
+          Connexion à CREIX
         </h1>
-        <p className="mt-2 text-center text-sm text-creax-blue/70">
+        <p className="mt-2 text-center text-sm text-creix-blue/70">
           Accédez à votre espace créateur ou graphiste
         </p>
 
@@ -58,7 +58,7 @@ function LoginContent() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-creax-blue"
+              className="block text-sm font-medium text-creix-blue"
             >
               Email
             </label>
@@ -68,7 +68,7 @@ function LoginContent() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="mt-1 w-full rounded-lg border border-creax-blue/30 bg-creax-black px-4 py-2 text-creax-blue placeholder-creax-blue/40 focus:border-creax-blue focus:outline-none focus:ring-1 focus:ring-creax-blue"
+              className="mt-1 w-full rounded-lg border border-creix-blue/30 bg-creix-black px-4 py-2 text-creix-blue placeholder-creix-blue/40 focus:border-creix-blue focus:outline-none focus:ring-1 focus:ring-creix-blue"
               placeholder="vous@exemple.com"
             />
           </div>
@@ -76,7 +76,7 @@ function LoginContent() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-creax-blue"
+              className="block text-sm font-medium text-creix-blue"
             >
               Mot de passe
             </label>
@@ -86,7 +86,7 @@ function LoginContent() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="mt-1 w-full rounded-lg border border-creax-blue/30 bg-creax-black px-4 py-2 text-creax-blue placeholder-creax-blue/40 focus:border-creax-blue focus:outline-none focus:ring-1 focus:ring-creax-blue"
+              className="mt-1 w-full rounded-lg border border-creix-blue/30 bg-creix-black px-4 py-2 text-creix-blue placeholder-creix-blue/40 focus:border-creix-blue focus:outline-none focus:ring-1 focus:ring-creix-blue"
               placeholder="••••••••"
             />
           </div>
@@ -94,15 +94,15 @@ function LoginContent() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-full bg-creax-blue px-4 py-3 font-semibold text-creax-black transition hover:bg-creax-blueDark disabled:opacity-50"
+            className="w-full rounded-full bg-creix-blue px-4 py-3 font-semibold text-creix-black transition hover:bg-creix-blueDark disabled:opacity-50"
           >
             {loading ? "Connexion..." : "Se connecter"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-creax-blue/70">
+        <p className="mt-6 text-center text-sm text-creix-blue/70">
           Pas encore de compte ?{" "}
-          <a href="/signup" className="text-creax-blue hover:underline">
+          <a href="/signup" className="text-creix-blue hover:underline">
             Créer un compte
           </a>
         </p>
@@ -113,7 +113,7 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-creax-black flex items-center justify-center text-creax-blue">Chargement...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-creix-black flex items-center justify-center text-creix-blue">Chargement...</div>}>
       <LoginContent />
     </Suspense>
   );

@@ -1,7 +1,7 @@
 /**
  * Page pour envoyer une version protégée
  * 
- * Le freelance upload son travail et CREAX ajoute automatiquement le watermark
+ * Le freelance upload son travail et CREIX ajoute automatiquement le watermark
  */
 
 "use client";
@@ -264,7 +264,7 @@ export default function SendDeliveryPage() {
 
           <h1 className="text-2xl font-bold text-white">Envoyer une livraison</h1>
           <p className="mt-2 text-slate-400">
-            Uploadez votre travail - CREAX ajoutera automatiquement un watermark de protection
+            Uploadez votre travail - CREIX ajoutera automatiquement un watermark de protection
           </p>
         </div>
 
@@ -278,7 +278,7 @@ export default function SendDeliveryPage() {
             </div>
             <h2 className="text-lg font-semibold text-emerald-400">Livraison envoyée !</h2>
             <p className="mt-2 text-sm text-slate-400">
-              Le créateur va recevoir votre version protégée avec watermark CREAX.
+              Le créateur va recevoir votre version protégée avec watermark CREIX.
             </p>
             <p className="mt-1 text-sm text-slate-500">Redirection en cours...</p>
           </div>
@@ -331,7 +331,7 @@ export default function SendDeliveryPage() {
                       JPG, PNG, WebP, MP4, MOV, WebM (max 50MB)
                     </p>
                     <p className="mt-3 text-xs text-emerald-400/70">
-                      ✓ Le watermark CREAX sera ajouté automatiquement
+                      ✓ Le watermark CREIX sera ajouté automatiquement
                     </p>
                   </div>
                   <input 
@@ -364,7 +364,7 @@ export default function SendDeliveryPage() {
                     {/* Overlay watermark preview */}
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                       <div className="text-center transform -rotate-12">
-                        <p className="text-white/30 text-2xl font-bold">CREAX</p>
+                        <p className="text-white/30 text-2xl font-bold">CREIX</p>
                         <p className="text-white/20 text-sm">VERSION PROTÉGÉE</p>
                       </div>
                     </div>
@@ -392,7 +392,7 @@ export default function SendDeliveryPage() {
                   {/* Note watermark */}
                   <div className="mt-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-3">
                     <p className="text-xs text-emerald-400">
-                      ✓ Un watermark CREAX sera automatiquement ajouté pour protéger votre travail
+                      ✓ Un watermark CREIX sera automatiquement ajouté pour protéger votre travail
                     </p>
                   </div>
                 </div>
@@ -465,7 +465,7 @@ export default function SendDeliveryPage() {
             <div className="rounded-lg bg-slate-800/50 p-4">
               <h3 className="text-sm font-medium text-white mb-2">🛡️ Protection de votre travail</h3>
               <ul className="text-xs text-slate-400 space-y-1">
-                <li>• CREAX ajoute automatiquement un watermark visible</li>
+                <li>• CREIX ajoute automatiquement un watermark visible</li>
                 <li>• Le créateur ne peut pas télécharger la version protégée</li>
                 <li>• La version finale n'est envoyée qu'après paiement</li>
                 <li>• Vous gardez le contrôle total sur votre travail</li>

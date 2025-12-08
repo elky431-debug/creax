@@ -758,7 +758,7 @@ export default function DeliveryDetailPage() {
                 Envoyer une nouvelle version
               </h3>
               <p className="text-sm text-slate-400 mb-4">
-                Uploadez votre travail corrigé. CREAX ajoutera automatiquement le filigrane et le flou de protection.
+                Uploadez votre travail corrigé. CREIX ajoutera automatiquement le filigrane et le flou de protection.
               </p>
               
               <div className="space-y-4">
@@ -962,10 +962,10 @@ function SecureVideoPlayer({ url }: { url: string }) {
         Votre navigateur ne supporte pas la lecture vidéo.
       </video>
 
-      {/* Watermarks Creax */}
+      {/* Watermarks Creix */}
       <div className="absolute top-3 left-3 z-20 pointer-events-none">
         <span className="text-white/50 text-xs font-bold bg-black/50 px-2 py-1 rounded">
-          © CREAX {new Date().getFullYear()}
+          © CREIX {new Date().getFullYear()}
         </span>
       </div>
       <div className="absolute top-3 right-3 z-20 pointer-events-none">
@@ -975,14 +975,14 @@ function SecureVideoPlayer({ url }: { url: string }) {
       </div>
       <div className="absolute bottom-12 right-3 z-20 pointer-events-none">
         <span className="text-white/40 text-sm font-bold">
-          CREAX © {new Date().getFullYear()}
+          CREIX © {new Date().getFullYear()}
         </span>
       </div>
       
       {/* Watermark central */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
         <span className="text-white/15 text-4xl font-black rotate-[-25deg] tracking-widest">
-          CREAX
+          CREIX
         </span>
       </div>
     </div>
@@ -1073,17 +1073,17 @@ function SecureImageViewer({ url }: { url: string }) {
         />
       </div>
 
-      {/* Watermarks Creax visibles */}
+      {/* Watermarks Creix visibles */}
       <div className="absolute inset-0 pointer-events-none z-20 flex items-center justify-center">
         <span className="text-white/25 text-5xl font-black rotate-[-25deg] tracking-widest">
-          CREAX
+          CREIX
         </span>
       </div>
       
       {/* Copyright coins */}
       <div className="absolute top-3 left-3 z-20 pointer-events-none">
         <span className="text-white/40 text-xs font-bold bg-black/30 px-2 py-1 rounded">
-          © CREAX {new Date().getFullYear()}
+          © CREIX {new Date().getFullYear()}
         </span>
       </div>
       <div className="absolute top-3 right-3 z-20 pointer-events-none">
@@ -1095,7 +1095,7 @@ function SecureImageViewer({ url }: { url: string }) {
       {/* Barre copyright en bas */}
       <div className="absolute bottom-0 left-0 right-0 z-20 pointer-events-none bg-gradient-to-t from-black/70 to-transparent py-4 px-4">
         <p className="text-center text-white/60 text-sm font-semibold">
-          © CREAX {new Date().getFullYear()} - Contenu protégé - Téléchargement interdit
+          © CREIX {new Date().getFullYear()} - Contenu protégé - Téléchargement interdit
         </p>
       </div>
     </div>

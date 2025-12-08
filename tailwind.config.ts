@@ -9,9 +9,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        "creax-black": "#0a0a0a",
-        "creax-blue": "#048B9A",
-        "creax-blueDark": "#026f7a"
+        "creix-black": "#0a0a0a",
+        "creix-blue": "#048B9A",
+        "creix-blueDark": "#026f7a"
       }
     }
   },
@@ -19,6 +19,7 @@ const config: Config = {
 };
 
 export default config;
+
 
 
 

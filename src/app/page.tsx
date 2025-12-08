@@ -39,7 +39,7 @@ export default function HomePage() {
           
           {/* Subtitle */}
           <p className="max-w-2xl mx-auto text-lg sm:text-xl text-white/50 leading-relaxed mb-12">
-            CREAX met en relation créateurs de contenu et graphistes/monteurs vidéo 
+            CREIX met en relation créateurs de contenu et graphistes/monteurs vidéo 
             pour des collaborations <span className="text-cyan-400">simples</span>, <span className="text-emerald-400">rapides</span> et <span className="text-white/70">sécurisées</span>.
           </p>
           
@@ -101,20 +101,20 @@ export default function HomePage() {
       {/* Platforms Section - Pour les créateurs */}
       <section className="relative py-32 px-4 overflow-hidden">
         {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-creax-blue/[0.02] to-transparent" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-creax-blue/5 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-creix-blue/[0.02] to-transparent" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-creix-blue/5 rounded-full blur-3xl" />
         
         <div className="relative z-10 max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/10 px-4 py-2 mb-6 backdrop-blur-sm">
               <span className="text-lg">🎬</span>
-              <span className="text-xs font-medium uppercase tracking-widest text-creax-blue/80">Pour les créateurs</span>
+              <span className="text-xs font-medium uppercase tracking-widest text-creix-blue/80">Pour les créateurs</span>
             </div>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
               Vous créez du contenu ?
             </h2>
-            <p className="max-w-xl mx-auto text-creax-blue/60 text-lg">
+            <p className="max-w-xl mx-auto text-creix-blue/60 text-lg">
               Trouvez le graphiste ou monteur parfait pour sublimer vos vidéos.
             </p>
           </div>
@@ -161,7 +161,7 @@ export default function HomePage() {
                 <div className="relative flex flex-col items-center text-center space-y-4">
                   {/* Icon container */}
                   <div className={`relative w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br ${platform.gradient} p-[2px] group-hover:scale-110 transition-transform duration-150`}>
-                    <div className="w-full h-full rounded-2xl bg-creax-black flex items-center justify-center">
+                    <div className="w-full h-full rounded-2xl bg-creix-black flex items-center justify-center">
                       <svg className="w-8 h-8 md:w-10 md:h-10 text-white" viewBox="0 0 24 24" fill="currentColor">
                         <path d={platform.icon}/>
                   </svg>
@@ -184,7 +184,7 @@ export default function HomePage() {
           <div className="text-center mt-14">
             <a
               href="/signup?role=CREATOR"
-              className="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-creax-blue to-cyan-400 px-8 py-4 text-base font-bold text-creax-black shadow-lg shadow-creax-blue/25 hover:shadow-creax-blue/40 hover:scale-105 transition-all duration-150"
+              className="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-creix-blue to-cyan-400 px-8 py-4 text-base font-bold text-creix-black shadow-lg shadow-creix-blue/25 hover:shadow-creix-blue/40 hover:scale-105 transition-all duration-150"
             >
               <span>Je suis créateur</span>
               <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -198,20 +198,20 @@ export default function HomePage() {
       {/* Pour les graphistes */}
       <section className="relative py-32 px-4 overflow-hidden">
         {/* Background effects */}
-        <div className="absolute inset-0 bg-gradient-to-b from-creax-blue/[0.03] via-creax-blue/[0.08] to-creax-blue/[0.03]" />
-        <div className="absolute top-1/2 left-0 w-[600px] h-[600px] bg-creax-blue/10 rounded-full blur-3xl -translate-y-1/2" />
+        <div className="absolute inset-0 bg-gradient-to-b from-creix-blue/[0.03] via-creix-blue/[0.08] to-creix-blue/[0.03]" />
+        <div className="absolute top-1/2 left-0 w-[600px] h-[600px] bg-creix-blue/10 rounded-full blur-3xl -translate-y-1/2" />
         <div className="absolute top-1/2 right-0 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-2xl -translate-y-1/2" />
         
         <div className="relative z-10 max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
               {/* Badge animé */}
-              <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-creax-blue/10 to-emerald-500/10 border border-creax-blue/20 px-4 py-2 backdrop-blur-sm">
+              <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-creix-blue/10 to-emerald-500/10 border border-creix-blue/20 px-4 py-2 backdrop-blur-sm">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
-                <span className="text-xs font-medium uppercase tracking-widest text-creax-blue">
+                <span className="text-xs font-medium uppercase tracking-widest text-creix-blue">
                 Pour les graphistes & monteurs
               </span>
               </div>
@@ -219,12 +219,12 @@ export default function HomePage() {
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
                 <span className="text-white">Montrez votre talent,</span>
                 <br />
-                <span className="bg-gradient-to-r from-creax-blue via-emerald-400 to-creax-blue bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-creix-blue via-emerald-400 to-creix-blue bg-clip-text text-transparent">
                   trouvez des clients
                 </span>
               </h2>
               
-              <p className="text-creax-blue/70 text-lg leading-relaxed max-w-lg">
+              <p className="text-creix-blue/70 text-lg leading-relaxed max-w-lg">
                 Créez votre profil, présentez votre portfolio et recevez des demandes 
                 de créateurs qui correspondent à votre style et vos compétences.
               </p>
@@ -237,14 +237,14 @@ export default function HomePage() {
                   { icon: "✓", title: "Paiements sécurisés", desc: "Via Stripe, sans tracas administratifs" }
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-4 group">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-creax-blue/20 to-emerald-500/10 border border-creax-blue/20 flex items-center justify-center flex-shrink-0 group-hover:from-creax-blue/30 group-hover:to-emerald-500/20 transition-all duration-150">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-creix-blue/20 to-emerald-500/10 border border-creix-blue/20 flex items-center justify-center flex-shrink-0 group-hover:from-creix-blue/30 group-hover:to-emerald-500/20 transition-all duration-150">
                       <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
                   <div>
-                      <h4 className="font-semibold text-white group-hover:text-creax-blue transition-colors">{item.title}</h4>
-                      <p className="text-sm text-creax-blue/50">{item.desc}</p>
+                      <h4 className="font-semibold text-white group-hover:text-creix-blue transition-colors">{item.title}</h4>
+                      <p className="text-sm text-creix-blue/50">{item.desc}</p>
                   </div>
                 </li>
                 ))}
@@ -252,7 +252,7 @@ export default function HomePage() {
               
               <a
                 href="/signup?role=DESIGNER"
-                className="group inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-creax-blue to-emerald-500 px-8 py-4 text-base font-semibold text-creax-black shadow-lg shadow-creax-blue/25 hover:shadow-creax-blue/40 transition-all duration-150 hover:scale-105"
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-creix-blue to-emerald-500 px-8 py-4 text-base font-semibold text-creix-black shadow-lg shadow-creix-blue/25 hover:shadow-creix-blue/40 transition-all duration-150 hover:scale-105"
               >
                 Je suis graphiste / monteur
                 <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -264,7 +264,7 @@ export default function HomePage() {
             {/* Cards avec effet glassmorphism */}
             <div className="relative">
               {/* Glow background */}
-              <div className="absolute -inset-4 bg-gradient-to-br from-creax-blue/30 via-emerald-500/20 to-creax-blue/30 rounded-[40px] blur-2xl opacity-50" />
+              <div className="absolute -inset-4 bg-gradient-to-br from-creix-blue/30 via-emerald-500/20 to-creix-blue/30 rounded-[40px] blur-2xl opacity-50" />
               
               {/* Card container */}
               <div className="relative space-y-4">
@@ -306,16 +306,16 @@ export default function HomePage() {
       {/* Comment ça marche */}
       <section className="relative py-32 px-4 overflow-hidden">
         {/* Subtle background */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-creax-blue/[0.05] via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-creix-blue/[0.05] via-transparent to-transparent" />
         
         <div className="relative z-10 max-w-5xl mx-auto">
           {/* Header */}
           <div className="text-center mb-20">
             <span className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/10 px-4 py-2 mb-6 backdrop-blur-sm">
-              <svg className="w-4 h-4 text-creax-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="w-4 h-4 text-creix-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
-              <span className="text-xs font-medium uppercase tracking-widest text-creax-blue/80">Simple & rapide</span>
+              <span className="text-xs font-medium uppercase tracking-widest text-creix-blue/80">Simple & rapide</span>
             </span>
             <h2 className="text-4xl sm:text-5xl font-bold text-white">
               Comment ça marche ?
@@ -325,7 +325,7 @@ export default function HomePage() {
           {/* Steps */}
             <div className="relative">
             {/* Connection line */}
-            <div className="hidden md:block absolute top-24 left-[16.666%] right-[16.666%] h-[2px] bg-gradient-to-r from-creax-blue/50 via-emerald-500/50 to-creax-blue/50" />
+            <div className="hidden md:block absolute top-24 left-[16.666%] right-[16.666%] h-[2px] bg-gradient-to-r from-creix-blue/50 via-emerald-500/50 to-creix-blue/50" />
             
             <div className="grid md:grid-cols-3 gap-8 md:gap-12">
               {[
@@ -354,7 +354,7 @@ export default function HomePage() {
                 <div key={i} className="group relative flex flex-col items-center text-center">
                   {/* Number badge */}
                   <div className={`relative z-10 w-20 h-20 rounded-2xl bg-gradient-to-br ${step.color} p-[2px] mb-8 shadow-lg shadow-${step.color.split('-')[1]}-500/25 group-hover:scale-110 transition-transform duration-150`}>
-                    <div className="w-full h-full rounded-2xl bg-creax-black flex items-center justify-center">
+                    <div className="w-full h-full rounded-2xl bg-creix-black flex items-center justify-center">
                       <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d={step.icon} />
                       </svg>
@@ -367,10 +367,10 @@ export default function HomePage() {
                   </span>
                   
                   {/* Content */}
-                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-creax-blue transition-colors">
+                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-creix-blue transition-colors">
                     {step.title}
                   </h3>
-                  <p className="text-creax-blue/60 leading-relaxed max-w-xs">
+                  <p className="text-creix-blue/60 leading-relaxed max-w-xs">
                     {step.desc}
                 </p>
               </div>
@@ -382,7 +382,7 @@ export default function HomePage() {
           <div className="text-center mt-16">
             <a
               href="/signup"
-              className="inline-flex items-center gap-2 text-creax-blue hover:text-white transition-colors group"
+              className="inline-flex items-center gap-2 text-creix-blue hover:text-white transition-colors group"
             >
               <span className="font-medium">Commencer maintenant</span>
               <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -572,7 +572,7 @@ export default function HomePage() {
           
           {/* Subtitle */}
           <p className="text-white/50 text-lg sm:text-xl mb-12 max-w-2xl mx-auto leading-relaxed">
-            Rejoignez CREAX aujourd&apos;hui et commencez à créer des projets incroyables 
+            Rejoignez CREIX aujourd&apos;hui et commencez à créer des projets incroyables 
             avec les <span className="text-white/70">meilleurs talents créatifs</span>.
           </p>
           
