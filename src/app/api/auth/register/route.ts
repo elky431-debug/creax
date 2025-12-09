@@ -61,8 +61,9 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Erreur register:", error);
+    const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
     return NextResponse.json(
-      { error: "Erreur lors de la création du compte" },
+      { error: `Erreur lors de la création du compte: ${errorMessage}` },
       { status: 500 }
     );
   }
