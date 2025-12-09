@@ -17,13 +17,18 @@ export function Header() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [missionsMenuOpen, setMissionsMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const missionsMenuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   // Fermer le menu quand on clique ailleurs
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (missionsMenuRef.current && !missionsMenuRef.current.contains(event.target as Node)) {
         setMissionsMenuOpen(false);
+      }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setMobileMenuOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -100,22 +105,33 @@ export function Header() {
   const isLoggedIn = status === "authenticated";
 
   return (
-    <header className="border-b border-creix-blue/20 bg-creix-black sticky top-0 z-50">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" className="flex items-center gap-2">
-          <Image
-            src="/logo.png"
-            alt="CREIX"
-            width={44}
-            height={44}
-            className="rounded-lg"
-          />
-          <span className="text-xl font-bold text-creix-blue tracking-tight">CREIX</span>
+    <header className="sticky top-0 z-50 border-b border-creix-blue/10 bg-creix-black/80 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
+        {/* Logo */}
+        <Link href="/" className="group flex items-center gap-2.5 shrink-0">
+          <div className="relative">
+            <div className="absolute -inset-1 rounded-xl bg-creix-blue/20 opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-100" />
+            <Image
+              src="/logo.png"
+              alt="CREIX"
+              width={40}
+              height={40}
+              className="relative rounded-xl shadow-lg shadow-creix-blue/10 transition-transform duration-300 group-hover:scale-105"
+            />
+          </div>
+          <span className="text-lg font-bold tracking-tight text-creix-blue transition-colors duration-300 group-hover:text-white md:text-xl">
+            CREIX
+          </span>
         </Link>
 
-        <nav className="flex items-center gap-4 text-sm">
-          <Link href="/pricing" className="hover:underline text-creix-blue">
-            Tarifs
+        {/* Desktop Navigation */}
+        <nav className="hidden items-center gap-1 md:flex">
+          <Link 
+            href="/pricing" 
+            className="relative px-4 py-2 text-sm font-medium text-creix-blue/80 transition-all duration-200 hover:text-creix-blue"
+          >
+            <span className="relative z-10">Tarifs</span>
+            <span className="absolute inset-0 rounded-lg bg-creix-blue/0 transition-colors duration-200 hover:bg-creix-blue/10" />
           </Link>
 
           {isLoggedIn ? (
@@ -124,48 +140,33 @@ export function Header() {
               <div className="relative" ref={missionsMenuRef}>
                 <button
                   onClick={() => setMissionsMenuOpen(!missionsMenuOpen)}
-                  className="relative flex items-center gap-2 text-creix-blue hover:underline"
-                  >
-                    <svg
-                      className="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                      />
-                    </svg>
-                  <span className="hidden sm:inline">Missions</span>
-                    <svg
-                    className={`h-4 w-4 transition-transform ${missionsMenuOpen ? "rotate-180" : ""}`}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
+                  className="relative flex items-center gap-2 px-4 py-2 text-sm font-medium text-creix-blue/80 transition-all duration-200 hover:text-creix-blue rounded-lg hover:bg-creix-blue/10"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                  <span>Missions</span>
+                  <svg className={`h-3.5 w-3.5 transition-transform duration-200 ${missionsMenuOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                    {proposalCount > 0 && (
-                      <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-yellow-500 text-[10px] font-bold text-slate-900 animate-pulse">
-                        {proposalCount > 9 ? "9+" : proposalCount}
-                      </span>
-                    )}
+                  </svg>
+                  {proposalCount > 0 && (
+                    <span className="absolute -top-0.5 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold text-slate-900 shadow-lg shadow-amber-500/30">
+                      {proposalCount > 9 ? "9+" : proposalCount}
+                    </span>
+                  )}
                 </button>
 
                 {/* Dropdown menu */}
                 {missionsMenuOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-52 rounded-lg bg-creix-black border border-creix-blue/20 shadow-lg py-2 z-50">
+                  <div className="absolute top-full right-0 mt-2 w-56 origin-top-right animate-slide-in-from-top-2 rounded-xl border border-creix-blue/20 bg-creix-black/95 p-1.5 shadow-xl shadow-black/40 backdrop-blur-xl">
                     {userRole === "CREATOR" ? (
                       <>
                         <Link
                           href="/missions/my"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-creix-blue hover:bg-creix-blue/10 transition"
+                          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
                         >
-                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                           </svg>
                           Mes missions
@@ -173,38 +174,38 @@ export function Header() {
                         <Link
                           href="/proposals"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="relative flex items-center gap-2 px-4 py-2 text-creix-blue hover:bg-creix-blue/10 transition"
+                          className="relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
                         >
-                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                           </svg>
                           Propositions reçues
                           {proposalCount > 0 && (
-                            <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-yellow-500 text-[10px] font-bold text-slate-900">
+                            <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-amber-500 px-1.5 text-[10px] font-bold text-slate-900">
                               {proposalCount > 9 ? "9+" : proposalCount}
                             </span>
                           )}
                         </Link>
-                        <div className="my-2 border-t border-creix-blue/10" />
+                        <div className="my-1.5 border-t border-creix-blue/10" />
                         <Link
                           href="/deliveries"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-creix-blue hover:bg-creix-blue/10 transition"
+                          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
                         >
-                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                           </svg>
                           Livraisons
-                  </Link>
-                </>
+                        </Link>
+                      </>
                     ) : (
-                <>
-                  <Link
-                    href="/missions"
+                      <>
+                        <Link
+                          href="/missions"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-creix-blue hover:bg-creix-blue/10 transition"
-                  >
-                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                        >
+                          <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                           </svg>
                           Missions disponibles
@@ -212,39 +213,39 @@ export function Header() {
                         <Link
                           href="/missions/assigned"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-creix-blue hover:bg-creix-blue/10 transition"
+                          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
                         >
-                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                          </svg>
                           Mes missions assignées
-                  </Link>
-                  <Link
-                    href="/my-proposals"
+                        </Link>
+                        <Link
+                          href="/my-proposals"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="relative flex items-center gap-2 px-4 py-2 text-creix-blue hover:bg-creix-blue/10 transition"
-                  >
-                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          className="relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                        >
+                          <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                    </svg>
+                          </svg>
                           Mes propositions
-                    {proposalCount > 0 && (
-                            <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-slate-900">
-                        {proposalCount > 9 ? "9+" : proposalCount}
-                      </span>
-                    )}
-                  </Link>
-                        <div className="my-2 border-t border-creix-blue/10" />
-              <Link
-                href="/deliveries"
+                          {proposalCount > 0 && (
+                            <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-emerald-500 px-1.5 text-[10px] font-bold text-slate-900">
+                              {proposalCount > 9 ? "9+" : proposalCount}
+                            </span>
+                          )}
+                        </Link>
+                        <div className="my-1.5 border-t border-creix-blue/10" />
+                        <Link
+                          href="/deliveries"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="flex items-center gap-2 px-4 py-2 text-creix-blue hover:bg-creix-blue/10 transition"
-              >
-                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                        >
+                          <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
+                          </svg>
                           Livraisons
-              </Link>
+                        </Link>
                       </>
                     )}
                   </div>
@@ -254,69 +255,276 @@ export function Header() {
               {/* Bouton Messagerie avec notification */}
               <Link
                 href="/messages"
-                className="relative flex items-center gap-2 text-creix-blue hover:underline"
+                className="relative flex items-center gap-2 px-4 py-2 text-sm font-medium text-creix-blue/80 transition-all duration-200 hover:text-creix-blue rounded-lg hover:bg-creix-blue/10"
               >
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                  />
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
-                <span className="hidden sm:inline">Messages</span>
+                <span>Messages</span>
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white animate-pulse">
+                  <span className="absolute -top-0.5 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white shadow-lg shadow-rose-500/30">
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}
               </Link>
 
-              <Link href="/dashboard" className="hover:underline text-creix-blue">
+              <Link 
+                href="/dashboard" 
+                className="px-4 py-2 text-sm font-medium text-creix-blue/80 transition-all duration-200 hover:text-creix-blue rounded-lg hover:bg-creix-blue/10"
+              >
                 Dashboard
               </Link>
 
               <Link
                 href="/profile"
-                className="flex items-center gap-2 rounded-full bg-creix-blue px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-creix-black shadow-sm hover:bg-creix-blueDark transition"
+                className="group ml-2 flex items-center gap-2 rounded-full bg-gradient-to-r from-creix-blue to-creix-blue/80 pl-1 pr-4 py-1 text-xs font-semibold uppercase tracking-wide text-creix-black shadow-lg shadow-creix-blue/20 transition-all duration-300 hover:shadow-creix-blue/40 hover:scale-[1.02]"
               >
                 {profile?.avatarUrl ? (
-                  <div className="relative h-6 w-6 rounded-full overflow-hidden">
+                  <div className="relative h-7 w-7 rounded-full overflow-hidden ring-2 ring-creix-black/20">
                     <Image
                       src={profile.avatarUrl}
                       alt="Mon profil"
                       fill
                       className="object-cover"
-                      sizes="24px"
+                      sizes="28px"
                     />
                   </div>
                 ) : (
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-creix-black/20 text-[10px] font-bold">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-creix-black/20 text-[11px] font-bold">
                     {(profile?.displayName || session?.user?.email || "U").charAt(0).toUpperCase()}
                   </div>
                 )}
-                <span className="hidden sm:inline">Mon profil</span>
+                <span>Mon profil</span>
               </Link>
             </>
           ) : (
             <>
-              <Link href="/login" className="hover:underline text-creix-blue">
+              <Link 
+                href="/login" 
+                className="px-4 py-2 text-sm font-medium text-creix-blue/80 transition-all duration-200 hover:text-creix-blue rounded-lg hover:bg-creix-blue/10"
+              >
                 Connexion
               </Link>
               <Link
                 href="/signup"
-                className="rounded-full bg-creix-blue px-4 py-2 text-xs font-semibold uppercase tracking-wide text-creix-black shadow-sm hover:bg-creix-blueDark transition"
+                className="ml-2 rounded-full bg-gradient-to-r from-creix-blue to-creix-blue/80 px-5 py-2.5 text-xs font-semibold uppercase tracking-wide text-creix-black shadow-lg shadow-creix-blue/20 transition-all duration-300 hover:shadow-creix-blue/40 hover:scale-[1.02]"
               >
                 Créer un compte
               </Link>
             </>
           )}
         </nav>
+
+        {/* Mobile Navigation */}
+        <div className="flex items-center gap-3 md:hidden" ref={mobileMenuRef}>
+          {/* Tarifs link visible on mobile */}
+          <Link 
+            href="/pricing" 
+            className="text-sm font-medium text-creix-blue/80 transition-colors hover:text-creix-blue"
+          >
+            Tarifs
+          </Link>
+
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-creix-blue/10 text-creix-blue transition-colors hover:bg-creix-blue/20"
+            aria-label="Menu"
+          >
+            <svg 
+              className={`h-5 w-5 transition-transform duration-200 ${mobileMenuOpen ? "rotate-90 opacity-0" : ""}`}
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            <svg 
+              className={`absolute h-5 w-5 transition-transform duration-200 ${mobileMenuOpen ? "" : "-rotate-90 opacity-0"}`}
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            {(unreadCount > 0 || proposalCount > 0) && (
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white">
+                {(unreadCount + proposalCount) > 9 ? "9+" : unreadCount + proposalCount}
+              </span>
+            )}
+          </button>
+
+          {/* Mobile menu dropdown */}
+          {mobileMenuOpen && (
+            <div className="absolute top-full left-0 right-0 mt-2 mx-4 origin-top animate-slide-in-from-top-2 rounded-2xl border border-creix-blue/20 bg-creix-black/95 p-2 shadow-xl shadow-black/40 backdrop-blur-xl">
+              {isLoggedIn ? (
+                <>
+                  {/* User profile header */}
+                  <div className="flex items-center gap-3 px-3 py-3 mb-2 rounded-xl bg-creix-blue/5">
+                    {profile?.avatarUrl ? (
+                      <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-creix-blue/30">
+                        <Image
+                          src={profile.avatarUrl}
+                          alt="Mon profil"
+                          fill
+                          className="object-cover"
+                          sizes="40px"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-creix-blue/20 text-sm font-bold text-creix-blue">
+                        {(profile?.displayName || session?.user?.email || "U").charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-sm font-medium text-creix-blue">{profile?.displayName || "Mon compte"}</p>
+                      <p className="text-xs text-creix-blue/50">{session?.user?.email}</p>
+                    </div>
+                  </div>
+
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                  >
+                    <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Dashboard
+                  </Link>
+
+                  <div className="my-2 border-t border-creix-blue/10" />
+                  <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-creix-blue/40">Missions</p>
+                  
+                  {userRole === "CREATOR" ? (
+                    <>
+                      <Link
+                        href="/missions/my"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                      >
+                        <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        Mes missions
+                      </Link>
+                      <Link
+                        href="/proposals"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                      >
+                        <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                        </svg>
+                        Propositions reçues
+                        {proposalCount > 0 && (
+                          <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-amber-500 px-1.5 text-[10px] font-bold text-slate-900">
+                            {proposalCount}
+                          </span>
+                        )}
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href="/missions"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                      >
+                        <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        Missions disponibles
+                      </Link>
+                      <Link
+                        href="/missions/assigned"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                      >
+                        <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Mes missions assignées
+                      </Link>
+                      <Link
+                        href="/my-proposals"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                      >
+                        <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                        </svg>
+                        Mes propositions
+                        {proposalCount > 0 && (
+                          <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-emerald-500 px-1.5 text-[10px] font-bold text-slate-900">
+                            {proposalCount}
+                          </span>
+                        )}
+                      </Link>
+                    </>
+                  )}
+
+                  <Link
+                    href="/deliveries"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                  >
+                    <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                    Livraisons
+                  </Link>
+
+                  <div className="my-2 border-t border-creix-blue/10" />
+
+                  <Link
+                    href="/messages"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                  >
+                    <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    Messages
+                    {unreadCount > 0 && (
+                      <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-rose-500 px-1.5 text-[10px] font-bold text-white">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </Link>
+
+                  <Link
+                    href="/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                  >
+                    <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    Mon profil
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-creix-blue transition-all duration-150 hover:bg-creix-blue/10"
+                  >
+                    Connexion
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-creix-blue to-creix-blue/80 px-4 py-3 text-sm font-semibold uppercase tracking-wide text-creix-black shadow-lg shadow-creix-blue/20 transition-all duration-300"
+                  >
+                    Créer un compte
+                  </Link>
+                </>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );
