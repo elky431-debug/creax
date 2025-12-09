@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 // Composants du dashboard
 import { SectionTitle } from "@/components/dashboard/SectionTitle";
@@ -103,10 +104,24 @@ const TYPE_LABELS: Record<string, string> = {
 
 export default function DashboardPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [recentProposals, setRecentProposals] = useState<RecentProposal[]>([]);
   const [proposalCounts, setProposalCounts] = useState<ProposalCounts>({ total: 0, pending: 0, accepted: 0, rejected: 0 });
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+  // Vérifier si on revient d'un paiement réussi
+  useEffect(() => {
+    const billing = searchParams.get("billing");
+    if (billing === "success") {
+      setPaymentSuccess(true);
+      // Rafraîchir la session pour mettre à jour le statut d'abonnement
+      signIn(undefined, { redirect: false });
+      // Nettoyer l'URL
+      router.replace("/dashboard");
+    }
+  }, [searchParams, router]);
 
   // Fetch user data (logique existante conservée)
   useEffect(() => {

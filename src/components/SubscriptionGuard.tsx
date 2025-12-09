@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface SubscriptionGuardProps {
   children: React.ReactNode;
@@ -11,24 +11,52 @@ interface SubscriptionGuardProps {
 export default function SubscriptionGuard({ children }: SubscriptionGuardProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [hasSubscription, setHasSubscription] = useState<boolean | null>(null);
+  const [checking, setChecking] = useState(true);
 
+  // Vérifier l'abonnement directement depuis la base de données
   useEffect(() => {
     if (status === "loading") return;
 
-    // Si pas connecté, rediriger vers login
     if (status === "unauthenticated") {
       router.push("/login");
       return;
     }
 
-    // Si connecté mais pas d'abonnement actif, rediriger vers pricing
-    if (session && !session.user.hasActiveSubscription) {
-      router.push("/pricing?subscription_required=true");
+    // Vérifier l'abonnement depuis l'API
+    async function checkSubscription() {
+      try {
+        const res = await fetch("/api/subscription");
+        if (res.ok) {
+          const data = await res.json();
+          setHasSubscription(data.hasSubscription);
+          
+          if (!data.hasSubscription) {
+            router.push("/pricing?subscription_required=true");
+          }
+        } else {
+          // En cas d'erreur, utiliser la valeur de la session
+          setHasSubscription(session?.user?.hasActiveSubscription ?? false);
+          if (!session?.user?.hasActiveSubscription) {
+            router.push("/pricing?subscription_required=true");
+          }
+        }
+      } catch {
+        // En cas d'erreur, utiliser la valeur de la session
+        setHasSubscription(session?.user?.hasActiveSubscription ?? false);
+        if (!session?.user?.hasActiveSubscription) {
+          router.push("/pricing?subscription_required=true");
+        }
+      } finally {
+        setChecking(false);
+      }
     }
+
+    checkSubscription();
   }, [session, status, router]);
 
   // Afficher un loader pendant la vérification
-  if (status === "loading") {
+  if (status === "loading" || checking) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="relative">
@@ -40,7 +68,7 @@ export default function SubscriptionGuard({ children }: SubscriptionGuardProps) 
   }
 
   // Si pas connecté ou pas d'abonnement, ne rien afficher (redirection en cours)
-  if (status === "unauthenticated" || (session && !session.user.hasActiveSubscription)) {
+  if (status === "unauthenticated" || !hasSubscription) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
@@ -55,6 +83,7 @@ export default function SubscriptionGuard({ children }: SubscriptionGuardProps) 
 
   return <>{children}</>;
 }
+
 
 
 

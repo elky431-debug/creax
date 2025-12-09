@@ -58,6 +58,36 @@ export async function POST(req: Request) {
             console.log(`✅ Paiement livraison ${deliveryId} confirmé`);
           }
         }
+        
+        // Vérifier si c'est un abonnement
+        if (session.mode === "subscription" && session.subscription) {
+          const userId = session.metadata?.userId;
+          
+          if (userId) {
+            // Récupérer les détails de l'abonnement
+            const subscription = await stripe.subscriptions.retrieve(
+              session.subscription as string
+            );
+            
+            // Créer l'abonnement en base
+            await prisma.subscription.upsert({
+              where: { stripeSubscriptionId: subscription.id },
+              create: {
+                userId: userId,
+                stripeSubscriptionId: subscription.id,
+                stripePriceId: subscription.items.data[0].price.id,
+                status: subscription.status,
+                currentPeriodEnd: new Date(subscription.current_period_end * 1000)
+              },
+              update: {
+                status: subscription.status,
+                currentPeriodEnd: new Date(subscription.current_period_end * 1000)
+              }
+            });
+            
+            console.log(`✅ Abonnement créé pour utilisateur ${userId}`);
+          }
+        }
         break;
       }
 
@@ -120,6 +150,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
+
 
 
 
