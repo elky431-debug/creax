@@ -186,7 +186,7 @@ export default function MyMissionsPage() {
   }
 
   return (
-    <SubscriptionGuard>
+    <SubscriptionGuard allowedRoles={["CREATOR"]}>
     <div className="min-h-screen bg-[#000] relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none">

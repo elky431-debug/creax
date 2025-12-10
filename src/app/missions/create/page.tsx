@@ -269,7 +269,7 @@ export default function CreateMissionPage() {
   }
 
   return (
-    <SubscriptionGuard>
+    <SubscriptionGuard allowedRoles={["CREATOR"]}>
     <div className="min-h-screen bg-slate-950">
       <div className="mx-auto max-w-3xl px-4 py-10">
         {/* Header */}

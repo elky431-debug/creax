@@ -247,7 +247,7 @@ export default function SendDeliveryPage() {
   const creatorName = mission.creator.profile?.displayName || "Créateur";
 
   return (
-    <SubscriptionGuard>
+    <SubscriptionGuard allowedRoles={["DESIGNER"]}>
     <div className="min-h-screen bg-slate-950">
       <div className="mx-auto max-w-2xl px-4 py-10">
         {/* Header */}
