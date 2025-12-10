@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import SubscriptionGuard from "@/components/SubscriptionGuard";
 
 // =============================================
 // TYPES
@@ -197,6 +198,7 @@ export default function MyProposalsPage() {
   }
 
   return (
+    <SubscriptionGuard>
     <div className="min-h-screen bg-slate-950">
       <div className="mx-auto max-w-6xl px-4 py-10">
         {/* ============================================
@@ -302,6 +304,7 @@ export default function MyProposalsPage() {
         )}
       </div>
     </div>
+    </SubscriptionGuard>
   );
 }
 

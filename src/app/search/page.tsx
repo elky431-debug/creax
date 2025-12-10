@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
+import SubscriptionGuard from "@/components/SubscriptionGuard";
 
 type UserProfile = {
   id: string;
@@ -83,6 +84,7 @@ function SearchContent() {
   }
 
   return (
+    <SubscriptionGuard>
     <div className="min-h-screen bg-slate-950">
       <div className="mx-auto max-w-6xl px-4 py-10">
         {/* Header */}
@@ -233,6 +235,7 @@ function SearchContent() {
         )}
       </div>
     </div>
+    </SubscriptionGuard>
   );
 }
 
