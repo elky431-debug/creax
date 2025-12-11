@@ -20,19 +20,6 @@ export default withAuth(
     const { pathname } = req.nextUrl;
     const token = req.nextauth.token;
 
-    // Si l'utilisateur est connecté mais n'a pas d'abonnement actif
-    if (token && !token.hasActiveSubscription) {
-      // Autoriser les pages publiques et l'API
-      const isPublicPage = PUBLIC_PAGES.some(page => 
-        pathname === page || pathname.startsWith(page + "/") || pathname.startsWith("/api/")
-      );
-
-      if (!isPublicPage && !pathname.startsWith("/_next") && !pathname.includes(".")) {
-        // Rediriger vers la page de tarifs
-        return NextResponse.redirect(new URL("/pricing?subscription_required=true", req.url));
-      }
-    }
-
     return NextResponse.next();
   },
   {
