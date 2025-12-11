@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 interface SubscriptionGuardProps {
   children: React.ReactNode;
@@ -12,10 +12,8 @@ interface SubscriptionGuardProps {
 export default function SubscriptionGuard({ children, allowedRoles }: SubscriptionGuardProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [hasSubscription, setHasSubscription] = useState<boolean | null>(null);
-  const [checking, setChecking] = useState(true);
 
-  // Vérifier l'abonnement directement depuis la base de données
+  // Vérifier l'authentification et le rôle
   useEffect(() => {
     if (status === "loading") return;
 
@@ -24,54 +22,17 @@ export default function SubscriptionGuard({ children, allowedRoles }: Subscripti
       return;
     }
 
-    // Vérifier l'abonnement depuis l'API
-    async function checkSubscription() {
-      try {
-        const res = await fetch("/api/subscription");
-        if (res.ok) {
-          const data = await res.json();
-          setHasSubscription(data.hasSubscription);
-          
-          if (!data.hasSubscription) {
-            router.push("/pricing?subscription_required=true");
-          }
-        } else {
-          // En cas d'erreur, utiliser la valeur de la session
-          setHasSubscription(session?.user?.hasActiveSubscription ?? false);
-          if (!session?.user?.hasActiveSubscription) {
-            router.push("/pricing?subscription_required=true");
-          }
-        }
-      } catch {
-        // En cas d'erreur, utiliser la valeur de la session
-        setHasSubscription(session?.user?.hasActiveSubscription ?? false);
-        if (!session?.user?.hasActiveSubscription) {
-          router.push("/pricing?subscription_required=true");
-        }
-      } finally {
-        setChecking(false);
-      }
-    }
-
-    checkSubscription();
-  }, [session, status, router]);
-
-  // Vérifier le rôle après avoir vérifié l'abonnement
-  useEffect(() => {
-    if (checking || !hasSubscription) return;
-    
     // Si des rôles sont spécifiés, vérifier que l'utilisateur a le bon rôle
     if (allowedRoles && allowedRoles.length > 0) {
       const userRole = session?.user?.role as "CREATOR" | "DESIGNER" | undefined;
       if (userRole && !allowedRoles.includes(userRole)) {
-        // Rediriger vers le dashboard si le rôle ne correspond pas
         router.push("/dashboard");
       }
     }
-  }, [checking, hasSubscription, allowedRoles, session, router]);
+  }, [session, status, router, allowedRoles]);
 
   // Afficher un loader pendant la vérification
-  if (status === "loading" || checking) {
+  if (status === "loading") {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="relative">
@@ -82,8 +43,8 @@ export default function SubscriptionGuard({ children, allowedRoles }: Subscripti
     );
   }
 
-  // Si pas connecté ou pas d'abonnement, ne rien afficher (redirection en cours)
-  if (status === "unauthenticated" || !hasSubscription) {
+  // Si pas connecté, ne rien afficher (redirection en cours)
+  if (status === "unauthenticated") {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
