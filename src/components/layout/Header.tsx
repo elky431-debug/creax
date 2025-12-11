@@ -503,6 +503,23 @@ export function Header() {
                     </svg>
                     Mon profil
                   </Link>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      void (async () => {
+                        const { signOut } = await import("next-auth/react");
+                        await signOut({ callbackUrl: "/login" });
+                      })();
+                    }}
+                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-red-400 transition-all duration-150 hover:bg-red-500/10"
+                  >
+                    <svg className="h-5 w-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 11-4 0v-1m0-8V7a2 2 0 114 0v1" />
+                    </svg>
+                    Se déconnecter
+                  </button>
                 </>
               ) : (
                 <>
