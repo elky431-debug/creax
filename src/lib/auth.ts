@@ -29,8 +29,14 @@ export const authOptions: NextAuthOptions = {
         const email = parsed.data.email.toLowerCase().trim();
         const password = parsed.data.password;
 
-        const user = await prisma.user.findUnique({
-          where: { email },
+        // Recherche insensible à la casse pour éviter les soucis de casse d'email
+        const user = await prisma.user.findFirst({
+          where: {
+            email: {
+              equals: email,
+              mode: "insensitive"
+            }
+          },
           include: {
             profile: true,
             subscriptions: {
