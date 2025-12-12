@@ -22,7 +22,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const { email, password, role, displayName } = parsed.data;
+    const email = parsed.data.email.toLowerCase().trim();
+    const password = parsed.data.password;
+    const role = parsed.data.role;
+    const displayName = parsed.data.displayName;
 
     // Vérifier si l'email existe déjà
     const existingUser = await prisma.user.findUnique({
