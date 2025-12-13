@@ -130,8 +130,13 @@ function MessagesContent() {
         const profileData = await profileRes.json();
         setUserId(profileData.user?.id || "current");
 
-        // Forcer un refresh des conversations
-        const convRes = await fetch("/api/conversations", { cache: "no-store" });
+        // Petit délai pour s'assurer que la conversation est bien créée en base
+        if (conversationIdParam) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+
+        // Forcer un refresh des conversations (pas de cache)
+        const convRes = await fetch("/api/conversations?" + Date.now());
         let existingConversations: ConversationItem[] = [];
         if (convRes.ok) {
           const convData = await convRes.json();
@@ -146,6 +151,8 @@ function MessagesContent() {
           if (targetConv) {
             setSelectedConversation(targetConv);
           } else if (existingConversations.length > 0) {
+            // Si la conversation demandée n'est pas trouvée, prendre la plus récente
+            // (qui est probablement celle qu'on vient de créer)
             setSelectedConversation(existingConversations[0]);
           }
         } else if (existingConversations.length > 0 && !selectedConversation) {

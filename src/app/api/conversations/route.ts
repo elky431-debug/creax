@@ -161,7 +161,30 @@ export async function POST(req: Request) {
     });
 
     if (existingConversation) {
-      return NextResponse.json({ conversation: existingConversation });
+      // Retourner la conversation avec toutes les données nécessaires
+      const fullConversation = await prisma.conversation.findUnique({
+        where: { id: existingConversation.id },
+        include: {
+          creator: {
+            select: {
+              id: true,
+              email: true,
+              role: true,
+              profile: { select: { displayName: true, avatarUrl: true } }
+            }
+          },
+          designer: {
+            select: {
+              id: true,
+              email: true,
+              role: true,
+              profile: { select: { displayName: true, avatarUrl: true } }
+            }
+          },
+          mission: { select: { id: true, title: true } }
+        }
+      });
+      return NextResponse.json({ conversation: fullConversation });
     }
 
     // Déterminer qui a initié pour les compteurs de non-lus
@@ -176,6 +199,25 @@ export async function POST(req: Request) {
         lastMessagePreview: "Nouvelle conversation",
         unreadForCreator: currentIsCreator ? 0 : 1,
         unreadForDesigner: currentIsCreator ? 1 : 0
+      },
+      include: {
+        creator: {
+          select: {
+            id: true,
+            email: true,
+            role: true,
+            profile: { select: { displayName: true, avatarUrl: true } }
+          }
+        },
+        designer: {
+          select: {
+            id: true,
+            email: true,
+            role: true,
+            profile: { select: { displayName: true, avatarUrl: true } }
+          }
+        },
+        mission: { select: { id: true, title: true } }
       }
     });
 
