@@ -55,7 +55,7 @@ type ConversationItem = {
 function MessagesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const otherUserIdParam = searchParams.get("with");
+  const conversationIdParam = searchParams.get("conversation");
 
   const [userId, setUserId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<ConversationItem[]>([]);
@@ -137,9 +137,18 @@ function MessagesContent() {
           existingConversations = convData.conversations || [];
         }
 
-        // Sélectionner la première conversation par défaut
+        // Sélectionner la conversation depuis l'URL ou la première par défaut
         if (existingConversations.length > 0 && !selectedConversation) {
-          setSelectedConversation(existingConversations[0]);
+          if (conversationIdParam) {
+            const targetConv = existingConversations.find(c => c.id === conversationIdParam);
+            if (targetConv) {
+              setSelectedConversation(targetConv);
+            } else {
+              setSelectedConversation(existingConversations[0]);
+            }
+          } else {
+            setSelectedConversation(existingConversations[0]);
+          }
         }
 
         setConversations(existingConversations);
@@ -150,7 +159,7 @@ function MessagesContent() {
       }
     }
     fetchData();
-  }, [router, selectedConversation]);
+  }, [router, selectedConversation, conversationIdParam]);
 
   useEffect(() => {
     if (!selectedConversation) return;
