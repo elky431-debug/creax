@@ -119,11 +119,55 @@ export async function POST(req: Request) {
               }
             }
           }
+        },
+        designer: {
+          select: {
+            id: true,
+            profile: {
+              select: { displayName: true }
+            }
+          }
         }
       }
     });
 
-    return NextResponse.json({ proposal }, { status: 201 });
+    // Créer automatiquement une conversation pour que les deux puissent communiquer
+    const existingConversation = await prisma.conversation.findFirst({
+      where: {
+        missionId,
+        creatorId: mission.creatorId,
+        designerId: session.user.id
+      }
+    });
+
+    let conversation;
+    if (!existingConversation) {
+      // Créer la conversation
+      conversation = await prisma.conversation.create({
+        data: {
+          missionId,
+          creatorId: mission.creatorId,
+          designerId: session.user.id,
+          lastMessagePreview: `Nouvelle proposition de ${proposal.designer.profile?.displayName || "Graphiste"}`,
+          unreadForCreator: 1
+        }
+      });
+
+      // Créer un message système pour indiquer le début de la conversation
+      await prisma.message.create({
+        data: {
+          conversationId: conversation.id,
+          senderId: session.user.id,
+          type: "SYSTEM",
+          content: `📋 Nouvelle proposition pour "${mission.title}"\n\n${message}${price ? `\n\n💰 Prix proposé : ${price} €` : ""}`
+        }
+      });
+    }
+
+    return NextResponse.json({ 
+      proposal,
+      conversationId: existingConversation?.id || conversation?.id
+    }, { status: 201 });
   } catch (error) {
     console.error("Erreur POST proposal:", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
@@ -205,6 +249,9 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
+
+
+
 
 
 

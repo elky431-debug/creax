@@ -184,9 +184,14 @@ export default function MissionDetailsPage() {
         prev ? { ...prev, hasProposed: true, proposalStatus: "PENDING" } : null
       );
 
+      // Rediriger vers la messagerie après 2 secondes pour continuer la discussion
       setTimeout(() => {
-        setShowProposalModal(false);
-        setProposalSuccess(false);
+        if (data.conversationId) {
+          router.push(`/messages?conversation=${data.conversationId}`);
+        } else {
+          setShowProposalModal(false);
+          setProposalSuccess(false);
+        }
       }, 2000);
     } catch {
       setProposalError("Erreur réseau lors de l'envoi");
@@ -544,6 +549,9 @@ export default function MissionDetailsPage() {
                   <h3 className="text-xl font-semibold text-white mb-2">Proposition envoyée !</h3>
                   <p className="text-sm text-slate-400">
                     Le créateur a été notifié.
+                  </p>
+                  <p className="text-xs text-cyan-400 mt-2">
+                    Redirection vers la messagerie...
                   </p>
                 </div>
               ) : (
