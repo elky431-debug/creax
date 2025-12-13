@@ -85,6 +85,7 @@ export async function GET() {
 
 /**
  * POST - Créer ou récupérer une conversation existante
+ * Fonctionne pour n'importe quel utilisateur qui veut contacter un autre
  */
 export async function POST(req: Request) {
   try {
@@ -95,10 +96,14 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { missionId, creatorId } = body;
+    const { missionId, otherUserId } = body;
 
     if (!missionId) {
       return NextResponse.json({ error: "ID de mission requis" }, { status: 400 });
+    }
+
+    if (!otherUserId) {
+      return NextResponse.json({ error: "ID de l'autre utilisateur requis" }, { status: 400 });
     }
 
     // Récupérer la mission pour avoir les infos
@@ -111,27 +116,56 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Mission introuvable" }, { status: 404 });
     }
 
-    // Déterminer qui est le créateur et qui est le designer
-    const isCreator = session.user.id === mission.creatorId;
-    const finalCreatorId = mission.creatorId;
-    const finalDesignerId = isCreator ? creatorId : session.user.id;
+    // Récupérer les rôles des deux utilisateurs
+    const currentUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { id: true, role: true }
+    });
 
-    if (!finalDesignerId) {
-      return NextResponse.json({ error: "ID du designer requis" }, { status: 400 });
+    const otherUser = await prisma.user.findUnique({
+      where: { id: otherUserId },
+      select: { id: true, role: true }
+    });
+
+    if (!currentUser || !otherUser) {
+      return NextResponse.json({ error: "Utilisateur introuvable" }, { status: 404 });
     }
 
-    // Vérifier si une conversation existe déjà
+    // Déterminer qui est le créateur et qui est le designer
+    // Le créateur de la mission est toujours le "creatorId" de la conversation
+    // L'autre personne (designer) est le "designerId"
+    let finalCreatorId: string;
+    let finalDesignerId: string;
+
+    if (currentUser.role === "CREATOR") {
+      finalCreatorId = session.user.id;
+      finalDesignerId = otherUserId;
+    } else if (otherUser.role === "CREATOR") {
+      finalCreatorId = otherUserId;
+      finalDesignerId = session.user.id;
+    } else {
+      // Si les deux sont designers, utiliser le créateur de la mission
+      finalCreatorId = mission.creatorId;
+      finalDesignerId = session.user.id === mission.creatorId ? otherUserId : session.user.id;
+    }
+
+    // Vérifier si une conversation existe déjà (dans les deux sens)
     const existingConversation = await prisma.conversation.findFirst({
       where: {
         missionId,
-        creatorId: finalCreatorId,
-        designerId: finalDesignerId
+        OR: [
+          { creatorId: finalCreatorId, designerId: finalDesignerId },
+          { creatorId: finalDesignerId, designerId: finalCreatorId }
+        ]
       }
     });
 
     if (existingConversation) {
       return NextResponse.json({ conversation: existingConversation });
     }
+
+    // Déterminer qui a initié pour les compteurs de non-lus
+    const currentIsCreator = session.user.id === finalCreatorId;
 
     // Créer une nouvelle conversation
     const conversation = await prisma.conversation.create({
@@ -140,8 +174,8 @@ export async function POST(req: Request) {
         creatorId: finalCreatorId,
         designerId: finalDesignerId,
         lastMessagePreview: "Nouvelle conversation",
-        unreadForCreator: isCreator ? 0 : 1,
-        unreadForDesigner: isCreator ? 1 : 0
+        unreadForCreator: currentIsCreator ? 0 : 1,
+        unreadForDesigner: currentIsCreator ? 1 : 0
       }
     });
 

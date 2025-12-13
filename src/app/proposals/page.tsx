@@ -683,12 +683,26 @@ function ProposalDetailModal({
                 >
                   {loading ? "..." : "❌ Refuser"}
                 </button>
-                <Link
-                  href={`/messages?with=${proposal.designer.id}`}
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const res = await fetch("/api/conversations", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        missionId: proposal.mission.id,
+                        otherUserId: proposal.designer.id
+                      })
+                    });
+                    if (res.ok) {
+                      const data = await res.json();
+                      window.location.href = `/messages?conversation=${data.conversation.id}`;
+                    }
+                  }}
                   className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-white/[0.03] border border-white/[0.08] py-4 text-sm font-bold text-white transition hover:bg-white/[0.06]"
                 >
                   💬 Contacter
-                </Link>
+                </button>
                 <button
                   type="button"
                   onClick={onAccept}
@@ -700,12 +714,26 @@ function ProposalDetailModal({
               </div>
             ) : (
               <div className="flex gap-3">
-                <Link
-                  href={`/messages?with=${proposal.designer.id}`}
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const res = await fetch("/api/conversations", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        missionId: proposal.mission.id,
+                        otherUserId: proposal.designer.id
+                      })
+                    });
+                    if (res.ok) {
+                      const data = await res.json();
+                      window.location.href = `/messages?conversation=${data.conversation.id}`;
+                    }
+                  }}
                   className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 py-4 text-sm font-bold text-slate-900 transition hover:shadow-lg hover:shadow-cyan-500/25"
                 >
                   💬 Contacter le graphiste
-                </Link>
+                </button>
                 <button
                   type="button"
                   onClick={onClose}

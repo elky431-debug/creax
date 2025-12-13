@@ -394,7 +394,7 @@ export default function MissionDetailsPage() {
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({
                         missionId: mission.id,
-                        creatorId: mission.creator.id
+                        otherUserId: mission.creator.id
                       })
                     });
                     const data = await res.json();

@@ -550,12 +550,26 @@ export default function DeliveryDetailPage() {
               </div>
               <div>
                 <p className="font-semibold text-white">{otherUserName}</p>
-                <Link 
-                  href={`/messages?with=${otherUser.id}`}
+                <button 
+                  type="button"
+                  onClick={async () => {
+                    const res = await fetch("/api/conversations", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        missionId: delivery.missionId,
+                        otherUserId: otherUser.id
+                      })
+                    });
+                    if (res.ok) {
+                      const data = await res.json();
+                      router.push(`/messages?conversation=${data.conversation.id}`);
+                    }
+                  }}
                   className="text-sm text-cyan-400 hover:underline"
                 >
                   Envoyer un message
-                </Link>
+                </button>
               </div>
             </div>
           </div>
