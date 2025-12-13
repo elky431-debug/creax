@@ -387,18 +387,26 @@ export default function MissionDetailsPage() {
               <button
                 type="button"
                 onClick={async () => {
-                  // Créer ou récupérer la conversation pour cette mission
-                  const res = await fetch("/api/conversations", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      missionId: mission.id,
-                      creatorId: mission.creator.id
-                    })
-                  });
-                  if (res.ok) {
+                  try {
+                    // Créer ou récupérer la conversation pour cette mission
+                    const res = await fetch("/api/conversations", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        missionId: mission.id,
+                        creatorId: mission.creator.id
+                      })
+                    });
                     const data = await res.json();
-                    router.push(`/messages?conversation=${data.conversation.id}`);
+                    if (res.ok && data.conversation) {
+                      router.push(`/messages?conversation=${data.conversation.id}`);
+                    } else {
+                      console.error("Erreur création conversation:", data);
+                      alert("Erreur: " + (data.error || "Impossible de créer la conversation"));
+                    }
+                  } catch (err) {
+                    console.error("Erreur réseau:", err);
+                    alert("Erreur réseau lors de la création de la conversation");
                   }
                 }}
                 className="rounded-xl border border-slate-700 bg-slate-800 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 flex items-center justify-center gap-2"

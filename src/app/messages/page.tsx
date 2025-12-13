@@ -130,28 +130,27 @@ function MessagesContent() {
         const profileData = await profileRes.json();
         setUserId(profileData.user?.id || "current");
 
-        const convRes = await fetch("/api/conversations");
+        // Forcer un refresh des conversations
+        const convRes = await fetch("/api/conversations", { cache: "no-store" });
         let existingConversations: ConversationItem[] = [];
         if (convRes.ok) {
           const convData = await convRes.json();
           existingConversations = convData.conversations || [];
         }
 
+        setConversations(existingConversations);
+
         // Sélectionner la conversation depuis l'URL ou la première par défaut
-        if (existingConversations.length > 0 && !selectedConversation) {
-          if (conversationIdParam) {
-            const targetConv = existingConversations.find(c => c.id === conversationIdParam);
-            if (targetConv) {
-              setSelectedConversation(targetConv);
-            } else {
-              setSelectedConversation(existingConversations[0]);
-            }
-          } else {
+        if (conversationIdParam) {
+          const targetConv = existingConversations.find(c => c.id === conversationIdParam);
+          if (targetConv) {
+            setSelectedConversation(targetConv);
+          } else if (existingConversations.length > 0) {
             setSelectedConversation(existingConversations[0]);
           }
+        } else if (existingConversations.length > 0 && !selectedConversation) {
+          setSelectedConversation(existingConversations[0]);
         }
-
-        setConversations(existingConversations);
       } catch {
         router.push("/login?callbackUrl=/messages");
       } finally {
@@ -159,7 +158,8 @@ function MessagesContent() {
       }
     }
     fetchData();
-  }, [router, selectedConversation, conversationIdParam]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router, conversationIdParam]);
 
   useEffect(() => {
     if (!selectedConversation) return;
