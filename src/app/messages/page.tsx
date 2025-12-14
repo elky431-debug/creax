@@ -325,8 +325,8 @@ function MessagesContent() {
         
         {/* Main content */}
         <div className="flex gap-4 flex-1 min-h-0">
-          {/* Conversations list */}
-          <aside className="w-80 shrink-0 rounded-2xl bg-[#0a0a0a] border border-white/[0.06] overflow-hidden flex flex-col">
+          {/* Conversations list - Hidden on mobile when a conversation is selected */}
+          <aside className={`${selectedConversation ? 'hidden md:flex' : 'flex'} w-full md:w-80 shrink-0 rounded-2xl bg-[#0a0a0a] border border-white/[0.06] overflow-hidden flex-col`}>
             {/* Search */}
             <div className="p-4 border-b border-white/[0.06]">
               <div className="relative">
@@ -405,13 +405,23 @@ function MessagesContent() {
             </div>
           </aside>
 
-          {/* Chat area */}
-          <section className="flex-1 rounded-2xl bg-[#0a0a0a] border border-white/[0.06] flex flex-col overflow-hidden">
+          {/* Chat area - Full width on mobile when conversation selected */}
+          <section className={`${selectedConversation ? 'flex' : 'hidden md:flex'} flex-1 rounded-2xl bg-[#0a0a0a] border border-white/[0.06] flex-col overflow-hidden`}>
             {selectedConversation ? (
               <>
                 {/* Chat header */}
                 <div className="border-b border-white/[0.06] p-4 flex items-center justify-between bg-white/[0.01]">
                   <div className="flex items-center gap-3">
+                    {/* Back button - Mobile only */}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedConversation(null)}
+                      className="md:hidden h-10 w-10 rounded-lg bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-white/70 hover:text-white hover:bg-white/[0.06] transition-colors mr-1"
+                    >
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
                     <div className="relative">
                       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 text-sm font-bold text-slate-900 overflow-hidden">
                         {selectedConversation.otherUser.profile?.avatarUrl ? (
@@ -433,11 +443,11 @@ function MessagesContent() {
                         {selectedConversation.otherUser.profile?.displayName || selectedConversation.otherUser.email}
                       </p>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-cyan-400">
+                        <span className="text-xs text-cyan-400 truncate max-w-[120px] md:max-w-none">
                           {selectedConversation.missionTitle}
                         </span>
-                        <span className="text-white/20">•</span>
-                        <span className="text-xs text-white/40">
+                        <span className="text-white/20 hidden md:inline">•</span>
+                        <span className="text-xs text-white/40 hidden md:inline">
                           {selectedConversation.otherUser.role === "CREATOR" ? "Créateur" : "Designer"}
                         </span>
                       </div>
