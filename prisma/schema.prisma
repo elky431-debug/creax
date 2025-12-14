@@ -33,8 +33,32 @@ model User {
   deliveriesSent       MissionDelivery[] @relation("deliveries_sent")     // Livraisons envoyées (freelance)
   deliveriesReceived   MissionDelivery[] @relation("deliveries_received") // Livraisons reçues (créateur)
 
+  // Blocages
+  blockedUsers         BlockedUser[] @relation("blocker")
+  blockedByUsers       BlockedUser[] @relation("blocked")
+
   stripeCustomerId String?
   subscriptions    Subscription[]
+}
+
+// =============================================
+// BLOCAGE D'UTILISATEURS
+// =============================================
+model BlockedUser {
+  id          String   @id @default(cuid())
+  
+  blockerId   String
+  blocker     User     @relation("blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  
+  blockedId   String
+  blocked     User     @relation("blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+  
+  reason      String?  // Raison optionnelle du blocage
+  createdAt   DateTime @default(now())
+  
+  @@unique([blockerId, blockedId]) // Un utilisateur ne peut bloquer qu'une fois la même personne
+  @@index([blockerId])
+  @@index([blockedId])
 }
 
 model Profile {

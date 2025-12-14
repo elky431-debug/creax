@@ -68,8 +68,12 @@ function MessagesContent() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [blockLoading, setBlockLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   function isImageUrl(url: string) {
     return /\.(png|jpe?g|webp|gif)$/i.test(url);
@@ -189,6 +193,75 @@ function MessagesContent() {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
+
+  // Vérifier si l'utilisateur est bloqué quand on change de conversation
+  useEffect(() => {
+    if (!selectedConversation) {
+      setIsBlocked(false);
+      return;
+    }
+    async function checkBlocked() {
+      try {
+        const res = await fetch(`/api/users/${selectedConversation!.otherUser.id}/blocked`);
+        if (res.ok) {
+          const data = await res.json();
+          setIsBlocked(data.isBlocked);
+        }
+      } catch (e) {
+        console.error("Erreur vérification blocage:", e);
+      }
+    }
+    checkBlocked();
+  }, [selectedConversation]);
+
+  // Fermer le menu si on clique en dehors
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  async function handleBlockUser() {
+    if (!selectedConversation) return;
+    setBlockLoading(true);
+    try {
+      const res = await fetch("/api/users/block", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: selectedConversation.otherUser.id })
+      });
+      if (res.ok) {
+        setIsBlocked(true);
+        setShowMenu(false);
+      }
+    } catch (e) {
+      console.error("Erreur blocage:", e);
+    } finally {
+      setBlockLoading(false);
+    }
+  }
+
+  async function handleUnblockUser() {
+    if (!selectedConversation) return;
+    setBlockLoading(true);
+    try {
+      const res = await fetch(`/api/users/block?userId=${selectedConversation.otherUser.id}`, {
+        method: "DELETE"
+      });
+      if (res.ok) {
+        setIsBlocked(false);
+        setShowMenu(false);
+      }
+    } catch (e) {
+      console.error("Erreur déblocage:", e);
+    } finally {
+      setBlockLoading(false);
+    }
+  }
 
   async function uploadFiles(files: FileList) {
     const list = Array.from(files);
@@ -453,11 +526,57 @@ function MessagesContent() {
                       </div>
                     </div>
                   </div>
-                  <button className="h-9 w-9 rounded-lg bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.06] transition-colors">
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                    </svg>
-                  </button>
+                  {/* Menu dropdown */}
+                  <div className="relative" ref={menuRef}>
+                    <button 
+                      onClick={() => setShowMenu(!showMenu)}
+                      className="h-9 w-9 rounded-lg bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.06] transition-colors"
+                    >
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                      </svg>
+                    </button>
+
+                    {showMenu && (
+                      <div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-[#1a1a1a] border border-white/[0.1] shadow-xl z-50 overflow-hidden">
+                        {isBlocked ? (
+                          <button
+                            onClick={handleUnblockUser}
+                            disabled={blockLoading}
+                            className="w-full px-4 py-3 text-left text-sm text-emerald-400 hover:bg-white/[0.05] transition-colors flex items-center gap-3 disabled:opacity-50"
+                          >
+                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {blockLoading ? "Déblocage..." : "Débloquer"}
+                          </button>
+                        ) : (
+                          <button
+                            onClick={handleBlockUser}
+                            disabled={blockLoading}
+                            className="w-full px-4 py-3 text-left text-sm text-red-400 hover:bg-white/[0.05] transition-colors flex items-center gap-3 disabled:opacity-50"
+                          >
+                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                            </svg>
+                            {blockLoading ? "Blocage..." : "Bloquer cet utilisateur"}
+                          </button>
+                        )}
+                        
+                        <div className="border-t border-white/[0.06]" />
+                        
+                        <button
+                          onClick={() => setShowMenu(false)}
+                          className="w-full px-4 py-3 text-left text-sm text-white/50 hover:bg-white/[0.05] transition-colors flex items-center gap-3"
+                        >
+                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                          Fermer
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Messages */}
@@ -546,6 +665,25 @@ function MessagesContent() {
 
                 {/* Input area */}
                 <div className="border-t border-white/[0.06] p-4 bg-white/[0.01]">
+                  {/* Indicateur de blocage */}
+                  {isBlocked && (
+                    <div className="mb-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-center">
+                      <div className="flex items-center justify-center gap-2 text-red-400 text-sm font-medium">
+                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                        Vous avez bloqué cet utilisateur
+                      </div>
+                      <button
+                        onClick={handleUnblockUser}
+                        disabled={blockLoading}
+                        className="mt-2 text-xs text-white/50 hover:text-emerald-400 transition-colors"
+                      >
+                        {blockLoading ? "Déblocage..." : "Débloquer pour reprendre la conversation"}
+                      </button>
+                    </div>
+                  )}
+
                   {error && (
                     <div className="mb-3 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-2">
                       <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
@@ -602,14 +740,15 @@ function MessagesContent() {
                         type="text"
                         value={body}
                         onChange={(e) => setBody(e.target.value)}
-                        placeholder="Écrivez un message..."
-                        className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3 text-[15px] text-white placeholder-white/30 focus:outline-none focus:border-cyan-500/50 transition-colors"
+                        placeholder={isBlocked ? "Utilisateur bloqué" : "Écrivez un message..."}
+                        disabled={isBlocked}
+                        className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3 text-[15px] text-white placeholder-white/30 focus:outline-none focus:border-cyan-500/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                     </div>
 
                     <button
                       type="submit"
-                      disabled={sending || uploading || (!body.trim() && attachments.length === 0)}
+                      disabled={sending || uploading || isBlocked || (!body.trim() && attachments.length === 0)}
                       className="h-11 px-6 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 text-sm font-semibold text-slate-900 transition-all hover:shadow-lg hover:shadow-cyan-500/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none flex items-center gap-2"
                     >
                       {sending ? (
