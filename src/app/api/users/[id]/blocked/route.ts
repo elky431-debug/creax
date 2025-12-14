@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
  */
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ userId: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -16,13 +16,13 @@ export async function GET(
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
 
-    const { userId } = await params;
+    const { id } = await params;
 
     const block = await prisma.blockedUser.findUnique({
       where: {
         blockerId_blockedId: {
           blockerId: session.user.id,
-          blockedId: userId
+          blockedId: id
         }
       }
     });
