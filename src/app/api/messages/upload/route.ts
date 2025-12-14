@@ -1,15 +1,13 @@
 /**
- * Upload rapide pour pièces jointes de la messagerie.
+ * Upload pour pièces jointes de la messagerie.
  * - Auth requis
- * - Stockage local sous /public/uploads/messages
+ * - Stockage sur Supabase Storage
  * - Retourne une URL publique utilisable dans le message
  */
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { mkdir, writeFile } from "fs/promises";
-import { existsSync } from "fs";
-import path from "path";
 import { authOptions } from "@/lib/auth";
+import { supabase } from "@/lib/supabase";
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
 const ACCEPTED_TYPES = [
@@ -50,24 +48,33 @@ export async function POST(req: Request) {
       );
     }
 
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "messages");
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
+    // Générer un nom de fichier unique
+    const ext = file.name.includes(".") ? file.name.split(".").pop() : "bin";
+    const filename = `messages/${session.user.id}/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+    // Convertir le fichier en ArrayBuffer
+    const bytes = await file.arrayBuffer();
+
+    // Upload vers Supabase Storage
+    const { error: uploadError } = await supabase.storage
+      .from("uploads")
+      .upload(filename, bytes, {
+        contentType: file.type,
+        upsert: false
+      });
+
+    if (uploadError) {
+      console.error("Erreur Supabase Storage:", uploadError);
+      return NextResponse.json({ error: "Erreur lors de l'upload" }, { status: 500 });
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    const ext = file.name.includes(".") ? file.name.split(".").pop() : "bin";
-    const filename = `msg_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
-    const filepath = path.join(uploadDir, filename);
-
-    await writeFile(filepath, buffer);
-
-    const url = `/uploads/messages/${filename}`;
+    // Récupérer l'URL publique
+    const { data: urlData } = supabase.storage
+      .from("uploads")
+      .getPublicUrl(filename);
 
     return NextResponse.json({
-      url,
+      url: urlData.publicUrl,
       name: file.name,
       size: file.size,
       mime: file.type
@@ -77,21 +84,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
