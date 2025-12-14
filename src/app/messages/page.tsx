@@ -83,11 +83,75 @@ function MessagesContent() {
     return /\.(mp4|mov|webm)$/i.test(url);
   }
 
+  // Télécharger un fichier
+  async function downloadFile(url: string, filename?: string) {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename || url.split('/').pop() || 'download';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (e) {
+      console.error('Erreur téléchargement:', e);
+      // Fallback: ouvrir dans un nouvel onglet
+      window.open(url, '_blank');
+    }
+  }
+
+  // Télécharger en PDF (pour les images)
+  async function downloadAsPdf(imageUrl: string, filename?: string) {
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(blob);
+      
+      await new Promise((resolve) => { img.onload = resolve; });
+      
+      // Créer un canvas pour convertir l'image
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0);
+      
+      // Créer le PDF simple (data URL)
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      
+      // Ouvrir l'image dans un nouvel onglet pour impression/PDF
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head><title>${filename || 'Image'}</title></head>
+          <body style="margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#000;">
+            <img src="${imgData}" style="max-width:100%;max-height:100vh;"/>
+          </body>
+          </html>
+        `);
+        printWindow.document.close();
+        setTimeout(() => printWindow.print(), 500);
+      }
+      
+      URL.revokeObjectURL(img.src);
+    } catch (e) {
+      console.error('Erreur PDF:', e);
+    }
+  }
+
   function renderMessageBody(text: string, isMine: boolean) {
     const isUrl = /^https?:\/\//i.test(text) || text.startsWith("/uploads/");
+    const filename = text.split('/').pop() || 'fichier';
+    
     if (isUrl && isImageUrl(text)) {
       return (
-        <div className="space-y-2">
+        <div className="space-y-2 group/media relative">
           <Image
             src={text}
             alt="Image"
@@ -95,28 +159,72 @@ function MessagesContent() {
             height={280}
             className="rounded-xl object-cover max-h-72 w-auto shadow-lg"
           />
+          {/* Boutons de téléchargement */}
+          <div className="absolute bottom-2 right-2 flex gap-1.5 opacity-0 group-hover/media:opacity-100 transition-opacity">
+            <button
+              onClick={() => downloadFile(text, filename)}
+              className="h-8 w-8 rounded-lg bg-black/70 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/90 transition-colors"
+              title="Télécharger l'image"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            </button>
+            <button
+              onClick={() => downloadAsPdf(text, filename)}
+              className="h-8 w-8 rounded-lg bg-black/70 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/90 transition-colors"
+              title="Enregistrer en PDF"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+            </button>
+          </div>
         </div>
       );
     }
     if (isUrl && isVideoUrl(text)) {
       return (
-        <div className="space-y-2">
+        <div className="space-y-2 group/media relative">
           <video controls className="rounded-xl max-h-72 shadow-lg">
             <source src={text} />
           </video>
+          {/* Bouton de téléchargement vidéo */}
+          <div className="absolute top-2 right-2 opacity-0 group-hover/media:opacity-100 transition-opacity">
+            <button
+              onClick={() => downloadFile(text, filename)}
+              className="h-8 w-8 rounded-lg bg-black/70 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/90 transition-colors"
+              title="Télécharger la vidéo"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            </button>
+          </div>
         </div>
       );
     }
     if (isUrl) {
       return (
-        <a
-          href={text}
-          className={`underline break-all text-sm ${isMine ? "text-cyan-200" : "text-cyan-400"}`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          📎 {text.split("/").pop()}
-        </a>
+        <div className="flex items-center gap-2">
+          <a
+            href={text}
+            className={`underline break-all text-sm ${isMine ? "text-cyan-200" : "text-cyan-400"}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            📎 {filename}
+          </a>
+          <button
+            onClick={() => downloadFile(text, filename)}
+            className="h-6 w-6 rounded-md bg-white/10 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/20 transition-colors shrink-0"
+            title="Télécharger"
+          >
+            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+          </button>
+        </div>
       );
     }
     return <p className="text-[15px] leading-relaxed">{text}</p>;
