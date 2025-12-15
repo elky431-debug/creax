@@ -160,7 +160,22 @@ function DashboardContent() {
             {/* Welcome Card */}
             <div className="lg:col-span-2 rounded-3xl bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/[0.08] p-8 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-cyan-500/10 to-transparent rounded-full blur-3xl" />
-              <div className="relative">
+              
+              {/* Logo flottant avec effet glow */}
+              <div className="absolute -right-8 lg:right-8 top-1/2 -translate-y-1/2 opacity-20 lg:opacity-30 pointer-events-none">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-emerald-500 blur-3xl opacity-40" />
+                  <Image 
+                    src="/logo.png" 
+                    alt="CREIX" 
+                    width={200} 
+                    height={200} 
+                    className="relative w-40 lg:w-52 h-auto object-contain drop-shadow-2xl"
+                  />
+                </div>
+              </div>
+              
+              <div className="relative z-10">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-xs font-medium text-cyan-400 mb-5">
                   <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
                   {isCreator ? "Créateur de contenu" : "Designer / Monteur"}
