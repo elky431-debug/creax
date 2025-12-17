@@ -13,11 +13,11 @@ import { z } from "zod";
 
 // Schéma de validation pour créer une livraison
 const createDeliverySchema = z.object({
-  missionId: z.string().cuid(),
-  protectedUrl: z.string().min(1), // Accepte les URLs relatives comme /uploads/...
-  protectedType: z.enum(["image", "video"]),
+  missionId: z.string().min(1, "ID de mission requis"),
+  protectedUrl: z.string().min(1, "URL du fichier requise"),
+  protectedType: z.enum(["image", "video"], { errorMap: () => ({ message: "Type de fichier invalide" }) }),
   protectedNote: z.string().optional(),
-  amount: z.number().int().positive() // Montant en centimes
+  amount: z.number({ invalid_type_error: "Le prix doit être un nombre" }).int().positive("Le prix doit être positif")
 });
 
 /**

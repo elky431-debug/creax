@@ -5,23 +5,16 @@
  * 
  * Fonctionnalités :
  * - Upload d'images (jpg, png, webp) → watermark automatique CREIX
- * - Upload de vidéos (mp4, mov, webm) → compression + watermark texte
- * - Stockage sur le serveur (ou S3 en production)
- * 
- * Le watermark inclut :
- * - Logo/texte "CREIX"
- * - Nom du freelance
- * - Mention "VERSION PROTÉGÉE"
+ * - Upload de vidéos (mp4, mov, webm) → stockage direct
+ * - Stockage sur Supabase Storage
  */
 
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
 import sharp from "sharp";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
-import { existsSync } from "fs";
 
 // Taille max : 50MB
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
@@ -44,13 +37,9 @@ function escapeXml(str: string): string {
 
 /**
  * Générer le watermark SVG pour les images
- * WATERMARK ÉNORME ET IMPOSSIBLE À ENLEVER
  */
 function generateWatermarkSVG(freelancerName: string, width: number, height: number): Buffer {
-  // Échapper le nom pour éviter les erreurs XML
   const safeName = escapeXml(freelancerName);
-  
-  // Taille ÉNORME pour CREIX au centre
   const hugeFontSize = Math.max(80, Math.min(width, height) / 4);
   const mediumFontSize = hugeFontSize * 0.3;
   const smallFontSize = hugeFontSize * 0.2;
@@ -77,7 +66,7 @@ ${generateRepeatedWatermarks(width, height, smallFontSize)}
 }
 
 /**
- * Générer des watermarks répétés en diagonale BIEN VISIBLES
+ * Générer des watermarks répétés en diagonale
  */
 function generateRepeatedWatermarks(width: number, height: number, fontSize: number): string {
   const texts: string[] = [];
@@ -99,26 +88,23 @@ function generateRepeatedWatermarks(width: number, height: number, fontSize: num
 
 /**
  * Appliquer le watermark + flou léger sur une image
- * Le flou permet de voir le travail mais empêche l'utilisation sans paiement
  */
 async function applyImageWatermark(
   imageBuffer: Buffer,
   freelancerName: string
 ): Promise<Buffer> {
-  // Récupérer les métadonnées de l'image
   const metadata = await sharp(imageBuffer).metadata();
   const width = metadata.width || 800;
   const height = metadata.height || 600;
   
-  // Générer le watermark SVG
   const watermarkSvg = generateWatermarkSVG(freelancerName, width, height);
   
-  // 1. D'abord appliquer un flou modéré (on peut voir mais pas utiliser)
+  // Appliquer un flou modéré
   const blurredImage = await sharp(imageBuffer)
-    .blur(8) // Flou léger - visible mais protégé
+    .blur(8)
     .toBuffer();
   
-  // 2. Ensuite appliquer le watermark sur l'image floutée
+  // Appliquer le watermark
   const watermarkedImage = await sharp(blurredImage)
     .composite([
       {
@@ -127,14 +113,14 @@ async function applyImageWatermark(
         left: 0,
       }
     ])
-    .jpeg({ quality: 80 }) // Compression pour réduire la qualité
+    .jpeg({ quality: 80 })
     .toBuffer();
   
   return watermarkedImage;
 }
 
 /**
- * POST - Upload avec watermark automatique
+ * POST - Upload avec watermark automatique vers Supabase Storage
  */
 export async function POST(req: Request) {
   try {
@@ -212,19 +198,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Créer le dossier d'upload si nécessaire
-    const uploadDir = path.join(process.cwd(), "public", "uploads", "deliveries");
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
-    }
-
-    // Générer un nom de fichier unique
-    const timestamp = Date.now();
-    const randomStr = Math.random().toString(36).substring(2, 8);
-    const extension = isImage ? "jpg" : file.name.split(".").pop() || "mp4";
-    const filename = `delivery_${missionId}_${timestamp}_${randomStr}.${extension}`;
-    const filepath = path.join(uploadDir, filename);
-
     // Convertir le fichier en buffer
     const bytes = await file.arrayBuffer();
     let buffer = Buffer.from(bytes);
@@ -237,7 +210,6 @@ export async function POST(req: Request) {
         console.log("Flou et watermark appliqués avec succès!");
       } catch (error) {
         console.error("ERREUR watermark/flou:", error);
-        // On renvoie une erreur au lieu d'ignorer
         return NextResponse.json(
           { error: "Erreur lors de l'application du filigrane" },
           { status: 500 }
@@ -245,23 +217,42 @@ export async function POST(req: Request) {
       }
     }
 
-    // Sauvegarder le fichier
-    await writeFile(filepath, buffer);
+    // Générer un nom de fichier unique
+    const timestamp = Date.now();
+    const randomStr = Math.random().toString(36).substring(2, 8);
+    const extension = isImage ? "jpg" : (file.name.split(".").pop() || "mp4");
+    const filename = `deliveries/delivery_${missionId}_${timestamp}_${randomStr}.${extension}`;
 
-    // URL publique
-    const publicUrl = `/uploads/deliveries/${filename}`;
+    // Upload vers Supabase Storage
+    const { data, error } = await supabase.storage
+      .from("uploads")
+      .upload(filename, buffer, {
+        contentType: isImage ? "image/jpeg" : file.type,
+        upsert: false
+      });
+
+    if (error) {
+      console.error("Erreur Supabase Storage:", error);
+      return NextResponse.json(
+        { error: "Erreur lors de l'upload du fichier" },
+        { status: 500 }
+      );
+    }
+
+    // Obtenir l'URL publique
+    const { data: publicUrlData } = supabase.storage
+      .from("uploads")
+      .getPublicUrl(filename);
 
     return NextResponse.json({
-      url: publicUrl,
+      url: publicUrlData.publicUrl,
       type: isImage ? "image" : "video",
       filename: file.name,
       size: buffer.length,
-      watermarked: isImage // Les images sont watermarkées automatiquement
+      watermarked: isImage
     });
   } catch (error) {
     console.error("Erreur upload delivery:", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
-
-

@@ -167,8 +167,9 @@ export default function SendDeliveryPage() {
       return;
     }
 
-    if (!price || parseInt(price) <= 0) {
-      setUpload(prev => ({ ...prev, error: "Veuillez indiquer un prix" }));
+    const priceNum = parseInt(price);
+    if (!price || isNaN(priceNum) || priceNum <= 0) {
+      setUpload(prev => ({ ...prev, error: "Veuillez indiquer un prix valide (nombre entier positif)" }));
       return;
     }
 
@@ -202,7 +203,7 @@ export default function SendDeliveryPage() {
           protectedUrl: uploadData.url,
           protectedType: uploadData.type,
           protectedNote: note || undefined,
-          amount: parseInt(price) * 100 // Convertir en centimes
+          amount: priceNum * 100 // Convertir en centimes
         })
       });
 
@@ -406,13 +407,16 @@ export default function SendDeliveryPage() {
               </label>
               <div className="relative">
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  min="1"
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9]/g, '');
+                    setPrice(val);
+                  }}
                   placeholder="Ex: 50"
                   className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 pr-12 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
-                  required
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500">€</span>
               </div>
