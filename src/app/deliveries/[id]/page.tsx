@@ -916,88 +916,47 @@ function DeliveryTimeline({ status }: { status: string }) {
 }
 
 // =============================================
-// LECTEUR VIDÉO SÉCURISÉ ANTI-SCREENSHOT
+// LECTEUR VIDÉO SÉCURISÉ
 // =============================================
 
 function SecureVideoPlayer({ url }: { url: string }) {
-  // Bloquer les captures d'écran via événements
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "PrintScreen" || (e.metaKey && e.shiftKey && (e.key === "3" || e.key === "4" || e.key === "5"))) {
-        e.preventDefault();
-        alert("Les captures d'écran sont désactivées pour protéger ce contenu.");
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("keyup", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("keyup", handleKeyDown);
-    };
-  }, []);
-
   return (
     <div 
-      className="secure-media-container relative rounded-lg overflow-hidden bg-black"
+      className="relative rounded-lg overflow-hidden bg-black"
       onContextMenu={(e) => e.preventDefault()}
-      onCopy={(e) => e.preventDefault()}
-      style={{
-        WebkitTouchCallout: "none",
-        WebkitUserSelect: "none",
-        userSelect: "none",
-        filter: "blur(0)",
-        WebkitFilter: "blur(0)",
-        backfaceVisibility: "hidden",
-        transform: "translateZ(0)",
-      }}
     >
-      {/* Overlay de protection */}
-      <div 
-        className="absolute inset-0 z-10 pointer-events-none"
-        style={{ mixBlendMode: "normal" }}
-      />
-      
       <video
         src={url}
         controls
-        controlsList="nodownload noplaybackrate nofullscreen"
+        controlsList="nodownload"
         disablePictureInPicture
         playsInline
-        className="w-full max-h-[500px] object-contain"
-        style={{ 
-          WebkitUserSelect: "none",
-          userSelect: "none",
-          WebkitTouchCallout: "none",
-        }}
-        onDragStart={(e) => e.preventDefault()}
+        preload="metadata"
+        className="w-full max-h-[500px] object-contain relative z-0"
       >
         Votre navigateur ne supporte pas la lecture vidéo.
       </video>
 
       {/* Watermarks Creix */}
-      <div className="absolute top-3 left-3 z-20 pointer-events-none">
-        <span className="text-white/50 text-xs font-bold bg-black/50 px-2 py-1 rounded">
+      <div className="absolute top-3 left-3 z-10 pointer-events-none">
+        <span className="text-white/60 text-xs font-bold bg-black/60 px-2 py-1 rounded">
           © CREIX {new Date().getFullYear()}
         </span>
       </div>
-      <div className="absolute top-3 right-3 z-20 pointer-events-none">
-        <span className="text-white/50 text-xs font-bold bg-black/50 px-2 py-1 rounded">
+      <div className="absolute top-3 right-3 z-10 pointer-events-none">
+        <span className="text-white/60 text-xs font-bold bg-black/60 px-2 py-1 rounded">
           VERSION PROTÉGÉE
         </span>
       </div>
-      <div className="absolute bottom-12 right-3 z-20 pointer-events-none">
-        <span className="text-white/40 text-sm font-bold">
+      <div className="absolute bottom-14 right-3 z-10 pointer-events-none">
+        <span className="text-white/50 text-sm font-bold">
           CREIX © {new Date().getFullYear()}
         </span>
       </div>
       
-      {/* Watermark central */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-        <span className="text-white/15 text-4xl font-black rotate-[-25deg] tracking-widest">
-          CREIX
-        </span>
+      {/* Texte descriptif sous la vidéo */}
+      <div className="mt-2 text-center text-xs text-slate-500">
+        Soumission de {new Date().toLocaleDateString("fr-FR")}
       </div>
     </div>
   );
