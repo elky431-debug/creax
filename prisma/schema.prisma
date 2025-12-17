@@ -37,8 +37,9 @@ model User {
   blockedUsers         BlockedUser[] @relation("blocker")
   blockedByUsers       BlockedUser[] @relation("blocked")
 
-  stripeCustomerId String?
-  subscriptions    Subscription[]
+  stripeCustomerId       String?
+  stripeConnectAccountId String?   // ID du compte Stripe Connect (pour recevoir des paiements)
+  subscriptions          Subscription[]
 }
 
 // =============================================
@@ -79,6 +80,12 @@ model Profile {
   portfolioUrl String?
   rate         String?
   availability String?
+
+  // Informations bancaires (pour les designers/freelances)
+  iban              String?   // IBAN du compte bancaire
+  bankAccountHolder String?   // Nom du titulaire du compte
+  bankName          String?   // Nom de la banque (optionnel)
+  bic               String?   // Code BIC/SWIFT (optionnel)
 
   // Portfolio images
   portfolioImages PortfolioImage[]

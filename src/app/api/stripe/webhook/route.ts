@@ -69,7 +69,7 @@ export async function POST(req: Request) {
         break;
       }
 
-      // Paiement réussi
+      // Paiement réussi pour abonnement
       case "invoice.payment_succeeded": {
         const invoice = event.data.object as Stripe.Invoice;
         console.log(`Paiement réussi pour la facture ${invoice.id}`);
@@ -80,7 +80,66 @@ export async function POST(req: Request) {
       case "invoice.payment_failed": {
         const invoice = event.data.object as Stripe.Invoice;
         console.log(`Paiement échoué pour la facture ${invoice.id}`);
-        // TODO: Envoyer un email à l'utilisateur
+        break;
+      }
+
+      // =========================================
+      // PAIEMENT DE LIVRAISON (Checkout Session)
+      // =========================================
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        
+        // Vérifier si c'est un paiement de livraison
+        if (session.metadata?.type === "delivery_payment") {
+          const deliveryId = session.metadata.deliveryId;
+          
+          if (deliveryId) {
+            // Mettre à jour le statut de la livraison
+            await prisma.missionDelivery.update({
+              where: { id: deliveryId },
+              data: {
+                paymentStatus: "PAID",
+                status: "PAID",
+                paidAt: new Date(),
+                stripePaymentId: session.payment_intent as string
+              }
+            });
+
+            // Récupérer les infos pour notification
+            const delivery = await prisma.missionDelivery.findUnique({
+              where: { id: deliveryId },
+              include: {
+                freelancer: {
+                  select: {
+                    id: true,
+                    email: true,
+                    profile: {
+                      select: {
+                        displayName: true,
+                        iban: true,
+                        bankAccountHolder: true
+                      }
+                    }
+                  }
+                },
+                mission: {
+                  select: { title: true }
+                }
+              }
+            });
+
+            console.log(`✅ Paiement livraison ${deliveryId} confirmé`);
+            console.log(`   Mission: ${delivery?.mission.title}`);
+            console.log(`   Freelance: ${delivery?.freelancer.profile?.displayName}`);
+            console.log(`   Montant: ${(session.amount_total || 0) / 100}€`);
+            
+            // Log IBAN pour virement manuel (à automatiser plus tard avec Stripe Connect)
+            if (delivery?.freelancer.profile?.iban) {
+              console.log(`   IBAN pour virement: ${delivery.freelancer.profile.iban}`);
+              console.log(`   Titulaire: ${delivery.freelancer.profile.bankAccountHolder}`);
+            }
+          }
+        }
         break;
       }
 
@@ -133,6 +192,7 @@ async function handleSubscriptionUpdate(
     });
   }
 }
+
 
 
 
