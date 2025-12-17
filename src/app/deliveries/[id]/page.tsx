@@ -916,15 +916,18 @@ function DeliveryTimeline({ status }: { status: string }) {
 }
 
 // =============================================
-// LECTEUR VIDÉO SÉCURISÉ
+// LECTEUR VIDÉO SÉCURISÉ AVEC WATERMARK
 // =============================================
 
 function SecureVideoPlayer({ url }: { url: string }) {
+  const year = new Date().getFullYear();
+  
   return (
     <div 
       className="relative rounded-lg overflow-hidden bg-black"
       onContextMenu={(e) => e.preventDefault()}
     >
+      {/* Vidéo */}
       <video
         src={url}
         controls
@@ -937,26 +940,64 @@ function SecureVideoPlayer({ url }: { url: string }) {
         Votre navigateur ne supporte pas la lecture vidéo.
       </video>
 
-      {/* Watermarks Creix */}
-      <div className="absolute top-3 left-3 z-10 pointer-events-none">
-        <span className="text-white/60 text-xs font-bold bg-black/60 px-2 py-1 rounded">
-          © CREIX {new Date().getFullYear()}
-        </span>
-      </div>
-      <div className="absolute top-3 right-3 z-10 pointer-events-none">
-        <span className="text-white/60 text-xs font-bold bg-black/60 px-2 py-1 rounded">
-          VERSION PROTÉGÉE
-        </span>
-      </div>
-      <div className="absolute bottom-14 right-3 z-10 pointer-events-none">
-        <span className="text-white/50 text-sm font-bold">
-          CREIX © {new Date().getFullYear()}
-        </span>
-      </div>
-      
-      {/* Texte descriptif sous la vidéo */}
-      <div className="mt-2 text-center text-xs text-slate-500">
-        Soumission de {new Date().toLocaleDateString("fr-FR")}
+      {/* ========== WATERMARKS OVERLAY ========== */}
+      <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+        
+        {/* Watermarks répétés en diagonale */}
+        <div className="absolute inset-0 flex flex-wrap items-center justify-center gap-16 -rotate-[25deg] scale-150 opacity-20">
+          {Array.from({ length: 25 }).map((_, i) => (
+            <span key={i} className="text-white text-xl font-black whitespace-nowrap">
+              {i % 2 === 0 ? "CREIX" : year}
+            </span>
+          ))}
+        </div>
+
+        {/* Watermark central CREIX - GROS */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center -rotate-[25deg]">
+            <div className="text-white/40 text-5xl md:text-6xl font-black tracking-wider drop-shadow-lg">
+              CREIX
+            </div>
+            <div className="text-white/30 text-lg md:text-xl font-bold mt-2">
+              VERSION PROTÉGÉE
+            </div>
+          </div>
+        </div>
+
+        {/* Coin supérieur gauche */}
+        <div className="absolute top-3 left-3">
+          <span className="text-white/70 text-xs font-bold bg-black/50 px-2 py-1 rounded">
+            © CREIX {year}
+          </span>
+        </div>
+
+        {/* Coin supérieur droit */}
+        <div className="absolute top-3 right-3">
+          <span className="text-white/70 text-xs font-bold bg-black/50 px-2 py-1 rounded">
+            VERSION PROTÉGÉE
+          </span>
+        </div>
+
+        {/* Coin inférieur gauche */}
+        <div className="absolute bottom-14 left-3">
+          <span className="text-white/50 text-xs font-bold">
+            CREIX
+          </span>
+        </div>
+
+        {/* Coin inférieur droit */}
+        <div className="absolute bottom-14 right-3">
+          <span className="text-white/50 text-xs font-bold">
+            {year}
+          </span>
+        </div>
+
+        {/* Barre du bas */}
+        <div className="absolute bottom-0 left-0 right-0 bg-black/60 py-2 px-3">
+          <p className="text-center text-white/80 text-xs font-semibold">
+            CREIX {year} - TÉLÉCHARGEMENT INTERDIT
+          </p>
+        </div>
       </div>
     </div>
   );
