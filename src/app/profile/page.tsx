@@ -579,9 +579,13 @@ function PaymentSettingsSection() {
         if (res.ok) {
           const data = await res.json();
           setBankInfo(data);
+        } else {
+          // Si erreur, considérer comme non configuré
+          setBankInfo({ isConfigured: false });
         }
       } catch {
-        // Silently fail
+        // En cas d'erreur, considérer comme non configuré
+        setBankInfo({ isConfigured: false });
       } finally {
         setLoading(false);
       }
