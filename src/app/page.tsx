@@ -3,15 +3,15 @@ export default function HomePage() {
     <div className="flex flex-col">
       {/* Hero Section */}
       <section className="relative min-h-screen flex flex-col items-center justify-center px-4 py-20 overflow-hidden">
-        {/* Animated background */}
-        <div className="absolute inset-0">
-          {/* Main gradient orbs */}
-          <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-cyan-500/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-emerald-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-cyan-500/10 via-transparent to-emerald-500/10 rounded-full blur-3xl" />
+        {/* Animated background - optimized for mobile */}
+        <div className="absolute inset-0 pointer-events-none">
+          {/* Main gradient orbs - simplified on mobile */}
+          <div className="absolute top-1/4 left-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-cyan-500/15 md:bg-cyan-500/20 rounded-full blur-2xl md:blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-[250px] md:w-[400px] h-[250px] md:h-[400px] bg-emerald-500/10 md:bg-emerald-500/15 rounded-full blur-2xl md:blur-3xl" />
+          <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-cyan-500/10 via-transparent to-emerald-500/10 rounded-full blur-3xl" />
           
-          {/* Grid pattern */}
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(0,212,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,212,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
+          {/* Grid pattern - hidden on mobile */}
+          <div className="hidden md:block absolute inset-0 bg-[linear-gradient(rgba(0,212,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,212,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
           
           {/* Radial gradient overlay */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#000_70%)]" />
@@ -19,9 +19,9 @@ export default function HomePage() {
         
         <div className="relative z-10 text-center max-w-5xl mx-auto">
           {/* Badge */}
-          <div className="inline-flex items-center gap-3 rounded-full bg-white/[0.03] border border-white/10 px-5 py-2.5 mb-8 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-3 rounded-full bg-white/[0.03] border border-white/10 px-5 py-2.5 mb-8">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+              <span className="hidden md:inline-flex animate-ping absolute h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
             </span>
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">La plateforme créative</span>
@@ -47,17 +47,17 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               href="/pricing"
-              className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 px-8 py-4 text-base font-bold text-slate-900 shadow-2xl shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-150 hover:scale-105 overflow-hidden"
+              className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 px-8 py-4 text-base font-bold text-slate-900 shadow-xl md:shadow-2xl shadow-cyan-500/20 md:shadow-cyan-500/25 active:scale-95 md:hover:scale-105 transition-transform overflow-hidden"
             >
               <span className="relative z-10">S&apos;abonner maintenant</span>
-              <svg className="relative z-10 w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <svg className="relative z-10 w-5 h-5 md:group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
             </a>
             <a
               href="/pricing"
-              className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/[0.02] backdrop-blur-sm px-8 py-4 text-base font-semibold text-white hover:bg-white/[0.05] hover:border-white/30 transition-all duration-150"
+              className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/[0.02] px-8 py-4 text-base font-semibold text-white active:bg-white/[0.05] md:hover:bg-white/[0.05] md:hover:border-white/30 transition-colors"
             >
               <span>Voir les tarifs</span>
               <svg className="w-4 h-4 text-white/50 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -92,15 +92,15 @@ export default function HomePage() {
       </section>
 
       {/* Platforms Section - Pour les créateurs */}
-      <section className="relative py-32 px-4 overflow-hidden">
-        {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-creix-blue/[0.02] to-transparent" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-creix-blue/5 rounded-full blur-3xl" />
+      <section className="relative py-20 md:py-32 px-4 overflow-hidden">
+        {/* Background - simplified on mobile */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-creix-blue/[0.02] to-transparent pointer-events-none" />
+        <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-creix-blue/5 rounded-full blur-3xl pointer-events-none" />
         
         <div className="relative z-10 max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/10 px-4 py-2 mb-6 backdrop-blur-sm">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/10 px-4 py-2 mb-6">
               <span className="text-lg">🎬</span>
               <span className="text-xs font-medium uppercase tracking-widest text-creix-blue/80">Pour les créateurs</span>
             </div>
@@ -189,19 +189,19 @@ export default function HomePage() {
       </section>
 
       {/* Pour les graphistes */}
-      <section className="relative py-32 px-4 overflow-hidden">
-        {/* Background effects */}
-        <div className="absolute inset-0 bg-gradient-to-b from-creix-blue/[0.03] via-creix-blue/[0.08] to-creix-blue/[0.03]" />
-        <div className="absolute top-1/2 left-0 w-[600px] h-[600px] bg-creix-blue/10 rounded-full blur-3xl -translate-y-1/2" />
-        <div className="absolute top-1/2 right-0 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-2xl -translate-y-1/2" />
+      <section className="relative py-20 md:py-32 px-4 overflow-hidden">
+        {/* Background effects - optimized */}
+        <div className="absolute inset-0 bg-gradient-to-b from-creix-blue/[0.03] via-creix-blue/[0.08] to-creix-blue/[0.03] pointer-events-none" />
+        <div className="hidden md:block absolute top-1/2 left-0 w-[600px] h-[600px] bg-creix-blue/10 rounded-full blur-3xl -translate-y-1/2 pointer-events-none" />
+        <div className="hidden md:block absolute top-1/2 right-0 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-2xl -translate-y-1/2 pointer-events-none" />
         
         <div className="relative z-10 max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
               {/* Badge animé */}
-              <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-creix-blue/10 to-emerald-500/10 border border-creix-blue/20 px-4 py-2 backdrop-blur-sm">
+              <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-creix-blue/10 to-emerald-500/10 border border-creix-blue/20 px-4 py-2">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="hidden md:inline-flex animate-ping absolute h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
                 <span className="text-xs font-medium uppercase tracking-widest text-creix-blue">
@@ -256,8 +256,8 @@ export default function HomePage() {
             
             {/* Cards avec effet glassmorphism */}
             <div className="relative">
-              {/* Glow background */}
-              <div className="absolute -inset-4 bg-gradient-to-br from-creix-blue/30 via-emerald-500/20 to-creix-blue/30 rounded-[40px] blur-2xl opacity-50" />
+              {/* Glow background - hidden on mobile */}
+              <div className="hidden md:block absolute -inset-4 bg-gradient-to-br from-creix-blue/30 via-emerald-500/20 to-creix-blue/30 rounded-[40px] blur-2xl opacity-50 pointer-events-none" />
               
               {/* Card container */}
               <div className="relative space-y-4">
@@ -268,14 +268,13 @@ export default function HomePage() {
                 ].map((card, i) => (
                   <div
                     key={i}
-                    className={`group relative rounded-2xl bg-gradient-to-br ${card.color} backdrop-blur-sm border ${card.border} p-6 hover:scale-[1.02] transition-all duration-150 cursor-default`}
-                    style={{ animationDelay: `${i * 100}ms` }}
+                    className={`group relative rounded-2xl bg-gradient-to-br ${card.color} border ${card.border} p-6 active:scale-[0.98] md:hover:scale-[1.02] transition-transform cursor-default`}
                   >
-                    {/* Inner glow on hover */}
-                    <div className="absolute inset-0 rounded-2xl bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {/* Inner glow on hover - desktop only */}
+                    <div className="hidden md:block absolute inset-0 rounded-2xl bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                     
                     <div className="relative flex items-center gap-5">
-                      <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur flex items-center justify-center text-3xl shadow-inner">
+                      <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-3xl">
                         {card.emoji}
                   </div>
                       <div className="flex-1">
@@ -297,14 +296,14 @@ export default function HomePage() {
       </section>
 
       {/* Comment ça marche */}
-      <section className="relative py-32 px-4 overflow-hidden">
+      <section className="relative py-20 md:py-32 px-4 overflow-hidden">
         {/* Subtle background */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-creix-blue/[0.05] via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-creix-blue/[0.05] via-transparent to-transparent pointer-events-none" />
         
         <div className="relative z-10 max-w-5xl mx-auto">
           {/* Header */}
           <div className="text-center mb-20">
-            <span className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/10 px-4 py-2 mb-6 backdrop-blur-sm">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/10 px-4 py-2 mb-6">
               <svg className="w-4 h-4 text-creix-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
@@ -387,17 +386,17 @@ export default function HomePage() {
       </section>
 
       {/* Pricing preview */}
-      <section className="relative py-32 px-4 overflow-hidden">
-        {/* Background */}
-        <div className="absolute inset-0">
+      <section className="relative py-20 md:py-32 px-4 overflow-hidden">
+        {/* Background - optimized */}
+        <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/[0.03] to-transparent" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-gradient-to-r from-cyan-500/10 via-emerald-500/5 to-cyan-500/10 rounded-full blur-3xl" />
+          <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-gradient-to-r from-cyan-500/10 via-emerald-500/5 to-cyan-500/10 rounded-full blur-3xl" />
         </div>
         
         <div className="relative z-10 max-w-5xl mx-auto">
           {/* Header */}
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/10 px-4 py-2 mb-6 backdrop-blur-sm">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/10 px-4 py-2 mb-6">
               <span className="text-lg">💎</span>
               <span className="text-xs font-semibold uppercase tracking-[0.15em] text-white/70">Tarification simple</span>
             </div>
@@ -529,14 +528,14 @@ export default function HomePage() {
       </section>
 
       {/* CTA Final */}
-      <section className="relative py-32 px-4 overflow-hidden">
-        {/* Background */}
-        <div className="absolute inset-0">
+      <section className="relative py-20 md:py-32 px-4 overflow-hidden">
+        {/* Background - optimized */}
+        <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-t from-cyan-500/[0.08] via-transparent to-transparent" />
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[1200px] h-[600px] bg-gradient-to-t from-cyan-500/20 via-emerald-500/10 to-transparent rounded-full blur-3xl" />
+          <div className="hidden md:block absolute bottom-0 left-1/2 -translate-x-1/2 w-[1200px] h-[600px] bg-gradient-to-t from-cyan-500/20 via-emerald-500/10 to-transparent rounded-full blur-3xl" />
           
-          {/* Animated particles */}
-          <div className="absolute inset-0">
+          {/* Animated particles - desktop only */}
+          <div className="hidden md:block absolute inset-0">
             {[...Array(5)].map((_, i) => (
               <div
                 key={i}
@@ -553,7 +552,7 @@ export default function HomePage() {
         
         <div className="relative z-10 max-w-4xl mx-auto text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/10 px-4 py-2 mb-8 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/10 px-4 py-2 mb-8">
             <span className="text-lg">🚀</span>
             <span className="text-xs font-semibold uppercase tracking-[0.15em] text-white/70">Rejoignez-nous</span>
           </div>
@@ -573,13 +572,13 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               href="/signup"
-              className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 px-10 py-5 text-lg font-bold text-slate-900 shadow-2xl shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all duration-150 hover:scale-105 overflow-hidden"
+              className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 px-8 md:px-10 py-4 md:py-5 text-base md:text-lg font-bold text-slate-900 shadow-xl md:shadow-2xl shadow-cyan-500/25 md:shadow-cyan-500/30 active:scale-95 md:hover:scale-105 transition-transform overflow-hidden"
             >
               <span className="relative z-10">Créer mon compte gratuitement</span>
-              <svg className="relative z-10 w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <svg className="relative z-10 w-5 h-5 md:group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
             </a>
           </div>
         </div>

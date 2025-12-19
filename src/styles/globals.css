@@ -9,6 +9,41 @@ body {
   color: #048B9A;
 }
 
+/* Performance optimizations for mobile scroll */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: auto; /* Disable smooth scroll for better performance */
+}
+
+/* Optimize transforms and animations */
+@media (max-width: 768px) {
+  .blur-3xl,
+  .blur-2xl,
+  .blur-xl {
+    filter: none !important;
+    backdrop-filter: none !important;
+  }
+  
+  .backdrop-blur-sm,
+  .backdrop-blur,
+  .backdrop-blur-xl {
+    backdrop-filter: none !important;
+  }
+  
+  /* Reduce animation complexity */
+  .animate-pulse {
+    animation: none !important;
+  }
+  
+  .animate-ping {
+    animation: none !important;
+  }
+}
+
 a {
   color: #048B9A;
 }
