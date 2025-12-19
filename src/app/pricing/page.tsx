@@ -1,8 +1,9 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 function PricingContent() {
   const { data: session, status } = useSession();
@@ -12,6 +13,80 @@ function PricingContent() {
   const [loading, setLoading] = useState<"creator" | "designer" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [hoveredPlan, setHoveredPlan] = useState<"creator" | "designer" | null>(null);
+  const [hasSubscription, setHasSubscription] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [checkingSubscription, setCheckingSubscription] = useState(true);
+
+  // Vérifier l'abonnement de l'utilisateur
+  useEffect(() => {
+    async function checkSubscription() {
+      if (status === "loading") return;
+      
+      if (status === "authenticated") {
+        try {
+          const res = await fetch("/api/profile");
+          if (res.ok) {
+            const data = await res.json();
+            setHasSubscription(data.user?.hasSubscription || false);
+            setUserRole(data.user?.role || null);
+          }
+        } catch (e) {
+          console.error("Erreur vérification abonnement:", e);
+        }
+      }
+      setCheckingSubscription(false);
+    }
+    checkSubscription();
+  }, [status]);
+
+  // Si l'utilisateur a déjà un abonnement, afficher un message
+  if (!checkingSubscription && hasSubscription && !subscriptionRequired) {
+    return (
+      <div className="min-h-screen bg-[#000] flex items-center justify-center px-4">
+        <div className="text-center max-w-md">
+          <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-10 h-10 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-4">Vous êtes déjà abonné ! 🎉</h1>
+          <p className="text-white/60 mb-8">
+            Vous avez déjà un abonnement actif. Profitez de toutes les fonctionnalités de CREIX !
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link 
+              href="/dashboard"
+              className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-emerald-500 text-black font-semibold rounded-xl hover:opacity-90 transition"
+            >
+              Aller au Dashboard
+            </Link>
+            <Link 
+              href="/profile"
+              className="px-6 py-3 bg-white/10 border border-white/20 text-white font-semibold rounded-xl hover:bg-white/20 transition"
+            >
+              Gérer mon abonnement
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Déterminer quel plan afficher selon le rôle
+  const showCreatorPlan = !userRole || userRole === "CREATOR";
+  const showDesignerPlan = !userRole || userRole === "DESIGNER";
+
+  // Afficher un loader pendant la vérification
+  if (status === "loading" || checkingSubscription) {
+    return (
+      <div className="min-h-screen bg-[#000] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-10 w-10 rounded-full border-2 border-white/10 border-t-cyan-500 animate-spin" />
+          <p className="text-white/50">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
 
   async function handleSubscribe(plan: "creator" | "designer") {
     if (status !== "authenticated") {
@@ -139,9 +214,9 @@ function PricingContent() {
         </div>
 
         {/* Plans */}
-        <div className="grid gap-6 lg:grid-cols-2 lg:gap-8 max-w-4xl mx-auto">
+        <div className={`grid gap-6 ${showCreatorPlan && showDesignerPlan ? 'lg:grid-cols-2' : 'lg:grid-cols-1'} lg:gap-8 max-w-4xl mx-auto`}>
           {/* Plan Créateur */}
-          <div
+          {showCreatorPlan && <div
             className="group relative"
             onMouseEnter={() => setHoveredPlan("creator")}
             onMouseLeave={() => setHoveredPlan(null)}
@@ -211,10 +286,10 @@ function PricingContent() {
                 </button>
               </div>
             </div>
-          </div>
+          </div>}
 
           {/* Plan Designer */}
-          <div
+          {showDesignerPlan && <div
             className="group relative"
             onMouseEnter={() => setHoveredPlan("designer")}
             onMouseLeave={() => setHoveredPlan(null)}
@@ -284,7 +359,7 @@ function PricingContent() {
                 </button>
               </div>
             </div>
-          </div>
+          </div>}
         </div>
 
         {/* Bottom section */}
