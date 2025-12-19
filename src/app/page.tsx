@@ -104,12 +104,13 @@ export default function HomePage() {
               <span className="text-lg">🎬</span>
               <span className="text-xs font-medium uppercase tracking-widest text-creix-blue/80">Pour les créateurs</span>
             </div>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
-              Vous créez du contenu ?
-            </h2>
-            <p className="max-w-xl mx-auto text-creix-blue/60 text-lg">
-              Trouvez le graphiste ou monteur parfait pour sublimer vos vidéos.
-            </p>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+            Vous créez du contenu ?
+          </h2>
+          <p className="max-w-xl mx-auto text-creix-blue/60 text-lg">
+            Vous manquez de temps ou de compétences pour le montage et le design ? 
+            Publiez vos missions et laissez les meilleurs talents s&apos;en occuper pour vous.
+          </p>
           </div>
           
           {/* Platform cards - Modern grid */}
@@ -218,8 +219,8 @@ export default function HomePage() {
               </h2>
               
               <p className="text-creix-blue/70 text-lg leading-relaxed max-w-lg">
-                Créez votre profil, présentez votre portfolio et recevez des demandes 
-                de créateurs qui correspondent à votre style et vos compétences.
+                Vous êtes graphiste ou monteur vidéo ? Parcourez les missions publiées par les créateurs, 
+                proposez vos services et développez votre activité avec des clients réguliers.
               </p>
               
               {/* Features avec icônes modernes */}
