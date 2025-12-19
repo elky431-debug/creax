@@ -54,8 +54,13 @@ export async function POST(req: Request) {
     try {
       const resendApiKey = process.env.RESEND_API_KEY;
       
+      console.log("=== DEBUG EMAIL ===");
+      console.log("RESEND_API_KEY présente:", !!resendApiKey);
+      console.log("Email destinataire:", normalizedEmail);
+      console.log("Reset URL:", resetUrl);
+      
       if (resendApiKey) {
-        await fetch("https://api.resend.com/emails", {
+        const emailResponse = await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -96,13 +101,22 @@ export async function POST(req: Request) {
             `
           })
         });
+
+        const emailResult = await emailResponse.json();
+        console.log("Resend Response Status:", emailResponse.status);
+        console.log("Resend Response:", JSON.stringify(emailResult));
+        
+        if (!emailResponse.ok) {
+          console.error("Erreur Resend:", emailResult);
+        } else {
+          console.log("Email envoyé avec succès! ID:", emailResult.id);
+        }
       } else {
         // Log pour le développement si pas de clé Resend
-        console.log("=== LIEN DE RÉINITIALISATION ===");
-        console.log(`Email: ${normalizedEmail}`);
+        console.log("PAS DE CLÉ RESEND - Email non envoyé");
         console.log(`Lien: ${resetUrl}`);
-        console.log("================================");
       }
+      console.log("===================");
     } catch (emailError) {
       console.error("Erreur envoi email:", emailError);
       // On ne fait pas échouer la requête si l'email échoue
