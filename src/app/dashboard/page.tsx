@@ -26,6 +26,8 @@ type RecentProposal = {
 
 type ProposalCounts = { total: number; pending: number; accepted: number; rejected: number };
 
+type BankStatus = { isConfigured: boolean };
+
 export default function DashboardPage() {
   return (
     <Suspense fallback={<LoadingScreen />}>
@@ -53,6 +55,8 @@ function DashboardContent() {
   const [recentProposals, setRecentProposals] = useState<RecentProposal[]>([]);
   const [proposalCounts, setProposalCounts] = useState<ProposalCounts>({ total: 0, pending: 0, accepted: 0, rejected: 0 });
   const [missionCount, setMissionCount] = useState(0);
+  const [bankStatus, setBankStatus] = useState<BankStatus | null>(null);
+  const [showBankNotification, setShowBankNotification] = useState(true);
 
   useEffect(() => {
     if (searchParams.get("billing") === "success") {
@@ -94,6 +98,21 @@ function DashboardContent() {
       } catch (e) { console.error(e); }
     }
     fetchData();
+  }, [user]);
+
+  // Vérifier le statut bancaire pour les designers
+  useEffect(() => {
+    if (!user || user.role !== "DESIGNER") return;
+    async function fetchBankStatus() {
+      try {
+        const res = await fetch("/api/profile/bank");
+        if (res.ok) {
+          const data = await res.json();
+          setBankStatus(data);
+        }
+      } catch (e) { console.error(e); }
+    }
+    fetchBankStatus();
   }, [user]);
 
   function formatDate(dateStr: string): string {
@@ -153,6 +172,46 @@ function DashboardContent() {
               </Link>
             </div>
           </header>
+
+          {/* Notification IBAN pour les designers */}
+          {!isCreator && bankStatus && !bankStatus.isConfigured && showBankNotification && (
+            <div className="mb-8 rounded-2xl bg-gradient-to-r from-orange-500/10 to-yellow-500/10 border border-orange-500/30 p-5 relative overflow-hidden">
+              <button 
+                onClick={() => setShowBankNotification(false)}
+                className="absolute top-3 right-3 text-white/40 hover:text-white transition-colors"
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className="h-14 w-14 rounded-2xl bg-orange-500/20 flex items-center justify-center shrink-0">
+                  <span className="text-2xl">💳</span>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-white mb-1">
+                    Configurez vos paramètres de paiement
+                  </h3>
+                  <p className="text-sm text-white/60 mb-3">
+                    Pour recevoir vos paiements lorsque vos travaux sont validés, vous devez d&apos;abord configurer votre IBAN.
+                  </p>
+                  <Link 
+                    href="/settings/bank"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-orange-500 to-yellow-500 text-sm font-semibold text-black hover:shadow-lg hover:shadow-orange-500/25 transition-all"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Configurer maintenant
+                  </Link>
+                </div>
+              </div>
+              
+              {/* Decoration */}
+              <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl pointer-events-none" />
+            </div>
+          )}
 
           {/* Main Grid */}
           <div className="grid lg:grid-cols-3 gap-5 mb-10">

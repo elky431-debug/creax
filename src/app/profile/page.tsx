@@ -17,6 +17,10 @@ type ProfileData = {
   needs: string;
   availability: string;
   avatarUrl: string | null;
+  iban?: string;
+  bankAccountHolder?: string;
+  bankName?: string;
+  bic?: string;
 };
 
 type UserData = {
@@ -310,6 +314,9 @@ export default function ProfilePage() {
           {/* Portfolio pour les designers */}
           {!isCreator && <PortfolioUploader />}
 
+          {/* Paramètres de paiement pour les designers */}
+          {!isCreator && <PaymentSettingsSection />}
+
           {/* Messages */}
           {error && (
             <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-4 text-sm text-red-400">
@@ -552,6 +559,129 @@ function DangerZone({ hasSubscription }: { hasSubscription: boolean }) {
         </div>
       )}
     </>
+  );
+}
+
+// Composant pour les paramètres de paiement (Designers uniquement)
+function PaymentSettingsSection() {
+  const [bankInfo, setBankInfo] = useState<{
+    isConfigured: boolean;
+    bankAccountHolder?: string;
+    bankName?: string;
+    bic?: string;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchBankInfo() {
+      try {
+        const res = await fetch("/api/profile/bank");
+        if (res.ok) {
+          const data = await res.json();
+          setBankInfo(data);
+        }
+      } catch {
+        // Silently fail
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchBankInfo();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="rounded-xl bg-slate-900/80 border border-slate-800 p-6">
+        <div className="flex items-center gap-3">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
+          <span className="text-slate-400">Chargement...</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`rounded-xl border p-6 ${
+      bankInfo?.isConfigured 
+        ? "bg-emerald-500/5 border-emerald-500/20" 
+        : "bg-orange-500/5 border-orange-500/20"
+    }`}>
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${
+            bankInfo?.isConfigured ? "bg-emerald-500/20" : "bg-orange-500/20"
+          }`}>
+            <svg className={`h-5 w-5 ${bankInfo?.isConfigured ? "text-emerald-400" : "text-orange-400"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-white">💳 Paramètres de paiement</h2>
+            <p className={`text-sm ${bankInfo?.isConfigured ? "text-emerald-400" : "text-orange-400"}`}>
+              {bankInfo?.isConfigured ? "✓ Compte bancaire configuré" : "⚠️ Configuration requise"}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {bankInfo?.isConfigured ? (
+        <div className="space-y-3 mb-4">
+          <div className="bg-slate-900/50 rounded-lg p-3">
+            <p className="text-xs text-slate-500 mb-1">Titulaire</p>
+            <p className="text-sm text-white font-medium">{bankInfo.bankAccountHolder || "—"}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-slate-900/50 rounded-lg p-3">
+              <p className="text-xs text-slate-500 mb-1">Banque</p>
+              <p className="text-sm text-white">{bankInfo.bankName || "—"}</p>
+            </div>
+            <div className="bg-slate-900/50 rounded-lg p-3">
+              <p className="text-xs text-slate-500 mb-1">IBAN</p>
+              <p className="text-sm text-white font-mono">****</p>
+            </div>
+          </div>
+          <p className="text-xs text-slate-500">
+            Vos informations bancaires sont sécurisées et chiffrées.
+          </p>
+        </div>
+      ) : (
+        <div className="mb-4">
+          <p className="text-sm text-slate-400 mb-3">
+            Configurez vos informations bancaires pour recevoir vos paiements lorsque vos travaux sont acceptés et payés par les créateurs.
+          </p>
+          <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-3">
+            <p className="text-xs text-orange-300">
+              <strong>Important :</strong> Sans IBAN configuré, vous ne pourrez pas recevoir vos paiements.
+            </p>
+          </div>
+        </div>
+      )}
+
+      <a
+        href="/settings/bank"
+        className={`inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition ${
+          bankInfo?.isConfigured 
+            ? "border border-slate-700 bg-slate-800 text-white hover:bg-slate-700" 
+            : "bg-gradient-to-r from-cyan-500 to-emerald-500 text-black hover:opacity-90"
+        }`}
+      >
+        {bankInfo?.isConfigured ? (
+          <>
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Modifier mes informations bancaires
+          </>
+        ) : (
+          <>
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Configurer mon IBAN maintenant
+          </>
+        )}
+      </a>
+    </div>
   );
 }
 
