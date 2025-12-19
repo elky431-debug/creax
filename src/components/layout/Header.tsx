@@ -319,7 +319,7 @@ export function Header() {
         </nav>
 
         {/* Mobile Navigation - seulement sur très petit écran */}
-        <div className="flex items-center gap-3 sm:hidden" ref={mobileMenuRef>
+        <div className="flex items-center gap-3 sm:hidden" ref={mobileMenuRef}>
           {/* Tarifs link visible on mobile */}
           <Link 
             href="/pricing" 
