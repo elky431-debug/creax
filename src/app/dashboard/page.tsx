@@ -109,8 +109,15 @@ function DashboardContent() {
         if (res.ok) {
           const data = await res.json();
           setBankStatus(data);
+        } else {
+          // Si erreur (404 profil pas trouvé, etc.), considérer comme non configuré
+          setBankStatus({ isConfigured: false });
         }
-      } catch (e) { console.error(e); }
+      } catch (e) { 
+        console.error(e);
+        // En cas d'erreur, considérer comme non configuré
+        setBankStatus({ isConfigured: false });
+      }
     }
     fetchBankStatus();
   }, [user]);

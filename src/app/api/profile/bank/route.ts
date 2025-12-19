@@ -31,8 +31,15 @@ export async function GET() {
       }
     });
 
+    // Si le profil n'existe pas, retourner isConfigured: false
     if (!profile) {
-      return NextResponse.json({ error: "Profil introuvable" }, { status: 404 });
+      return NextResponse.json({
+        iban: null,
+        bankAccountHolder: null,
+        bankName: null,
+        bic: null,
+        isConfigured: false
+      });
     }
 
     // Masquer partiellement l'IBAN pour la sécurité
