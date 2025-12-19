@@ -108,8 +108,7 @@ export default function HomePage() {
             Vous créez du contenu ?
           </h2>
           <p className="max-w-xl mx-auto text-creix-blue/60 text-lg">
-            Vous manquez de temps ou de compétences pour le montage et le design ? 
-            Publiez vos missions et laissez les meilleurs talents s&apos;en occuper pour vous.
+            Miniatures, montages, visuels... Publiez ce dont vous avez besoin, les pros répondent.
           </p>
           </div>
           
@@ -219,8 +218,7 @@ export default function HomePage() {
               </h2>
               
               <p className="text-creix-blue/70 text-lg leading-relaxed max-w-lg">
-                Vous êtes graphiste ou monteur vidéo ? Parcourez les missions publiées par les créateurs, 
-                proposez vos services et développez votre activité avec des clients réguliers.
+                Des créateurs ont besoin de vous. Proposez vos services, gagnez des clients.
               </p>
               
               {/* Features avec icônes modernes */}
