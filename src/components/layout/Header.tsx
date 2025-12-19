@@ -124,11 +124,11 @@ export function Header() {
           </span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden items-center gap-1 md:flex">
+        {/* Desktop Navigation - visible sur tablette et plus */}
+        <nav className="hidden items-center gap-0.5 sm:flex">
           <Link 
             href="/pricing" 
-            className="relative px-4 py-2 text-sm font-medium text-creix-blue/80 transition-all duration-200 hover:text-creix-blue"
+            className="relative px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-creix-blue/80 transition-all duration-200 hover:text-creix-blue"
           >
             <span className="relative z-10">Tarifs</span>
             <span className="absolute inset-0 rounded-lg bg-creix-blue/0 transition-colors duration-200 hover:bg-creix-blue/10" />
@@ -140,9 +140,9 @@ export function Header() {
               <div className="relative" ref={missionsMenuRef}>
                 <button
                   onClick={() => setMissionsMenuOpen(!missionsMenuOpen)}
-                  className="relative flex items-center gap-2 px-4 py-2 text-sm font-medium text-creix-blue/80 transition-all duration-200 hover:text-creix-blue rounded-lg hover:bg-creix-blue/10"
+                  className="relative flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-creix-blue/80 transition-all duration-200 hover:text-creix-blue rounded-lg hover:bg-creix-blue/10"
                 >
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="h-4 w-4 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
                   <span>Missions</span>
@@ -255,12 +255,12 @@ export function Header() {
               {/* Bouton Messagerie avec notification */}
               <Link
                 href="/messages"
-                className="relative flex items-center gap-2 px-4 py-2 text-sm font-medium text-creix-blue/80 transition-all duration-200 hover:text-creix-blue rounded-lg hover:bg-creix-blue/10"
+                className="relative flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-creix-blue/80 transition-all duration-200 hover:text-creix-blue rounded-lg hover:bg-creix-blue/10"
               >
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
-                <span>Messages</span>
+                <span className="hidden sm:inline">Messages</span>
                 {unreadCount > 0 && (
                   <span className="absolute -top-0.5 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white shadow-lg shadow-rose-500/30">
                     {unreadCount > 9 ? "9+" : unreadCount}
@@ -270,17 +270,20 @@ export function Header() {
 
               <Link 
                 href="/dashboard" 
-                className="px-4 py-2 text-sm font-medium text-creix-blue/80 transition-all duration-200 hover:text-creix-blue rounded-lg hover:bg-creix-blue/10"
+                className="px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-creix-blue/80 transition-all duration-200 hover:text-creix-blue rounded-lg hover:bg-creix-blue/10"
               >
-                Dashboard
+                <span className="hidden sm:inline">Dashboard</span>
+                <svg className="h-4 w-4 sm:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
               </Link>
 
               <Link
                 href="/profile"
-                className="group ml-2 flex items-center gap-2 rounded-full bg-gradient-to-r from-creix-blue to-creix-blue/80 pl-1 pr-4 py-1 text-xs font-semibold uppercase tracking-wide text-creix-black shadow-lg shadow-creix-blue/20 transition-all duration-300 hover:shadow-creix-blue/40 hover:scale-[1.02]"
+                className="group ml-1 sm:ml-2 flex items-center gap-1 sm:gap-2 rounded-full bg-gradient-to-r from-creix-blue to-creix-blue/80 pl-1 pr-2 sm:pr-3 py-1 text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-creix-black shadow-lg shadow-creix-blue/20 transition-all duration-300 hover:shadow-creix-blue/40 hover:scale-[1.02]"
               >
                 {profile?.avatarUrl ? (
-                  <div className="relative h-7 w-7 rounded-full overflow-hidden ring-2 ring-creix-black/20">
+                  <div className="relative h-6 w-6 sm:h-7 sm:w-7 rounded-full overflow-hidden ring-2 ring-creix-black/20">
                     <Image
                       src={profile.avatarUrl}
                       alt="Mon profil"
@@ -290,11 +293,11 @@ export function Header() {
                     />
                   </div>
                 ) : (
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-creix-black/20 text-[11px] font-bold">
+                  <div className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-creix-black/20 text-[10px] sm:text-[11px] font-bold">
                     {(profile?.displayName || session?.user?.email || "U").charAt(0).toUpperCase()}
                   </div>
                 )}
-                <span>Mon profil</span>
+                <span className="hidden sm:inline">Profil</span>
               </Link>
             </>
           ) : (
@@ -315,8 +318,8 @@ export function Header() {
           )}
         </nav>
 
-        {/* Mobile Navigation */}
-        <div className="flex items-center gap-3 md:hidden" ref={mobileMenuRef}>
+        {/* Mobile Navigation - seulement sur très petit écran */}
+        <div className="flex items-center gap-3 sm:hidden" ref={mobileMenuRef>
           {/* Tarifs link visible on mobile */}
           <Link 
             href="/pricing" 
