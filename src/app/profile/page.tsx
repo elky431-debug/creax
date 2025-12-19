@@ -347,6 +347,9 @@ export default function ProfilePage() {
           </div>
         </form>
 
+        {/* Section Mot de passe */}
+        <ChangePasswordSection />
+
         {/* Section Abonnement */}
         <SubscriptionSection hasSubscription={user.hasSubscription} />
 
@@ -559,6 +562,171 @@ function DangerZone({ hasSubscription }: { hasSubscription: boolean }) {
         </div>
       )}
     </>
+  );
+}
+
+// Composant pour changer le mot de passe
+function ChangePasswordSection() {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [showPasswords, setShowPasswords] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setMessage(null);
+
+    // Validation côté client
+    if (newPassword !== confirmPassword) {
+      setMessage({ type: "error", text: "Les nouveaux mots de passe ne correspondent pas" });
+      setLoading(false);
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setMessage({ type: "error", text: "Le nouveau mot de passe doit contenir au moins 8 caractères" });
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword, newPassword, confirmPassword })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMessage({ type: "error", text: data.error || "Erreur lors du changement" });
+        return;
+      }
+
+      setMessage({ type: "success", text: "Mot de passe modifié avec succès !" });
+      // Réinitialiser le formulaire
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch {
+      setMessage({ type: "error", text: "Erreur de connexion au serveur" });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="mt-8 rounded-xl bg-slate-900/80 border border-slate-800 p-6">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="h-10 w-10 rounded-xl bg-cyan-500/20 flex items-center justify-center">
+          <svg className="h-5 w-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </div>
+        <div>
+          <h2 className="text-lg font-semibold text-white">🔒 Modifier mon mot de passe</h2>
+          <p className="text-sm text-slate-400">Changez votre mot de passe de connexion</p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Mot de passe actuel */}
+        <div>
+          <label className="block text-sm font-medium text-slate-300 mb-1">
+            Mot de passe actuel *
+          </label>
+          <div className="relative">
+            <input
+              type={showPasswords ? "text" : "password"}
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              required
+              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none pr-10"
+              placeholder="Votre mot de passe actuel"
+            />
+          </div>
+        </div>
+
+        {/* Nouveau mot de passe */}
+        <div>
+          <label className="block text-sm font-medium text-slate-300 mb-1">
+            Nouveau mot de passe *
+          </label>
+          <input
+            type={showPasswords ? "text" : "password"}
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            required
+            minLength={8}
+            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+            placeholder="Minimum 8 caractères"
+          />
+          <p className="text-xs text-slate-500 mt-1">
+            Le mot de passe doit contenir au moins 8 caractères
+          </p>
+        </div>
+
+        {/* Confirmer le nouveau mot de passe */}
+        <div>
+          <label className="block text-sm font-medium text-slate-300 mb-1">
+            Confirmer le nouveau mot de passe *
+          </label>
+          <input
+            type={showPasswords ? "text" : "password"}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            minLength={8}
+            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+            placeholder="Retapez le nouveau mot de passe"
+          />
+        </div>
+
+        {/* Toggle afficher les mots de passe */}
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="showPasswords"
+            checked={showPasswords}
+            onChange={(e) => setShowPasswords(e.target.checked)}
+            className="h-4 w-4 rounded border-slate-700 bg-slate-800 text-cyan-500 focus:ring-cyan-500"
+          />
+          <label htmlFor="showPasswords" className="text-sm text-slate-400">
+            Afficher les mots de passe
+          </label>
+        </div>
+
+        {/* Messages */}
+        {message && (
+          <div className={`p-3 rounded-lg text-sm ${
+            message.type === "success"
+              ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"
+              : "bg-red-500/10 border border-red-500/20 text-red-400"
+          }`}>
+            {message.text}
+          </div>
+        )}
+
+        {/* Bouton */}
+        <button
+          type="submit"
+          disabled={loading || !currentPassword || !newPassword || !confirmPassword}
+          className="w-full sm:w-auto rounded-lg bg-cyan-500 px-6 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? (
+            <span className="flex items-center gap-2">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-slate-900/30 border-t-slate-900" />
+              Modification...
+            </span>
+          ) : (
+            "Modifier mon mot de passe"
+          )}
+        </button>
+      </form>
+    </div>
   );
 }
 
