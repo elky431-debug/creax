@@ -10,11 +10,13 @@ export const metadata = {
     "CREIX met en relation créateurs de contenu et graphistes/monteurs pour des collaborations simples et sécurisées.",
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/logo.png", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
     ],
-    apple: "/logo.png",
-    shortcut: "/logo.png",
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: "/favicon-32x32.png",
   },
   openGraph: {
     title: "CREIX - Plateforme créateurs & graphistes",
@@ -23,7 +25,7 @@ export const metadata = {
     siteName: "CREIX",
     images: [
       {
-        url: "/logo.png",
+        url: "https://creix.app/logo.png",
         width: 512,
         height: 512,
         alt: "CREIX Logo",
@@ -36,7 +38,7 @@ export const metadata = {
     card: "summary",
     title: "CREIX - Plateforme créateurs & graphistes",
     description: "CREIX met en relation créateurs de contenu et graphistes/monteurs pour des collaborations simples et sécurisées.",
-    images: ["/logo.png"],
+    images: ["https://creix.app/logo.png"],
   },
 };
 
