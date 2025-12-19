@@ -7,7 +7,37 @@ import { Header } from "@/components/layout/Header";
 export const metadata = {
   title: "CREIX - Plateforme créateurs & graphistes",
   description:
-    "CREIX met en relation créateurs de contenu et graphistes/monteurs pour des collaborations simples et sécurisées."
+    "CREIX met en relation créateurs de contenu et graphistes/monteurs pour des collaborations simples et sécurisées.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/logo.png", type: "image/png" },
+    ],
+    apple: "/logo.png",
+    shortcut: "/logo.png",
+  },
+  openGraph: {
+    title: "CREIX - Plateforme créateurs & graphistes",
+    description: "CREIX met en relation créateurs de contenu et graphistes/monteurs pour des collaborations simples et sécurisées.",
+    url: "https://creix.app",
+    siteName: "CREIX",
+    images: [
+      {
+        url: "/logo.png",
+        width: 512,
+        height: 512,
+        alt: "CREIX Logo",
+      },
+    ],
+    locale: "fr_FR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "CREIX - Plateforme créateurs & graphistes",
+    description: "CREIX met en relation créateurs de contenu et graphistes/monteurs pour des collaborations simples et sécurisées.",
+    images: ["/logo.png"],
+  },
 };
 
 export default function RootLayout({
