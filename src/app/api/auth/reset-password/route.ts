@@ -117,7 +117,7 @@ export async function POST(req: Request) {
     // Mettre à jour le mot de passe
     await prisma.user.update({
       where: { id: user.id },
-      data: { password: hashedPassword }
+      data: { hashedPassword: hashedPassword }
     });
 
     // Supprimer le token utilisé
