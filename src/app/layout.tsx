@@ -77,7 +77,7 @@ export default function RootLayout({
                     
                     {/* Facebook */}
                     <a
-                      href="https://www.facebook.com"
+                      href="https://www.facebook.com/profile.php?id=61584700048145"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="group flex items-center gap-2 rounded-full bg-[#1877F2] p-[1.5px] transition-all duration-150 hover:shadow-lg hover:shadow-blue-500/20"
