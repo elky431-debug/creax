@@ -383,6 +383,26 @@ function DangerZone({ hasSubscription }: { hasSubscription: boolean }) {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [cancelAtPeriodEnd, setCancelAtPeriodEnd] = useState(false);
+  const [periodEnd, setPeriodEnd] = useState<string | null>(null);
+
+  // Vérifier si l'abonnement est déjà en cours de résiliation
+  useEffect(() => {
+    async function checkCancellation() {
+      if (!hasSubscription) return;
+      try {
+        const res = await fetch("/api/subscription");
+        if (res.ok) {
+          const data = await res.json();
+          setCancelAtPeriodEnd(data.subscription?.cancelAtPeriodEnd || false);
+          setPeriodEnd(data.subscription?.currentPeriodEnd || null);
+        }
+      } catch {
+        // Ignorer
+      }
+    }
+    checkCancellation();
+  }, [hasSubscription]);
 
   async function handleCancelSubscription() {
     setCancelLoading(true);
@@ -440,17 +460,28 @@ function DangerZone({ hasSubscription }: { hasSubscription: boolean }) {
           {hasSubscription && (
             <div className="flex items-center justify-between p-4 rounded-lg bg-slate-900/50 border border-slate-800">
               <div>
-                <h3 className="text-sm font-medium text-white">Mettre fin à mon abonnement</h3>
+                <h3 className="text-sm font-medium text-white">
+                  {cancelAtPeriodEnd ? "Résiliation programmée" : "Résilier mon abonnement"}
+                </h3>
                 <p className="text-xs text-slate-500 mt-1">
-                  Votre abonnement restera actif jusqu'à la fin de la période en cours.
+                  {cancelAtPeriodEnd && periodEnd
+                    ? `Votre abonnement prendra fin le ${new Date(periodEnd).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}`
+                    : "Votre abonnement restera actif jusqu'à la fin de la période en cours."
+                  }
                 </p>
               </div>
-              <button
-                onClick={() => setShowCancelModal(true)}
-                className="rounded-lg border border-orange-500/30 bg-orange-500/10 px-4 py-2 text-sm font-semibold text-orange-400 transition hover:bg-orange-500/20"
-              >
-                Annuler l'abonnement
-              </button>
+              {cancelAtPeriodEnd ? (
+                <span className="rounded-lg bg-orange-500/20 px-4 py-2 text-sm font-semibold text-orange-400">
+                  ✓ Résiliation confirmée
+                </span>
+              ) : (
+                <button
+                  onClick={() => setShowCancelModal(true)}
+                  className="rounded-lg border border-orange-500/30 bg-orange-500/10 px-4 py-2 text-sm font-semibold text-orange-400 transition hover:bg-orange-500/20"
+                >
+                  Résilier
+                </button>
+              )}
             </div>
           )}
 
@@ -864,6 +895,7 @@ function SubscriptionSection({ hasSubscription }: { hasSubscription: boolean }) 
     status: string;
     currentPeriodEnd: string;
     isTrial: boolean;
+    cancelAtPeriodEnd?: boolean;
   } | null>(null);
 
   useEffect(() => {
@@ -906,17 +938,35 @@ function SubscriptionSection({ hasSubscription }: { hasSubscription: boolean }) 
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className={`h-3 w-3 rounded-full ${
+              subscription.cancelAtPeriodEnd ? "bg-orange-500" :
               subscription.status === "active" ? "bg-emerald-500" :
               subscription.status === "trialing" ? "bg-cyan-500" :
               "bg-yellow-500"
             }`} />
             <span className="text-sm text-white">
-              {subscription.status === "active" && "Abonnement actif"}
+              {subscription.cancelAtPeriodEnd && "Résiliation programmée"}
+              {!subscription.cancelAtPeriodEnd && subscription.status === "active" && "Abonnement actif"}
               {subscription.status === "trialing" && "Période d'essai"}
               {subscription.status === "past_due" && "Paiement en retard"}
-              {subscription.status === "canceled" && "Annulé"}
+              {subscription.status === "canceled" && !subscription.cancelAtPeriodEnd && "Annulé"}
             </span>
           </div>
+
+          {subscription.cancelAtPeriodEnd && (
+            <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-3">
+              <p className="text-sm text-orange-300">
+                Votre abonnement prendra fin le{" "}
+                <span className="font-medium text-white">
+                  {new Date(subscription.currentPeriodEnd).toLocaleDateString("fr-FR", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric"
+                  })}
+                </span>
+                . Vous conservez l'accès jusqu'à cette date.
+              </p>
+            </div>
+          )}
 
           {subscription.isTrial && (
             <p className="text-sm text-slate-400">
@@ -968,3 +1018,4 @@ function SubscriptionSection({ hasSubscription }: { hasSubscription: boolean }) 
     </div>
   );
 }
+

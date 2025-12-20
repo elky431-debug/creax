@@ -5,6 +5,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+import { stripe } from "@/lib/stripe";
+
 // GET - Récupérer le statut de l'abonnement
 export async function GET() {
   try {
@@ -33,13 +35,27 @@ export async function GET() {
       subscription &&
       (subscription.status === "active" || subscription.status === "trialing");
 
+    // Vérifier sur Stripe si l'abonnement est programmé pour être annulé
+    let cancelAtPeriodEnd = false;
+    if (subscription?.stripeSubscriptionId) {
+      try {
+        const stripeSubscription = await stripe.subscriptions.retrieve(
+          subscription.stripeSubscriptionId
+        );
+        cancelAtPeriodEnd = stripeSubscription.cancel_at_period_end;
+      } catch {
+        // Ignorer l'erreur si l'abonnement n'existe plus sur Stripe
+      }
+    }
+
     return NextResponse.json({
       hasSubscription: isActive,
       subscription: subscription
         ? {
             status: subscription.status,
             currentPeriodEnd: subscription.currentPeriodEnd,
-            isTrial: subscription.status === "trialing"
+            isTrial: subscription.status === "trialing",
+            cancelAtPeriodEnd
           }
         : null
     });
