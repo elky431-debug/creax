@@ -67,7 +67,7 @@ export async function POST(req: Request) {
             Authorization: `Bearer ${resendApiKey}`
           },
           body: JSON.stringify({
-            from: "CREIX <onboarding@resend.dev>",
+            from: "CREIX <noreply@creix.app>",
             to: normalizedEmail,
             subject: "Réinitialisation de votre mot de passe CREIX",
             html: `
