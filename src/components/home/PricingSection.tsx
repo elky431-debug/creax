@@ -93,27 +93,29 @@ function PricingCards({
         </div>
         
         {/* Cards */}
-        <div className={`grid gap-6 max-w-3xl mx-auto ${hasActiveSubscription ? 'sm:grid-cols-1 max-w-xl' : 'sm:grid-cols-2'}`}>
-          
-          {/* Si abonné, afficher la carte de son abonnement */}
-          {hasActiveSubscription && subscription ? (
-            <SubscriptionCard 
-              role={userRole!} 
-              subscription={subscription} 
-            />
-          ) : (
-            <>
-              {/* Créateurs - caché si l'utilisateur est un designer abonné */}
-              {(!userRole || userRole === "CREATOR") && (
-                <CreatorPricingCard />
-              )}
-              
-              {/* Designers - caché si l'utilisateur est un créateur abonné */}
-              {(!userRole || userRole === "DESIGNER") && (
-                <DesignerPricingCard />
-              )}
-            </>
-          )}
+        <div className="flex justify-center">
+          <div className={`grid gap-6 ${hasActiveSubscription || (userRole && !hasActiveSubscription) ? 'grid-cols-1 max-w-md' : 'sm:grid-cols-2 max-w-3xl'}`}>
+            
+            {/* Si abonné, afficher la carte de son abonnement */}
+            {hasActiveSubscription && subscription ? (
+              <SubscriptionCard 
+                role={userRole!} 
+                subscription={subscription} 
+              />
+            ) : (
+              <>
+                {/* Créateurs - caché si l'utilisateur est un designer */}
+                {(!userRole || userRole === "CREATOR") && (
+                  <CreatorPricingCard />
+                )}
+                
+                {/* Designers - caché si l'utilisateur est un créateur */}
+                {(!userRole || userRole === "DESIGNER") && (
+                  <DesignerPricingCard />
+                )}
+              </>
+            )}
+          </div>
         </div>
         
         {/* Bottom CTA */}
