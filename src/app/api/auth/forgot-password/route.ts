@@ -87,13 +87,24 @@ export async function POST(req: Request) {
                     Vous avez demandé à réinitialiser votre mot de passe. Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe.
                   </p>
                   
-                  <a href="${resetUrl}" style="display: block; width: 100%; padding: 16px; background: linear-gradient(135deg, #00D9FF 0%, #10B981 100%); color: #000; text-decoration: none; border-radius: 50px; font-weight: 600; text-align: center; font-size: 14px; box-sizing: border-box;">
-                    Réinitialiser mon mot de passe
-                  </a>
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto;">
+                    <tr>
+                      <td style="border-radius: 50px; background: linear-gradient(135deg, #00D9FF 0%, #10B981 100%);">
+                        <a href="${resetUrl}" target="_blank" style="display: inline-block; padding: 16px 32px; color: #000; text-decoration: none; font-weight: 600; font-size: 14px;">
+                          Réinitialiser mon mot de passe
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
                   
                   <p style="color: #666; font-size: 12px; margin: 24px 0 0; text-align: center;">
                     Ce lien expire dans 1 heure.<br>
                     Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.
+                  </p>
+                  
+                  <p style="color: #555; font-size: 11px; margin: 16px 0 0; text-align: center; word-break: break-all;">
+                    Si le bouton ne fonctionne pas, copiez ce lien :<br>
+                    <a href="${resetUrl}" style="color: #00D9FF;">${resetUrl}</a>
                   </p>
                 </div>
               </body>
