@@ -13,6 +13,40 @@ function LoginContent() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotSuccess, setForgotSuccess] = useState(false);
+
+  // Fonction pour envoyer le mail de réinitialisation
+  async function handleForgotPassword(e: React.MouseEvent) {
+    e.preventDefault();
+    
+    if (!email) {
+      setError("Entrez votre email d'abord");
+      return;
+    }
+
+    setForgotLoading(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+
+      if (res.ok) {
+        setForgotSuccess(true);
+      } else {
+        const data = await res.json();
+        setError(data.error || "Une erreur est survenue");
+      }
+    } catch {
+      setError("Erreur de connexion au serveur");
+    } finally {
+      setForgotLoading(false);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -55,6 +89,15 @@ function LoginContent() {
             </div>
           )}
 
+          {forgotSuccess && (
+            <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-4 text-center">
+              <p className="text-sm text-emerald-400 font-medium">✓ Email envoyé !</p>
+              <p className="text-xs text-emerald-400/70 mt-1">
+                Vérifiez votre boîte mail pour réinitialiser votre mot de passe.
+              </p>
+            </div>
+          )}
+
           <div>
             <label
               htmlFor="email"
@@ -81,12 +124,14 @@ function LoginContent() {
               >
                 Mot de passe
               </label>
-              <a 
-                href="/forgot-password" 
-                className="text-xs text-creix-blue/70 hover:text-creix-blue hover:underline"
+              <button 
+                type="button"
+                onClick={handleForgotPassword}
+                disabled={forgotLoading}
+                className="text-xs text-creix-blue/70 hover:text-creix-blue hover:underline disabled:opacity-50"
               >
-                Mot de passe oublié ?
-              </a>
+                {forgotLoading ? "Envoi..." : "Mot de passe oublié ?"}
+              </button>
             </div>
             <input
               id="password"

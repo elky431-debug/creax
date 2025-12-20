@@ -1,13 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
-export default function ForgotPasswordPage() {
+function ForgotPasswordContent() {
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+
+  // Pré-remplir l'email depuis l'URL
+  useEffect(() => {
+    const emailParam = searchParams.get("email");
+    if (emailParam) {
+      setEmail(emailParam);
+    }
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -118,5 +128,14 @@ export default function ForgotPasswordPage() {
   );
 }
 
-
-
+export default function ForgotPasswordPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-creix-black flex items-center justify-center">
+        <div className="animate-spin h-8 w-8 border-2 border-creix-cyan border-t-transparent rounded-full"></div>
+      </div>
+    }>
+      <ForgotPasswordContent />
+    </Suspense>
+  );
+}
