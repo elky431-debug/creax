@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type SubscriptionData = {
@@ -42,20 +43,24 @@ export default function PricingSection() {
     fetchSubscription();
   }, [session, status]);
 
+  const isLoggedIn = status === "authenticated";
+
   // Afficher le loader pendant le chargement
   if (status === "loading" || loading) {
-    return <PricingCards userRole={undefined} subscription={null} />;
+    return <PricingCards userRole={undefined} subscription={null} isLoggedIn={false} />;
   }
 
-  return <PricingCards userRole={userRole} subscription={subscription} />;
+  return <PricingCards userRole={userRole} subscription={subscription} isLoggedIn={isLoggedIn} />;
 }
 
 function PricingCards({ 
   userRole, 
-  subscription 
+  subscription,
+  isLoggedIn
 }: { 
   userRole: "CREATOR" | "DESIGNER" | undefined;
   subscription: SubscriptionData;
+  isLoggedIn: boolean;
 }) {
   const hasActiveSubscription = subscription && 
     (subscription.status === "active" || subscription.status === "trialing");
@@ -106,12 +111,12 @@ function PricingCards({
               <>
                 {/* Créateurs - caché si l'utilisateur est un designer */}
                 {(!userRole || userRole === "CREATOR") && (
-                  <CreatorPricingCard />
+                  <CreatorPricingCard isLoggedIn={isLoggedIn} />
                 )}
                 
                 {/* Designers - caché si l'utilisateur est un créateur */}
                 {(!userRole || userRole === "DESIGNER") && (
-                  <DesignerPricingCard />
+                  <DesignerPricingCard isLoggedIn={isLoggedIn} />
                 )}
               </>
             )}
@@ -248,7 +253,34 @@ function SubscriptionCard({
 }
 
 // Carte pricing Créateurs
-function CreatorPricingCard() {
+function CreatorPricingCard({ isLoggedIn }: { isLoggedIn?: boolean }) {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubscribe() {
+    if (!isLoggedIn) {
+      router.push("/signup?role=CREATOR");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/billing/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: "creator" })
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch {
+      // Silently fail
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="group relative rounded-3xl overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/50 via-cyan-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
@@ -277,7 +309,7 @@ function CreatorPricingCard() {
         </div>
         
         <ul className="space-y-3 mb-8">
-          {["Accès illimité aux talents", "Messagerie directe", "Paiements sécurisés"].map((f, i) => (
+          {["Accès illimité aux talents", "Messagerie directe", "Paiements sécurisés via Stripe"].map((f, i) => (
             <li key={i} className="flex items-center gap-3 text-sm text-white/60">
               <svg className="w-5 h-5 text-cyan-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -287,16 +319,47 @@ function CreatorPricingCard() {
           ))}
         </ul>
         
-        <a href="/pricing" className="block w-full text-center py-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-white font-semibold hover:bg-white/[0.06] hover:border-white/20 transition-all">
-          Commencer
-        </a>
+        <button 
+          onClick={handleSubscribe}
+          disabled={loading}
+          className="block w-full text-center py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 text-black font-semibold hover:opacity-90 transition-all disabled:opacity-50"
+        >
+          {loading ? "Chargement..." : "S'abonner maintenant"}
+        </button>
       </div>
     </div>
   );
 }
 
 // Carte pricing Designers
-function DesignerPricingCard() {
+function DesignerPricingCard({ isLoggedIn }: { isLoggedIn?: boolean }) {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubscribe() {
+    if (!isLoggedIn) {
+      router.push("/signup?role=DESIGNER");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/billing/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: "designer" })
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch {
+      // Silently fail
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="group relative rounded-3xl overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/50 via-emerald-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
@@ -325,7 +388,7 @@ function DesignerPricingCard() {
         </div>
         
         <ul className="space-y-3 mb-8">
-          {["Visibilité maximale", "Portfolio intégré", "Demandes qualifiées"].map((f, i) => (
+          {["Visibilité maximale", "Portfolio intégré", "Paiements sécurisés via Stripe"].map((f, i) => (
             <li key={i} className="flex items-center gap-3 text-sm text-white/60">
               <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -335,9 +398,13 @@ function DesignerPricingCard() {
           ))}
         </ul>
         
-        <a href="/pricing" className="block w-full text-center py-3.5 rounded-xl bg-white/[0.03] border border-white/10 text-white font-semibold hover:bg-white/[0.06] hover:border-white/20 transition-all">
-          Commencer
-        </a>
+        <button 
+          onClick={handleSubscribe}
+          disabled={loading}
+          className="block w-full text-center py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 text-black font-semibold hover:opacity-90 transition-all disabled:opacity-50"
+        >
+          {loading ? "Chargement..." : "S'abonner maintenant"}
+        </button>
       </div>
     </div>
   );
