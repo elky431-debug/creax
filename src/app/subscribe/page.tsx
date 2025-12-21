@@ -19,36 +19,12 @@ function SubscribeContent() {
     }
   }, [searchParams]);
 
-  // Vérifier l'abonnement en temps réel et rediriger si abonné
+  // Rediriger tous les utilisateurs connectés vers le dashboard
   useEffect(() => {
-    async function checkSubscription() {
-      if (status !== "authenticated") return;
-      
-      try {
-        // Utiliser l'API principale qui vérifie en base de données
-        const res = await fetch("/api/subscription");
-        if (res.ok) {
-          const data = await res.json();
-          console.log("Vérification abonnement:", data);
-          if (data.hasSubscription) {
-            // Forcer la redirection vers le dashboard
-            console.log("Abonnement actif trouvé, redirection...");
-            window.location.replace("/dashboard");
-            return;
-          }
-        }
-      } catch (err) {
-        console.error("Erreur vérification:", err);
-      }
+    if (status === "authenticated") {
+      window.location.replace("/dashboard");
     }
-    
-    // Vérifier immédiatement
-    checkSubscription();
-    
-    // Vérifier toutes les 2 secondes au cas où le webhook arrive
-    const interval = setInterval(checkSubscription, 2000);
-    return () => clearInterval(interval);
-  }, [session, status]);
+  }, [status]);
 
   // Rediriger vers login si non connecté
   useEffect(() => {

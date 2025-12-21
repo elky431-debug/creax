@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 interface SubscriptionGuardProps {
   children: React.ReactNode;
@@ -12,44 +12,14 @@ interface SubscriptionGuardProps {
 export default function SubscriptionGuard({ children, allowedRoles }: SubscriptionGuardProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [hasSubscription, setHasSubscription] = useState<boolean | null>(null);
-  const [checking, setChecking] = useState(true);
-
-  // Vérifier l'abonnement en temps réel
+  // Vérifier l'authentification et le rôle (pas l'abonnement pour l'instant)
   useEffect(() => {
-    async function checkSubscription() {
-      if (status !== "authenticated") {
-        setChecking(false);
-        return;
-      }
-
-      try {
-        const res = await fetch("/api/subscription");
-        if (res.ok) {
-          const data = await res.json();
-          setHasSubscription(data.hasSubscription);
-          
-          if (!data.hasSubscription) {
-            router.push("/subscribe");
-            return;
-          }
-        }
-      } catch {
-        // Fallback sur le token
-        setHasSubscription(session?.user?.hasActiveSubscription || false);
-      } finally {
-        setChecking(false);
-      }
-    }
-
     if (status === "loading") return;
 
     if (status === "unauthenticated") {
       router.push("/login");
       return;
     }
-
-    checkSubscription();
 
     // Si des rôles sont spécifiés, vérifier que l'utilisateur a le bon rôle
     if (allowedRoles && allowedRoles.length > 0) {
@@ -61,26 +31,12 @@ export default function SubscriptionGuard({ children, allowedRoles }: Subscripti
   }, [session, status, router, allowedRoles]);
 
   // Afficher un loader pendant la vérification
-  if (status === "loading" || checking) {
+  if (status === "loading") {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="relative">
           <div className="w-16 h-16 border-4 border-cyan-500/30 rounded-full animate-spin border-t-cyan-500"></div>
           <div className="absolute inset-0 w-16 h-16 border-4 border-transparent rounded-full animate-spin border-b-purple-500" style={{ animationDirection: "reverse", animationDuration: "1.5s" }}></div>
-        </div>
-      </div>
-    );
-  }
-
-  // Si pas d'abonnement, ne rien afficher (redirection en cours)
-  if (hasSubscription === false) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-center">
-          <div className="relative mb-4">
-            <div className="w-16 h-16 border-4 border-cyan-500/30 rounded-full animate-spin border-t-cyan-500 mx-auto"></div>
-          </div>
-          <p className="text-white/60">Redirection vers abonnement...</p>
         </div>
       </div>
     );
