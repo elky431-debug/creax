@@ -19,12 +19,34 @@ function SubscribeContent() {
     }
   }, [searchParams]);
 
-  // Rediriger si déjà abonné
+  // Vérifier l'abonnement en temps réel et rediriger si abonné
   useEffect(() => {
-    if (status === "authenticated" && session?.user?.hasActiveSubscription) {
-      router.push("/dashboard");
+    async function checkSubscription() {
+      if (status !== "authenticated") return;
+      
+      try {
+        const res = await fetch("/api/subscription/check?userId=" + session?.user?.id);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.hasActiveSubscription) {
+            // Forcer la redirection vers le dashboard
+            window.location.href = "/dashboard";
+          }
+        }
+      } catch {
+        // Fallback sur le token
+        if (session?.user?.hasActiveSubscription) {
+          window.location.href = "/dashboard";
+        }
+      }
     }
-  }, [session, status, router]);
+    
+    checkSubscription();
+    
+    // Vérifier toutes les 3 secondes au cas où le webhook arrive
+    const interval = setInterval(checkSubscription, 3000);
+    return () => clearInterval(interval);
+  }, [session, status]);
 
   // Rediriger vers login si non connecté
   useEffect(() => {
