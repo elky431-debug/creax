@@ -11,7 +11,8 @@ const PUBLIC_PAGES = [
   "/reset-password",
   "/api/auth",
   "/api/billing",
-  "/api/stripe/webhook"
+  "/api/stripe/webhook",
+  "/api/subscription"
 ];
 
 // Pages accessibles connecté SANS abonnement actif
@@ -19,33 +20,54 @@ const NO_SUBSCRIPTION_PAGES = [
   "/subscribe",
   "/subscribe/success",
   "/api/billing",
-  "/api/auth"
+  "/api/auth",
+  "/api/subscription"
 ];
 
 export default withAuth(
-  function middleware(req) {
+  async function middleware(req) {
     const { pathname } = req.nextUrl;
     const token = req.nextauth.token;
 
-    // Si l'utilisateur est connecté mais n'a pas d'abonnement actif
-    if (token && !token.hasActiveSubscription) {
-      // Vérifier si la page est accessible sans abonnement
-      const canAccessWithoutSub = NO_SUBSCRIPTION_PAGES.some(page =>
-        pathname === page || pathname.startsWith(page + "/")
-      );
+    // Vérifier si la page nécessite un abonnement
+    const canAccessWithoutSub = NO_SUBSCRIPTION_PAGES.some(page =>
+      pathname === page || pathname.startsWith(page + "/")
+    );
 
-      // Si la page nécessite un abonnement, rediriger vers /subscribe
-      if (!canAccessWithoutSub) {
-        const url = req.nextUrl.clone();
-        url.pathname = "/subscribe";
-        return NextResponse.redirect(url);
-      }
+    // Si on peut accéder sans abonnement, laisser passer
+    if (canAccessWithoutSub) {
+      return NextResponse.next();
     }
 
-    // Si l'utilisateur a un abonnement actif et essaie d'accéder à /subscribe
-    if (token?.hasActiveSubscription && pathname === "/subscribe") {
+    // Pour les pages protégées, vérifier l'abonnement en temps réel via API
+    if (token?.id) {
+      try {
+        // Appel API interne pour vérifier l'abonnement en temps réel
+        const baseUrl = req.nextUrl.origin;
+        const res = await fetch(`${baseUrl}/api/subscription/check?userId=${token.id}`, {
+          headers: {
+            "x-middleware-check": "true"
+          }
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          
+          // Si abonnement actif, laisser passer
+          if (data.hasActiveSubscription) {
+            return NextResponse.next();
+          }
+        }
+      } catch {
+        // En cas d'erreur, utiliser le token comme fallback
+        if (token.hasActiveSubscription) {
+          return NextResponse.next();
+        }
+      }
+      
+      // Pas d'abonnement actif, rediriger vers /subscribe
       const url = req.nextUrl.clone();
-      url.pathname = "/dashboard";
+      url.pathname = "/subscribe";
       return NextResponse.redirect(url);
     }
 
@@ -64,7 +86,7 @@ export default withAuth(
         if (isPublic) return true;
 
         // Page /subscribe accessible si connecté (même sans abonnement)
-        if (pathname === "/subscribe") {
+        if (pathname === "/subscribe" || pathname.startsWith("/subscribe/")) {
           return !!token;
         }
 
