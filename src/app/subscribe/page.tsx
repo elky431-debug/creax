@@ -83,6 +83,7 @@ function SubscribeContent() {
 
   const isCreator = session.user?.role === "CREATOR";
   const planName = isCreator ? "Créateur" : "Graphiste / Monteur";
+  const planPrice = isCreator ? "4,99" : "9,99";
   const planDescription = isCreator
     ? "Publiez vos missions et trouvez les meilleurs talents pour vos projets créatifs."
     : "Accédez aux missions des créateurs et développez votre activité freelance.";
@@ -115,7 +116,7 @@ function SubscribeContent() {
 
             {/* Prix */}
             <div className="mb-4">
-              <span className="text-4xl font-bold text-white">9,99€</span>
+              <span className="text-4xl font-bold text-white">{planPrice}€</span>
               <span className="text-gray-400">/mois</span>
             </div>
 
