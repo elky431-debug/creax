@@ -17,6 +17,7 @@ const PUBLIC_PAGES = [
 // Pages accessibles connecté SANS abonnement actif
 const NO_SUBSCRIPTION_PAGES = [
   "/subscribe",
+  "/subscribe/success",
   "/api/billing",
   "/api/auth"
 ];

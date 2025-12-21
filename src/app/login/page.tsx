@@ -8,6 +8,7 @@ function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const billingSuccess = searchParams.get("billing") === "success";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -88,6 +89,15 @@ function LoginContent() {
           {error && (
             <div className="rounded-lg bg-red-500/10 p-3 text-center text-sm text-red-400">
               {error}
+            </div>
+          )}
+
+          {billingSuccess && (
+            <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-4 text-center">
+              <p className="text-sm text-emerald-400 font-medium">🎉 Abonnement activé avec succès !</p>
+              <p className="text-xs text-emerald-400/70 mt-1">
+                Connectez-vous pour accéder à toutes les fonctionnalités.
+              </p>
             </div>
           )}
 
