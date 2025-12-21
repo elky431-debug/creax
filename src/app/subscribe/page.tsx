@@ -25,26 +25,28 @@ function SubscribeContent() {
       if (status !== "authenticated") return;
       
       try {
-        const res = await fetch("/api/subscription/check?userId=" + session?.user?.id);
+        // Utiliser l'API principale qui vérifie en base de données
+        const res = await fetch("/api/subscription");
         if (res.ok) {
           const data = await res.json();
-          if (data.hasActiveSubscription) {
+          console.log("Vérification abonnement:", data);
+          if (data.hasSubscription) {
             // Forcer la redirection vers le dashboard
-            window.location.href = "/dashboard";
+            console.log("Abonnement actif trouvé, redirection...");
+            window.location.replace("/dashboard");
+            return;
           }
         }
-      } catch {
-        // Fallback sur le token
-        if (session?.user?.hasActiveSubscription) {
-          window.location.href = "/dashboard";
-        }
+      } catch (err) {
+        console.error("Erreur vérification:", err);
       }
     }
     
+    // Vérifier immédiatement
     checkSubscription();
     
-    // Vérifier toutes les 3 secondes au cas où le webhook arrive
-    const interval = setInterval(checkSubscription, 3000);
+    // Vérifier toutes les 2 secondes au cas où le webhook arrive
+    const interval = setInterval(checkSubscription, 2000);
     return () => clearInterval(interval);
   }, [session, status]);
 

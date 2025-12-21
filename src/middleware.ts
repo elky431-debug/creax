@@ -25,7 +25,7 @@ const NO_SUBSCRIPTION_PAGES = [
 ];
 
 export default withAuth(
-  async function middleware(req) {
+  function middleware(req) {
     const { pathname } = req.nextUrl;
     const token = req.nextauth.token;
 
@@ -39,38 +39,8 @@ export default withAuth(
       return NextResponse.next();
     }
 
-    // Pour les pages protégées, vérifier l'abonnement en temps réel via API
-    if (token?.id) {
-      try {
-        // Appel API interne pour vérifier l'abonnement en temps réel
-        const baseUrl = req.nextUrl.origin;
-        const res = await fetch(`${baseUrl}/api/subscription/check?userId=${token.id}`, {
-          headers: {
-            "x-middleware-check": "true"
-          }
-        });
-        
-        if (res.ok) {
-          const data = await res.json();
-          
-          // Si abonnement actif, laisser passer
-          if (data.hasActiveSubscription) {
-            return NextResponse.next();
-          }
-        }
-      } catch {
-        // En cas d'erreur, utiliser le token comme fallback
-        if (token.hasActiveSubscription) {
-          return NextResponse.next();
-        }
-      }
-      
-      // Pas d'abonnement actif, rediriger vers /subscribe
-      const url = req.nextUrl.clone();
-      url.pathname = "/subscribe";
-      return NextResponse.redirect(url);
-    }
-
+    // La vérification d'abonnement se fait côté page, pas dans le middleware
+    // Le middleware vérifie seulement l'authentification
     return NextResponse.next();
   },
   {
