@@ -56,10 +56,13 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Déterminer si l'utilisateur a un abonnement actif
+        // On vérifie le statut ET que la période n'est pas expirée
         const subscription = user.subscriptions[0];
+        const now = new Date();
         const hasActiveSub =
           subscription &&
-          (subscription.status === "active" || subscription.status === "trialing");
+          (subscription.status === "active" || subscription.status === "trialing") &&
+          new Date(subscription.currentPeriodEnd) > now;
 
         return {
           id: user.id,
