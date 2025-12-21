@@ -11,11 +11,15 @@ function ForgotPasswordContent() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
-  // Pré-remplir l'email depuis l'URL
+  // Pré-remplir l'email depuis l'URL et vérifier si envoyé
   useEffect(() => {
     const emailParam = searchParams.get("email");
+    const sentParam = searchParams.get("sent");
     if (emailParam) {
       setEmail(emailParam);
+    }
+    if (sentParam === "true") {
+      setSuccess(true);
     }
   }, [searchParams]);
 

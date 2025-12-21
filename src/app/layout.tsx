@@ -21,7 +21,7 @@ export const metadata = {
   openGraph: {
     title: "CREIX - Plateforme créateurs & graphistes",
     description: "CREIX met en relation créateurs de contenu et graphistes/monteurs pour des collaborations simples et sécurisées.",
-    url: "https://creix.app",
+    url: "https://ccreix.app",
     siteName: "CREIX",
     images: [
       {

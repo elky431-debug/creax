@@ -7,6 +7,8 @@ const PUBLIC_PAGES = [
   "/login",
   "/signup",
   "/pricing",
+  "/forgot-password",
+  "/reset-password",
   "/api/auth",
   "/api/billing",
   "/api/stripe/webhook"

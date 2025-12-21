@@ -37,6 +37,8 @@ function LoginContent() {
 
       if (res.ok) {
         setForgotSuccess(true);
+        // Rediriger vers la page forgot-password pour afficher le message
+        window.location.href = `/forgot-password?email=${encodeURIComponent(email)}&sent=true`;
       } else {
         const data = await res.json();
         setError(data.error || "Une erreur est survenue");
