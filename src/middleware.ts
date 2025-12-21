@@ -1,7 +1,7 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
-// Pages accessibles sans abonnement
+// Pages accessibles sans authentification
 const PUBLIC_PAGES = [
   "/",
   "/login",
@@ -14,13 +14,39 @@ const PUBLIC_PAGES = [
   "/api/stripe/webhook"
 ];
 
-// Pages accessibles sans authentification
-const AUTH_PAGES = ["/login", "/signup"];
+// Pages accessibles connecté SANS abonnement actif
+const NO_SUBSCRIPTION_PAGES = [
+  "/subscribe",
+  "/api/billing",
+  "/api/auth"
+];
 
 export default withAuth(
   function middleware(req) {
     const { pathname } = req.nextUrl;
     const token = req.nextauth.token;
+
+    // Si l'utilisateur est connecté mais n'a pas d'abonnement actif
+    if (token && !token.hasActiveSubscription) {
+      // Vérifier si la page est accessible sans abonnement
+      const canAccessWithoutSub = NO_SUBSCRIPTION_PAGES.some(page =>
+        pathname === page || pathname.startsWith(page + "/")
+      );
+
+      // Si la page nécessite un abonnement, rediriger vers /subscribe
+      if (!canAccessWithoutSub) {
+        const url = req.nextUrl.clone();
+        url.pathname = "/subscribe";
+        return NextResponse.redirect(url);
+      }
+    }
+
+    // Si l'utilisateur a un abonnement actif et essaie d'accéder à /subscribe
+    if (token?.hasActiveSubscription && pathname === "/subscribe") {
+      const url = req.nextUrl.clone();
+      url.pathname = "/dashboard";
+      return NextResponse.redirect(url);
+    }
 
     return NextResponse.next();
   },
@@ -35,6 +61,11 @@ export default withAuth(
         );
         
         if (isPublic) return true;
+
+        // Page /subscribe accessible si connecté (même sans abonnement)
+        if (pathname === "/subscribe") {
+          return !!token;
+        }
 
         // Les fichiers statiques sont toujours accessibles
         if (pathname.startsWith("/_next") || pathname.includes(".")) {

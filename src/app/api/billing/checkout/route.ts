@@ -77,7 +77,13 @@ export async function POST(req: Request) {
         }
       ],
       success_url: `${process.env.NEXTAUTH_URL}/dashboard?billing=success`,
-      cancel_url: `${process.env.NEXTAUTH_URL}/pricing?billing=cancelled`,
+      cancel_url: `${process.env.NEXTAUTH_URL}/subscribe?billing=cancelled`,
+      subscription_data: {
+        metadata: {
+          userId: user.id,
+          plan
+        }
+      },
       metadata: {
         userId: user.id,
         plan
