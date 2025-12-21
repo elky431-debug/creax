@@ -171,9 +171,9 @@ function SubscribeContent() {
             <button
               onClick={handleSubscribe}
               disabled={loading}
-              className="group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-creix-cyan via-cyan-400 to-creix-cyan p-[1px] transition-all duration-300 hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] disabled:opacity-50"
+              className="group w-full rounded-xl bg-gradient-to-r from-cyan-500 via-cyan-400 to-cyan-500 px-6 py-4 font-semibold text-black transition-all duration-300 hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
             >
-              <div className="relative flex items-center justify-center gap-2 rounded-[11px] bg-gradient-to-r from-creix-cyan via-cyan-400 to-creix-cyan px-6 py-4 font-semibold text-black transition-all">
+              <div className="flex items-center justify-center gap-2">
                 {loading ? (
                   <>
                     <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
