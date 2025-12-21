@@ -136,6 +136,19 @@ export function Header() {
 
           {isLoggedIn ? (
             <>
+              {/* Bouton S'abonner si pas d'abonnement actif */}
+              {!session?.user?.hasActiveSubscription && (
+                <Link
+                  href="/subscribe"
+                  className="relative flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm font-semibold text-black bg-gradient-to-r from-amber-400 to-amber-500 rounded-full shadow-lg shadow-amber-500/20 transition-all duration-200 hover:shadow-amber-500/40 hover:scale-[1.02]"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  <span>S&apos;abonner</span>
+                </Link>
+              )}
+
               {/* Menu Missions & Propositions */}
               <div className="relative" ref={missionsMenuRef}>
                 <button
@@ -362,6 +375,20 @@ export function Header() {
             <div className="absolute top-full left-0 right-0 mt-2 mx-4 origin-top animate-slide-in-from-top-2 rounded-2xl border border-creix-blue/20 bg-creix-black/95 p-2 shadow-xl shadow-black/40 backdrop-blur-xl">
               {isLoggedIn ? (
                 <>
+                  {/* Bouton S'abonner si pas d'abonnement actif (mobile) */}
+                  {!session?.user?.hasActiveSubscription && (
+                    <Link
+                      href="/subscribe"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 px-4 py-3 mb-2 text-sm font-semibold text-black shadow-lg shadow-amber-500/20"
+                    >
+                      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                      Activer mon abonnement
+                    </Link>
+                  )}
+
                   {/* User profile header */}
                   <div className="flex items-center gap-3 px-3 py-3 mb-2 rounded-xl bg-creix-blue/5">
                     {profile?.avatarUrl ? (
