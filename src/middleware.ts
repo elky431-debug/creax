@@ -128,8 +128,9 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public folder
+     * - api (API routes) -> évite de rajouter une latence sur chaque action
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\..*|uploads).*)"
+    "/((?!_next/static|_next/image|favicon.ico|.*\\..*|uploads|api).*)"
   ]
 };
 
