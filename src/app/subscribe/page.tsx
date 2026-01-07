@@ -231,6 +231,33 @@ function SubscribeContent() {
             <p className="mt-4 text-xs text-gray-500">
               Paiement sécurisé par Stripe. Résiliable à tout moment.
             </p>
+
+            {/* Conseils (sans inquiéter l'utilisateur) */}
+            <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-4 text-left">
+              <p className="text-xs font-semibold text-white/80 mb-2">
+                À savoir
+              </p>
+              <ul className="space-y-2 text-xs text-gray-400">
+                <li className="flex gap-2">
+                  <span className="text-cyan-400">•</span>
+                  <span>
+                    Pour une activation immédiate, effectuez le paiement depuis ce bouton et avec le même email que votre compte CREIX.
+                  </span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="text-cyan-400">•</span>
+                  <span>
+                    Une fois le paiement validé, vous serez redirigé automatiquement vers votre dashboard.
+                  </span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="text-cyan-400">•</span>
+                  <span>
+                    Si l’accès ne s’active pas immédiatement, rafraîchissez la page ou reconnectez-vous : l’activation peut prendre quelques secondes.
+                  </span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
