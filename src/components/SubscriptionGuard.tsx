@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface SubscriptionGuardProps {
   children: React.ReactNode;
@@ -12,7 +12,10 @@ interface SubscriptionGuardProps {
 export default function SubscriptionGuard({ children, allowedRoles }: SubscriptionGuardProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
-  // Vérifier l'authentification et le rôle (pas l'abonnement pour l'instant)
+  const [checking, setChecking] = useState(true);
+  const [hasSubscription, setHasSubscription] = useState<boolean | null>(null);
+
+  // Vérifier auth + abonnement (DB) + rôle
   useEffect(() => {
     if (status === "loading") return;
 
@@ -21,6 +24,48 @@ export default function SubscriptionGuard({ children, allowedRoles }: Subscripti
       return;
     }
 
+    let cancelled = false;
+
+    async function checkSubscription() {
+      setChecking(true);
+      try {
+        const res = await fetch("/api/subscription/check", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          const active = data?.hasActiveSubscription === true;
+          if (!cancelled) {
+            setHasSubscription(active);
+          }
+          if (!active) {
+            router.push("/subscribe");
+            return;
+          }
+        } else {
+          const fallback = session?.user?.hasActiveSubscription === true;
+          if (!cancelled) {
+            setHasSubscription(fallback);
+          }
+          if (!fallback) {
+            router.push("/subscribe");
+            return;
+          }
+        }
+      } catch {
+        const fallback = session?.user?.hasActiveSubscription === true;
+        if (!cancelled) {
+          setHasSubscription(fallback);
+        }
+        if (!fallback) {
+          router.push("/subscribe");
+          return;
+        }
+      } finally {
+        if (!cancelled) setChecking(false);
+      }
+    }
+
+    checkSubscription();
+
     // Si des rôles sont spécifiés, vérifier que l'utilisateur a le bon rôle
     if (allowedRoles && allowedRoles.length > 0) {
       const userRole = session?.user?.role as "CREATOR" | "DESIGNER" | undefined;
@@ -28,10 +73,13 @@ export default function SubscriptionGuard({ children, allowedRoles }: Subscripti
         router.push("/dashboard");
       }
     }
+    return () => {
+      cancelled = true;
+    };
   }, [session, status, router, allowedRoles]);
 
   // Afficher un loader pendant la vérification
-  if (status === "loading") {
+  if (status === "loading" || checking) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="relative">
@@ -51,6 +99,20 @@ export default function SubscriptionGuard({ children, allowedRoles }: Subscripti
             <div className="w-16 h-16 border-4 border-cyan-500/30 rounded-full animate-spin border-t-cyan-500 mx-auto"></div>
           </div>
           <p className="text-white/60">Redirection en cours...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Si pas d'abonnement, ne rien afficher (redirection en cours)
+  if (hasSubscription === false) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="relative mb-4">
+            <div className="w-16 h-16 border-4 border-cyan-500/30 rounded-full animate-spin border-t-cyan-500 mx-auto"></div>
+          </div>
+          <p className="text-white/60">Redirection vers abonnement...</p>
         </div>
       </div>
     );

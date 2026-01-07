@@ -1,23 +1,26 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 // Cette route vérifie l'abonnement en temps réel (appelée par le middleware)
 export async function GET(req: Request) {
   try {
-    const { searchParams } = new URL(req.url);
-    const userId = searchParams.get("userId");
-
     // Vérifier que c'est un appel du middleware
     const isMiddlewareCheck = req.headers.get("x-middleware-check") === "true";
-    
-    if (!userId) {
-      return NextResponse.json({ hasActiveSubscription: false });
+
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { hasActiveSubscription: false },
+        { status: 401 }
+      );
     }
 
     // Chercher l'abonnement actif de l'utilisateur
     const subscription = await prisma.subscription.findFirst({
       where: {
-        userId,
+        userId: session.user.id,
         status: { in: ["active", "trialing"] },
         currentPeriodEnd: { gt: new Date() }
       },

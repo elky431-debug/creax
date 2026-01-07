@@ -31,9 +31,11 @@ export async function GET() {
     }
 
     const subscription = user.subscriptions[0];
+    const now = new Date();
     const isActive =
-      subscription &&
-      (subscription.status === "active" || subscription.status === "trialing");
+      !!subscription &&
+      (subscription.status === "active" || subscription.status === "trialing") &&
+      new Date(subscription.currentPeriodEnd) > now;
 
     // Vérifier sur Stripe si l'abonnement est programmé pour être annulé
     let cancelAtPeriodEnd = false;

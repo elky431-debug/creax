@@ -25,22 +25,70 @@ const NO_SUBSCRIPTION_PAGES = [
 ];
 
 export default withAuth(
-  function middleware(req) {
+  async function middleware(req) {
     const { pathname } = req.nextUrl;
     const token = req.nextauth.token;
+
+    // Fichiers statiques toujours accessibles
+    if (pathname.startsWith("/_next") || pathname.includes(".")) {
+      return NextResponse.next();
+    }
 
     // Vérifier si la page nécessite un abonnement
     const canAccessWithoutSub = NO_SUBSCRIPTION_PAGES.some(page =>
       pathname === page || pathname.startsWith(page + "/")
     );
 
-    // Si on peut accéder sans abonnement, laisser passer
+    // Si pas connecté, on laisse withAuth gérer la redirection (authorized=false)
+    if (!token) {
+      return NextResponse.next();
+    }
+
+    // Vérifier l'abonnement en DB (source de vérité).
+    // Fallback: utiliser le token si le check échoue (évite de bloquer un utilisateur déjà abonné).
+    let hasActiveSubscription = (token as { hasActiveSubscription?: boolean })?.hasActiveSubscription === true;
+
+    try {
+      const checkUrl = new URL("/api/subscription/check", req.nextUrl.origin);
+      const res = await fetch(checkUrl, {
+        method: "GET",
+        headers: {
+          cookie: req.headers.get("cookie") ?? "",
+          "x-middleware-check": "true"
+        },
+        cache: "no-store"
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        hasActiveSubscription = data?.hasActiveSubscription === true;
+      }
+    } catch {
+      // ignore - fallback token
+    }
+
+    // Accès à /subscribe:
+    // - si déjà abonné => on ne veut plus voir la paywall
+    // - sinon => laisser la page s'afficher
+    if (pathname === "/subscribe" || pathname.startsWith("/subscribe/")) {
+      if (hasActiveSubscription) {
+        return NextResponse.redirect(new URL("/dashboard", req.url));
+      }
+      return NextResponse.next();
+    }
+
+    // Si on peut accéder sans abonnement (API auth/billing/subscription), laisser passer
     if (canAccessWithoutSub) {
       return NextResponse.next();
     }
 
-    // La vérification d'abonnement se fait côté page, pas dans le middleware
-    // Le middleware vérifie seulement l'authentification
+    // Sinon, pages privées => abonnement requis
+    if (!hasActiveSubscription) {
+      const subscribeUrl = new URL("/subscribe", req.url);
+      subscribeUrl.searchParams.set("from", "paywall");
+      return NextResponse.redirect(subscribeUrl);
+    }
+
     return NextResponse.next();
   },
   {

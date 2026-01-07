@@ -11,6 +11,8 @@ function SubscribeContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [cancelled, setCancelled] = useState(false);
+  const [checkingSubscription, setCheckingSubscription] = useState(true);
+  const [hasActiveSubscription, setHasActiveSubscription] = useState<boolean | null>(null);
 
   // Vérifier si paiement annulé
   useEffect(() => {
@@ -19,19 +21,52 @@ function SubscribeContent() {
     }
   }, [searchParams]);
 
-  // Rediriger tous les utilisateurs connectés vers le dashboard
-  useEffect(() => {
-    if (status === "authenticated") {
-      window.location.replace("/dashboard");
-    }
-  }, [status]);
-
   // Rediriger vers login si non connecté
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/login");
+      router.push("/login?callbackUrl=/subscribe");
     }
   }, [status, router]);
+
+  // Vérifier l'abonnement (DB) et rediriger vers /dashboard si déjà actif
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    let cancelledRequest = false;
+
+    async function check() {
+      setCheckingSubscription(true);
+      try {
+        const res = await fetch("/api/subscription/check", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          const active = data?.hasActiveSubscription === true;
+          if (!cancelledRequest) {
+            setHasActiveSubscription(active);
+          }
+          if (active) {
+            window.location.replace("/dashboard");
+            return;
+          }
+        } else {
+          // Fallback token (peut être stale mais mieux que bloquer l'UI)
+          if (!cancelledRequest) {
+            setHasActiveSubscription(session?.user?.hasActiveSubscription ?? false);
+          }
+        }
+      } catch {
+        if (!cancelledRequest) {
+          setHasActiveSubscription(session?.user?.hasActiveSubscription ?? false);
+        }
+      } finally {
+        if (!cancelledRequest) setCheckingSubscription(false);
+      }
+    }
+
+    check();
+    return () => {
+      cancelledRequest = true;
+    };
+  }, [status, session]);
 
   async function handleSubscribe() {
     if (!session?.user?.role) return;
@@ -68,7 +103,7 @@ function SubscribeContent() {
   }
 
   // Loading state
-  if (status === "loading") {
+  if (status === "loading" || (status === "authenticated" && checkingSubscription)) {
     return (
       <div className="min-h-screen bg-creix-black flex items-center justify-center">
         <div className="animate-spin h-8 w-8 border-2 border-creix-cyan border-t-transparent rounded-full"></div>
@@ -77,7 +112,7 @@ function SubscribeContent() {
   }
 
   // Si pas de session ou déjà abonné, ne rien afficher (redirection en cours)
-  if (!session || session.user?.hasActiveSubscription) {
+  if (!session || hasActiveSubscription === true) {
     return null;
   }
 

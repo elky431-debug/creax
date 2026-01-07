@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 function SignupContent() {
   const router = useRouter();
@@ -48,10 +49,18 @@ function SignupContent() {
         setError(data.error || "Une erreur est survenue");
       } else {
         setSuccess(true);
-        // Redirection vers login avec indication de connexion pour abonnement
-        setTimeout(() => {
-          router.push("/login?from=signup");
-        }, 2000);
+        // Se connecter automatiquement puis aller sur /subscribe (paywall)
+        const loginRes = await signIn("credentials", {
+          email,
+          password,
+          redirect: false
+        });
+
+        if (loginRes?.error) {
+          router.push("/login?callbackUrl=/subscribe");
+        } else {
+          router.push("/subscribe");
+        }
       }
     } catch {
       setError("Une erreur est survenue");
@@ -83,7 +92,7 @@ function SignupContent() {
             Compte créé avec succès !
           </h2>
           <p className="mt-2 text-creix-blue/70">
-            Connectez-vous pour activer votre abonnement...
+            Redirection vers l&apos;abonnement...
           </p>
         </div>
       </div>
