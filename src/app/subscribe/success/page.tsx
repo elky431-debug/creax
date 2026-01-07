@@ -1,21 +1,25 @@
 "use client";
 
 import { useEffect } from "react";
-import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function SubscribeSuccessPage() {
+  const router = useRouter();
+
   useEffect(() => {
-    async function redirectToLogin() {
-      // Déconnecter l'utilisateur pour forcer un refresh du token
-      await signOut({ redirect: false });
-      
-      // Rediriger vers la page de connexion avec message de succès
-      window.location.href = "/login?billing=success";
+    async function syncAndRedirect() {
+      try {
+        // Auto-réparation: synchroniser immédiatement Stripe -> DB pour lever la paywall
+        await fetch("/api/subscription/sync-now", { method: "POST" });
+      } catch {
+        // ignore
+      } finally {
+        router.replace("/dashboard");
+      }
     }
 
-    // Petit délai pour que le webhook Stripe soit traité
-    setTimeout(redirectToLogin, 1500);
-  }, []);
+    syncAndRedirect();
+  }, [router]);
 
   return (
     <div className="min-h-[calc(100vh-200px)] flex flex-col items-center justify-center px-4 py-12">
@@ -32,7 +36,7 @@ export default function SubscribeSuccessPage() {
         </h1>
         
         <p className="text-gray-400 mb-6">
-          Redirection vers la page de connexion...
+          Activation de votre abonnement...
         </p>
 
         <div className="flex justify-center">
@@ -44,7 +48,7 @@ export default function SubscribeSuccessPage() {
         </div>
 
         <p className="mt-6 text-sm text-gray-500">
-          Connectez-vous pour accéder à toutes les fonctionnalités.
+          Redirection vers votre dashboard...
         </p>
       </div>
     </div>
