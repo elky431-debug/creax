@@ -22,9 +22,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await req.json().catch(() => ({} as { dryRun?: boolean; limit?: number }));
+    const body = await req
+      .json()
+      .catch(
+        () =>
+          ({} as {
+            dryRun?: boolean;
+            limit?: number;
+            matchByEmail?: boolean;
+          })
+      );
     const dryRun = body?.dryRun === true;
     const limit = typeof body?.limit === "number" ? body.limit : 500;
+    const matchByEmail = body?.matchByEmail === true;
 
     if (!process.env.STRIPE_SECRET_KEY) {
       return NextResponse.json({ error: "Stripe not configured" }, { status: 500 });
@@ -35,8 +45,8 @@ export async function POST(req: Request) {
     );
 
     const users = await prisma.user.findMany({
-      where: { stripeCustomerId: { not: null } },
-      select: { id: true, stripeCustomerId: true }
+      where: matchByEmail ? {} : { stripeCustomerId: { not: null } },
+      select: { id: true, email: true, stripeCustomerId: true }
     });
 
     const nowMs = Date.now();
@@ -47,49 +57,111 @@ export async function POST(req: Request) {
 
     for (const u of users.slice(0, limit)) {
       scanned += 1;
-      const customerId = u.stripeCustomerId!;
 
       try {
-        const subs = await stripe.subscriptions.list({
-          customer: customerId,
-          status: "all",
-          limit: 20
-        });
+        // 1) On essaie avec stripeCustomerId si on l'a
+        // 2) Sinon, optionnellement, on cherche le customer Stripe par email et on prend celui qui a une subscription active
+        const customerIds: string[] = [];
+        if (u.stripeCustomerId) customerIds.push(u.stripeCustomerId);
 
-        // on garde seulement les abonnements encore valides (active/trialing et période pas expirée)
-        const candidates = subs.data
-          .filter(s => (s.status === "active" || s.status === "trialing") && (s.current_period_end || 0) * 1000 > nowMs)
-          .sort((a, b) => (b.current_period_end || 0) - (a.current_period_end || 0));
+        if (customerIds.length === 0 && matchByEmail) {
+          // Stripe search syntax: https://stripe.com/docs/search#search-query-language
+          const email = u.email?.trim();
+          if (email) {
+            const customers = await stripe.customers.search({
+              query: `email:'${email.replace(/'/g, "\\'")}'`,
+              limit: 10
+            });
+            for (const c of customers.data) {
+              if (typeof c.id === "string") customerIds.push(c.id);
+            }
+          }
+        }
 
-        const best = candidates[0];
-        if (!best) continue;
+        if (customerIds.length === 0) continue;
+
+        // Lister les subscriptions de chaque customer, garder la meilleure (active/trialing la plus récente)
+        let bestSub: Stripe.Subscription | null = null;
+        let bestPriceId = "";
+
+        for (const customerId of customerIds) {
+          const subs = await stripe.subscriptions.list({
+            customer: customerId,
+            status: "all",
+            limit: 20
+          });
+
+          // on garde seulement les abonnements encore valides (active/trialing et période pas expirée)
+          const candidates = subs.data
+            .filter(
+              s =>
+                (s.status === "active" || s.status === "trialing") &&
+                (s.current_period_end || 0) * 1000 > nowMs
+            )
+            .sort((a, b) => (b.current_period_end || 0) - (a.current_period_end || 0));
+
+          const best = candidates[0];
+          if (!best) continue;
+
+          const priceId =
+            typeof best.items.data[0]?.price?.id === "string"
+              ? best.items.data[0].price.id
+              : "";
+
+          // On ignore les subscriptions qui ne correspondent pas à nos prices (sécurité)
+          if (
+            allowedPriceIds.size > 0 &&
+            priceId &&
+            !allowedPriceIds.has(priceId)
+          ) {
+            continue;
+          }
+
+          if (
+            !bestSub ||
+            (best.current_period_end || 0) > (bestSub.current_period_end || 0)
+          ) {
+            bestSub = best;
+            bestPriceId = priceId;
+          }
+        }
+
+        if (!bestSub) continue;
 
         activeFound += 1;
 
-        const priceId =
-          typeof best.items.data[0]?.price?.id === "string" ? best.items.data[0].price.id : "";
-
-        // On ignore les subscriptions qui ne correspondent pas à nos prices (sécurité)
-        if (allowedPriceIds.size > 0 && priceId && !allowedPriceIds.has(priceId)) {
-          continue;
-        }
-
         if (dryRun) continue;
 
+        // Si on a trouvé le customer via email, on sauvegarde stripeCustomerId sur le user
+        if (!u.stripeCustomerId) {
+          const customerIdToStore =
+            typeof bestSub.customer === "string" ? bestSub.customer : null;
+          if (customerIdToStore) {
+            await prisma.user.update({
+              where: { id: u.id },
+              data: { stripeCustomerId: customerIdToStore }
+            });
+          }
+        }
+
         await prisma.subscription.upsert({
-          where: { stripeSubscriptionId: best.id },
+          where: { stripeSubscriptionId: bestSub.id },
           update: {
             userId: u.id,
-            status: best.status,
-            currentPeriodEnd: new Date((best.current_period_end || 0) * 1000),
-            stripePriceId: priceId
+            status: bestSub.status,
+            currentPeriodEnd: new Date(
+              (bestSub.current_period_end || 0) * 1000
+            ),
+            stripePriceId: bestPriceId
           },
           create: {
             userId: u.id,
-            stripeSubscriptionId: best.id,
-            status: best.status,
-            currentPeriodEnd: new Date((best.current_period_end || 0) * 1000),
-            stripePriceId: priceId
+            stripeSubscriptionId: bestSub.id,
+            status: bestSub.status,
+            currentPeriodEnd: new Date(
+              (bestSub.current_period_end || 0) * 1000
+            ),
+            stripePriceId: bestPriceId
           }
         });
 
@@ -104,6 +176,7 @@ export async function POST(req: Request) {
       ok: true,
       dryRun,
       limit,
+      matchByEmail,
       usersWithStripeCustomerId: users.length,
       scanned,
       activeFound,
