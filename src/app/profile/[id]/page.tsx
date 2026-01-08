@@ -39,6 +39,28 @@ export default function PublicProfilePage() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [contactLoading, setContactLoading] = useState(false);
+
+  async function handleContact(targetUserId: string) {
+    setContactLoading(true);
+    try {
+      const res = await fetch("/api/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ otherUserId: targetUserId })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data?.conversation?.id) {
+        router.push(`/messages?conversation=${data.conversation.id}`);
+        return;
+      }
+      alert(data?.error || "Impossible d'ouvrir la conversation");
+    } catch {
+      alert("Erreur réseau lors de l'ouverture de la conversation");
+    } finally {
+      setContactLoading(false);
+    }
+  }
 
   useEffect(() => {
     async function fetchProfile() {
@@ -176,15 +198,17 @@ export default function PublicProfilePage() {
             </div>
 
             {/* Bouton contacter */}
-            <Link
-              href={`/messages?with=${user.id}`}
-              className="shrink-0 flex items-center gap-2 rounded-xl bg-cyan-500 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+            <button
+              type="button"
+              onClick={() => handleContact(user.id)}
+              disabled={contactLoading}
+              className="shrink-0 flex items-center gap-2 rounded-xl bg-cyan-500 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400 disabled:opacity-50"
             >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
-              Contacter
-            </Link>
+              {contactLoading ? "Ouverture..." : "Contacter"}
+            </button>
           </div>
         </div>
 
@@ -324,15 +348,17 @@ export default function PublicProfilePage() {
           <p className="text-slate-400 mb-6">
             Envoyez un message pour démarrer une collaboration
           </p>
-          <Link
-            href={`/messages?with=${user.id}`}
-            className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-8 py-3 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+          <button
+            type="button"
+            onClick={() => handleContact(user.id)}
+            disabled={contactLoading}
+            className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-8 py-3 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400 disabled:opacity-50"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
-            Contacter {displayName}
-          </Link>
+            {contactLoading ? "Ouverture..." : `Contacter ${displayName}`}
+          </button>
         </div>
       </div>
     </div>

@@ -28,9 +28,31 @@ function SearchContent() {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
+  const [contactLoadingId, setContactLoadingId] = useState<string | null>(null);
   
   const [query, setQuery] = useState(searchParams.get("q") || "");
   const [roleFilter, setRoleFilter] = useState(searchParams.get("role") || "");
+
+  async function handleContact(userId: string) {
+    setContactLoadingId(userId);
+    try {
+      const res = await fetch("/api/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ otherUserId: userId })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data?.conversation?.id) {
+        router.push(`/messages?conversation=${data.conversation.id}`);
+        return;
+      }
+      alert(data?.error || "Impossible d'ouvrir la conversation");
+    } catch {
+      alert("Erreur réseau lors de l'ouverture de la conversation");
+    } finally {
+      setContactLoadingId(null);
+    }
+  }
 
   // Vérifier l'auth et charger les résultats initiaux
   useEffect(() => {
@@ -205,15 +227,17 @@ function SearchContent() {
                   </svg>
                   Profil
                 </a>
-                <a
-                  href={`/messages?with=${user.id}`}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-cyan-500 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+                <button
+                  type="button"
+                  onClick={() => handleContact(user.id)}
+                  disabled={contactLoadingId === user.id}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-cyan-500 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400 disabled:opacity-50"
                 >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
-                  Contacter
-                </a>
+                  {contactLoadingId === user.id ? "Ouverture..." : "Contacter"}
+                </button>
               </div>
             </div>
           ))}
