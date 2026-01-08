@@ -27,11 +27,22 @@ export default function PricingSection() {
       }
 
       try {
-        const res = await fetch("/api/subscription");
+        // Perf: éviter d'appeler Stripe via /api/subscription (coûteux).
+        // Ici on veut surtout savoir "abonné ou non" => DB via /api/subscription/check.
+        const res = await fetch("/api/subscription/check", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
-          if (data.hasSubscription) {
-            setSubscription(data.subscription);
+          const active = data?.hasActiveSubscription === true;
+          if (active) {
+            // /api/subscription/check renvoie un sous-ensemble de champs
+            if (data.subscription) {
+              setSubscription({
+                status: data.subscription.status,
+                currentPeriodEnd: data.subscription.currentPeriodEnd,
+                isTrial: data.subscription.status === "trialing",
+                cancelAtPeriodEnd: false
+              });
+            }
           }
         }
       } catch {

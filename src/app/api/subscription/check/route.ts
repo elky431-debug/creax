@@ -1,16 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getToken } from "next-auth/jwt";
 
 // Cette route vérifie l'abonnement en temps réel (appelée par le middleware)
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
     // Vérifier que c'est un appel du middleware
     const isMiddlewareCheck = req.headers.get("x-middleware-check") === "true";
 
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    // Perf: getToken est plus léger que getServerSession (pas de construction de session complète).
+    const token = await getToken({ req });
+    const userId = (token as { sub?: string; id?: string } | null)?.id ?? token?.sub;
+
+    if (!userId) {
       return NextResponse.json(
         { hasActiveSubscription: false },
         { status: 401 }
@@ -20,16 +22,20 @@ export async function GET(req: Request) {
     // Chercher l'abonnement actif de l'utilisateur
     const subscription = await prisma.subscription.findFirst({
       where: {
-        userId: session.user.id,
+        userId,
         status: { in: ["active", "trialing"] },
         currentPeriodEnd: { gt: new Date() }
       },
-      orderBy: { createdAt: "desc" }
+      orderBy: { createdAt: "desc" },
+      select: {
+        status: true,
+        currentPeriodEnd: true
+      }
     });
 
     const hasActiveSubscription = !!subscription;
 
-    return NextResponse.json({ 
+    const res = NextResponse.json({ 
       hasActiveSubscription,
       // Ajouter des infos supplémentaires seulement si c'est pas le middleware
       ...(isMiddlewareCheck ? {} : {
@@ -39,6 +45,8 @@ export async function GET(req: Request) {
         } : null
       })
     });
+    res.headers.set("Cache-Control", "no-store");
+    return res;
   } catch (error) {
     console.error("Erreur vérification abonnement:", error);
     return NextResponse.json({ hasActiveSubscription: false });

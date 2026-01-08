@@ -391,7 +391,8 @@ function DangerZone({ hasSubscription }: { hasSubscription: boolean }) {
     async function checkCancellation() {
       if (!hasSubscription) return;
       try {
-        const res = await fetch("/api/subscription");
+        // Inclure Stripe uniquement ici (page profil) pour récupérer cancel_at_period_end
+        const res = await fetch("/api/subscription?stripe=1");
         if (res.ok) {
           const data = await res.json();
           setCancelAtPeriodEnd(data.subscription?.cancelAtPeriodEnd || false);
@@ -901,7 +902,8 @@ function SubscriptionSection({ hasSubscription }: { hasSubscription: boolean }) 
   useEffect(() => {
     async function fetchSubscription() {
       try {
-        const res = await fetch("/api/subscription");
+      // Inclure Stripe uniquement ici (page profil) pour récupérer cancel_at_period_end
+      const res = await fetch("/api/subscription?stripe=1");
         if (res.ok) {
           const data = await res.json();
           setSubscription(data.subscription);
