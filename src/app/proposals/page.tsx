@@ -19,6 +19,22 @@ import Image from "next/image";
 import Link from "next/link";
 import SubscriptionGuard from "@/components/SubscriptionGuard";
 
+function Icon({
+  children,
+  className,
+  strokeWidth = 2
+}: {
+  children: React.ReactNode;
+  className: string;
+  strokeWidth?: number;
+}) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={strokeWidth}>
+      {children}
+    </svg>
+  );
+}
+
 // =============================================
 // TYPES
 // =============================================
@@ -289,7 +305,11 @@ export default function ProposalsPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/10 px-4 py-2 mb-4 backdrop-blur-sm">
-                <span className="text-lg">📬</span>
+                <Icon className="h-4 w-4 text-cyan-300">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 13.5v6A2.25 2.25 0 0118 21.75H6A2.25 2.25 0 013.75 19.5v-6" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l3-3h10.5l3 3" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 16.5h7.5" />
+                </Icon>
                 <span className="text-xs font-semibold uppercase tracking-[0.15em] text-white/70">Candidatures</span>
               </div>
               <h1 className="text-4xl font-black text-white mb-2">Propositions reçues</h1>
@@ -311,17 +331,68 @@ export default function ProposalsPage() {
           {/* Compteurs */}
           <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
             {[
-              { label: "Total", value: counts.total, icon: "📊", gradient: "from-white/10 to-white/5", border: "border-white/10", textColor: "text-white" },
-              { label: "En attente", value: counts.pending, icon: "⏳", gradient: "from-yellow-500/20 to-yellow-500/5", border: "border-yellow-500/20", textColor: "text-yellow-400" },
-              { label: "Acceptées", value: counts.accepted, icon: "✅", gradient: "from-emerald-500/20 to-emerald-500/5", border: "border-emerald-500/20", textColor: "text-emerald-400" },
-              { label: "Refusées", value: counts.rejected, icon: "❌", gradient: "from-red-500/20 to-red-500/5", border: "border-red-500/20", textColor: "text-red-400" }
+              {
+                label: "Total",
+                value: counts.total,
+                icon: (
+                  <Icon className="h-5 w-5 text-white/70">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18h18" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7 14l3-3 3 3 5-6" />
+                  </Icon>
+                ),
+                gradient: "from-white/10 to-white/5",
+                border: "border-white/10",
+                textColor: "text-white"
+              },
+              {
+                label: "En attente",
+                value: counts.pending,
+                icon: (
+                  <Icon className="h-5 w-5 text-yellow-300/90">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </Icon>
+                ),
+                gradient: "from-yellow-500/20 to-yellow-500/5",
+                border: "border-yellow-500/20",
+                textColor: "text-yellow-400"
+              },
+              {
+                label: "Acceptées",
+                value: counts.accepted,
+                icon: (
+                  <Icon className="h-5 w-5 text-emerald-300/90">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </Icon>
+                ),
+                gradient: "from-emerald-500/20 to-emerald-500/5",
+                border: "border-emerald-500/20",
+                textColor: "text-emerald-400"
+              },
+              {
+                label: "Refusées",
+                value: counts.rejected,
+                icon: (
+                  <Icon className="h-5 w-5 text-red-300/90">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 9l-6 6" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 9l6 6" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </Icon>
+                ),
+                gradient: "from-red-500/20 to-red-500/5",
+                border: "border-red-500/20",
+                textColor: "text-red-400"
+              }
             ].map((stat, i) => (
               <div key={i} className={`relative rounded-2xl overflow-hidden group`}>
                 <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient}`} />
                 <div className={`absolute inset-[1px] rounded-2xl bg-[#0a0a0a]`} />
                 <div className={`relative p-5 border ${stat.border} rounded-2xl`}>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-2xl">{stat.icon}</span>
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.08]">
+                      {stat.icon}
+                    </span>
                   </div>
                   <p className={`text-3xl font-black ${stat.textColor}`}>{stat.value}</p>
                   <p className="text-sm text-white/40 mt-1">{stat.label}</p>
@@ -382,7 +453,11 @@ export default function ProposalsPage() {
             
             <div className="relative p-16 text-center">
               <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500/20 to-yellow-500/10 border border-white/[0.06]">
-                <span className="text-4xl">📬</span>
+                <Icon className="h-10 w-10 text-white/70" strokeWidth={1.8}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 13.5v6A2.25 2.25 0 0118 21.75H6A2.25 2.25 0 013.75 19.5v-6" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l3-3h10.5l3 3" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 16.5h7.5" />
+                </Icon>
               </div>
               <h3 className="text-2xl font-bold text-white mb-2">
                 {statusFilter === "ALL" 
@@ -501,7 +576,9 @@ function ProposalCard({ proposal, onSelect, formatDate }: ProposalCardProps) {
             <div className="mt-3 flex flex-wrap items-center gap-4 text-sm">
               {proposal.price && (
                 <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
-                  <span className="text-lg">💰</span>
+                  <Icon className="h-4 w-4 text-emerald-300">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </Icon>
                   {proposal.price} €
                 </span>
               )}
@@ -602,7 +679,13 @@ function ProposalDetailModal({
           <div className="p-6 space-y-6 max-h-[60vh] overflow-y-auto">
             {/* Mission concernée */}
             <div className="rounded-2xl bg-white/[0.02] border border-white/[0.06] p-5">
-              <p className="text-xs text-white/30 uppercase tracking-widest mb-2">📋 Mission</p>
+              <p className="text-xs text-white/30 uppercase tracking-widest mb-2 inline-flex items-center gap-2">
+                <Icon className="h-4 w-4 text-white/50">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5a2 2 0 002 2h2a2 2 0 002-2" />
+                </Icon>
+                Mission
+              </p>
               <p className="font-bold text-white text-lg">{proposal.mission.title}</p>
               <p className="text-sm text-white/40 mt-1">{TYPE_LABELS[proposal.mission.type]}</p>
             </div>
@@ -617,7 +700,13 @@ function ProposalDetailModal({
 
             {/* Message */}
             <div>
-              <h3 className="text-sm font-semibold text-white/70 mb-3">💬 Message de présentation</h3>
+              <h3 className="text-sm font-semibold text-white/70 mb-3 inline-flex items-center gap-2">
+                <Icon className="h-4 w-4 text-white/60">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </Icon>
+                Message de présentation
+              </h3>
               <div className="rounded-2xl bg-white/[0.02] border border-white/[0.06] p-5">
                 <p className="text-sm text-white/60 whitespace-pre-wrap leading-relaxed">{proposal.message}</p>
               </div>
@@ -627,7 +716,9 @@ function ProposalDetailModal({
             {proposal.price && (
               <div className="flex items-center gap-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-5">
                 <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-                  <span className="text-2xl">💰</span>
+                  <Icon className="h-6 w-6 text-emerald-300">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </Icon>
                 </div>
                 <div>
                   <p className="text-xs text-emerald-400/70 uppercase tracking-widest">Prix proposé</p>
@@ -638,7 +729,13 @@ function ProposalDetailModal({
 
             {/* Infos du designer */}
             <div>
-              <h3 className="text-sm font-semibold text-white/70 mb-4">👤 À propos du graphiste</h3>
+              <h3 className="text-sm font-semibold text-white/70 mb-4 inline-flex items-center gap-2">
+                <Icon className="h-4 w-4 text-white/60">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </Icon>
+                À propos du graphiste
+              </h3>
               <div className="space-y-4">
                 {proposal.designer.bio && (
                   <p className="text-sm text-white/50 leading-relaxed">{proposal.designer.bio}</p>
@@ -681,7 +778,11 @@ function ProposalDetailModal({
             {/* Erreur */}
             {error && (
               <div className="rounded-2xl bg-red-500/10 border border-red-500/20 p-4 text-sm text-red-400 flex items-center gap-3">
-                <span className="text-xl">⚠️</span>
+                <Icon className="h-5 w-5 text-red-300">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 17h.01" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.29 3.86l-7.5 13A2 2 0 004.5 19.75h15a2 2 0 001.71-2.89l-7.5-13a2 2 0 00-3.42 0z" />
+                </Icon>
                 {error}
               </div>
             )}
@@ -697,7 +798,14 @@ function ProposalDetailModal({
                   disabled={loading}
                   className="flex-1 rounded-xl border border-red-500/30 bg-red-500/10 py-4 text-sm font-bold text-red-400 transition hover:bg-red-500/20 disabled:opacity-50"
                 >
-                  {loading ? "..." : "❌ Refuser"}
+                  {loading ? "..." : (
+                    <span className="inline-flex items-center justify-center gap-2">
+                      <Icon className="h-5 w-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </Icon>
+                      Refuser
+                    </span>
+                  )}
                 </button>
                 <button
                   type="button"
@@ -717,7 +825,11 @@ function ProposalDetailModal({
                   }}
                   className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-white/[0.03] border border-white/[0.08] py-4 text-sm font-bold text-white transition hover:bg-white/[0.06]"
                 >
-                  💬 Contacter
+                  <Icon className="h-5 w-5 text-white/80">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </Icon>
+                  Contacter
                 </button>
                 <button
                   type="button"
@@ -725,7 +837,15 @@ function ProposalDetailModal({
                   disabled={loading}
                   className="flex-1 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 py-4 text-sm font-bold text-slate-900 transition hover:shadow-lg hover:shadow-emerald-500/25 disabled:opacity-50"
                 >
-                  {loading ? "..." : "✅ Accepter"}
+                  {loading ? "..." : (
+                    <span className="inline-flex items-center justify-center gap-2">
+                      <Icon className="h-5 w-5 text-slate-900">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </Icon>
+                      Accepter
+                    </span>
+                  )}
                 </button>
               </div>
             ) : (
@@ -748,7 +868,11 @@ function ProposalDetailModal({
                   }}
                   className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 py-4 text-sm font-bold text-slate-900 transition hover:shadow-lg hover:shadow-cyan-500/25"
                 >
-                  💬 Contacter le graphiste
+                  <Icon className="h-5 w-5 text-slate-900">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </Icon>
+                  Contacter le graphiste
                 </button>
                 <button
                   type="button"

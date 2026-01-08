@@ -140,6 +140,14 @@ function DashboardContent() {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Bonjour" : hour < 18 ? "Bon après-midi" : "Bonsoir";
 
+  function Icon({ children, className }: { children: React.ReactNode; className: string }) {
+    return (
+      <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        {children}
+      </svg>
+    );
+  }
+
   return (
     <SubscriptionGuard>
       <div className="min-h-screen bg-black text-white">
@@ -176,7 +184,10 @@ function DashboardContent() {
               </div>
               <div>
                 <div className="mb-1 inline-flex items-center gap-2 rounded-full bg-white/[0.04] border border-white/[0.08] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/70 backdrop-blur-sm">
-                  <span className="text-base leading-none">📊</span>
+                  <Icon className="h-4 w-4 text-cyan-300">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18h18" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7 14l3-3 3 3 5-6" />
+                  </Icon>
                   Dashboard
                 </div>
                 <div className="flex items-center gap-2">
@@ -236,7 +247,9 @@ function DashboardContent() {
               
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <div className="h-14 w-14 rounded-2xl bg-orange-500/20 flex items-center justify-center shrink-0">
-                  <span className="text-2xl">💳</span>
+                  <Icon className="h-7 w-7 text-orange-300">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5m-19.5 3h19.5M4.5 19.5h15A2.25 2.25 0 0021.75 17.25V6.75A2.25 2.25 0 0019.5 4.5h-15A2.25 2.25 0 002.25 6.75v10.5A2.25 2.25 0 004.5 19.5z" />
+                  </Icon>
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-bold text-white mb-1">
@@ -366,10 +379,18 @@ function DashboardContent() {
                   {isCreator && (
                     <div className="flex items-center gap-2">
                       <span className="inline-flex items-center gap-1 rounded-full bg-yellow-500/10 border border-yellow-500/20 px-2 py-1 text-[10px] font-semibold text-yellow-300">
-                        ⏳ {proposalCounts.pending}
+                        <Icon className="h-3.5 w-3.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </Icon>
+                        {proposalCounts.pending}
                       </span>
                       <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 text-[10px] font-semibold text-emerald-300">
-                        ✅ {proposalCounts.accepted}
+                        <Icon className="h-3.5 w-3.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </Icon>
+                        {proposalCounts.accepted}
                       </span>
                     </div>
                   )}
@@ -439,17 +460,68 @@ function DashboardContent() {
 
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                  { label: "Missions", value: missionCount, icon: "📋", tone: "from-white/10 to-white/5", border: "border-white/10", valueColor: "text-white" },
-                  { label: "En attente", value: proposalCounts.pending, icon: "⏳", tone: "from-yellow-500/20 to-yellow-500/5", border: "border-yellow-500/20", valueColor: "text-yellow-300" },
-                  { label: "Acceptées", value: proposalCounts.accepted, icon: "✅", tone: "from-emerald-500/20 to-emerald-500/5", border: "border-emerald-500/20", valueColor: "text-emerald-300" },
-                  { label: "Refusées", value: proposalCounts.rejected, icon: "❌", tone: "from-red-500/20 to-red-500/5", border: "border-red-500/20", valueColor: "text-red-300" },
+                  {
+                    label: "Missions",
+                    value: missionCount,
+                    icon: (
+                      <Icon className="h-5 w-5 text-white/70">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5a2 2 0 002 2h2a2 2 0 002-2" />
+                      </Icon>
+                    ),
+                    tone: "from-white/10 to-white/5",
+                    border: "border-white/10",
+                    valueColor: "text-white"
+                  },
+                  {
+                    label: "En attente",
+                    value: proposalCounts.pending,
+                    icon: (
+                      <Icon className="h-5 w-5 text-yellow-300/90">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </Icon>
+                    ),
+                    tone: "from-yellow-500/20 to-yellow-500/5",
+                    border: "border-yellow-500/20",
+                    valueColor: "text-yellow-300"
+                  },
+                  {
+                    label: "Acceptées",
+                    value: proposalCounts.accepted,
+                    icon: (
+                      <Icon className="h-5 w-5 text-emerald-300/90">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </Icon>
+                    ),
+                    tone: "from-emerald-500/20 to-emerald-500/5",
+                    border: "border-emerald-500/20",
+                    valueColor: "text-emerald-300"
+                  },
+                  {
+                    label: "Refusées",
+                    value: proposalCounts.rejected,
+                    icon: (
+                      <Icon className="h-5 w-5 text-red-300/90">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 9l-6 6" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 9l6 6" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </Icon>
+                    ),
+                    tone: "from-red-500/20 to-red-500/5",
+                    border: "border-red-500/20",
+                    valueColor: "text-red-300"
+                  }
                 ].map((stat) => (
                   <div key={stat.label} className="group relative rounded-2xl overflow-hidden">
                     <div className={`absolute inset-0 bg-gradient-to-br ${stat.tone}`} />
                     <div className="absolute inset-[1px] rounded-2xl bg-[#0a0a0a]" />
                     <div className={`relative rounded-2xl border ${stat.border} p-5 backdrop-blur-sm transition-transform duration-150 group-hover:-translate-y-0.5`}>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-2xl">{stat.icon}</span>
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.08]">
+                          {stat.icon}
+                        </span>
                         <span className="text-xs text-white/40">Ce mois</span>
                       </div>
                       <p className={`text-3xl font-black ${stat.valueColor}`}>{stat.value}</p>
@@ -506,7 +578,7 @@ function DashboardContent() {
                   <ActionCard
                     href="/settings/bank"
                     icon={<path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />}
-                    title="💳 Paramètres paiement"
+                    title="Paramètres paiement"
                     description="Configurer mon IBAN"
                   />
                 </>
@@ -583,13 +655,49 @@ function DashboardContent() {
           <section className="pt-8 border-t border-white/[0.06]">
             <div className="flex flex-wrap items-center justify-center gap-2">
               {[
-                { href: "/pricing", label: "Tarifs", icon: "💎" },
-                { href: "/messages", label: "Messages", icon: "💬" },
-                { href: "/profile", label: "Profil", icon: "👤" },
-                { href: isCreator ? "/missions/my" : "/missions", label: "Missions", icon: "📋" },
+                {
+                  href: "/pricing",
+                  label: "Tarifs",
+                  icon: (
+                    <Icon className="h-4 w-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 2l2.4 4.86L20 8l-4 3.9L16.8 18 12 15.6 7.2 18 8 11.9 4 8l5.6-1.14L12 2z" />
+                    </Icon>
+                  )
+                },
+                {
+                  href: "/messages",
+                  label: "Messages",
+                  icon: (
+                    <Icon className="h-4 w-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </Icon>
+                  )
+                },
+                {
+                  href: "/profile",
+                  label: "Profil",
+                  icon: (
+                    <Icon className="h-4 w-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </Icon>
+                  )
+                },
+                {
+                  href: isCreator ? "/missions/my" : "/missions",
+                  label: "Missions",
+                  icon: (
+                    <Icon className="h-4 w-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5a2 2 0 002 2h2a2 2 0 002-2" />
+                    </Icon>
+                  )
+                }
               ].map((link) => (
-                <Link key={link.href} href={link.href} className="px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.08] text-sm text-white/50 hover:text-white hover:bg-white/[0.08] hover:border-white/[0.14] transition-all hover:-translate-y-0.5 active:translate-y-0">
-                  {link.icon} {link.label}
+                <Link key={link.href} href={link.href} className="px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.08] text-sm text-white/50 hover:text-white hover:bg-white/[0.08] hover:border-white/[0.14] transition-all hover:-translate-y-0.5 active:translate-y-0 inline-flex items-center gap-2">
+                  <span className="text-white/60">{link.icon}</span>
+                  {link.label}
                 </Link>
               ))}
             </div>
