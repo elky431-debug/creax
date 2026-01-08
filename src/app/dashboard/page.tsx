@@ -143,21 +143,54 @@ function DashboardContent() {
   return (
     <SubscriptionGuard>
       <div className="min-h-screen bg-black text-white">
-        {/* Background */}
+        {/* Background (glow + grid) */}
         <div className="fixed inset-0 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-gradient-to-b from-cyan-500/[0.07] via-emerald-500/[0.03] to-transparent blur-[100px]" />
+          {/* Orbs */}
+          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[1100px] h-[700px] bg-gradient-to-b from-cyan-500/[0.08] via-emerald-500/[0.035] to-transparent blur-[110px]" />
+          <div className="absolute -bottom-56 left-0 w-[700px] h-[700px] bg-gradient-to-tr from-emerald-500/[0.06] via-cyan-500/[0.02] to-transparent blur-[120px]" />
+          <div className="absolute -bottom-56 right-0 w-[700px] h-[700px] bg-gradient-to-tl from-cyan-500/[0.06] via-emerald-500/[0.02] to-transparent blur-[120px]" />
+
+          {/* Grid overlay */}
+          <div
+            className="absolute inset-0 opacity-[0.08]"
+            style={{
+              backgroundImage:
+                "linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px)",
+              backgroundSize: "48px 48px"
+            }}
+          />
+          {/* Vignette */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black" />
         </div>
 
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-8 lg:py-12">
           
           {/* Header */}
-          <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12">
+          <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10">
             <div className="flex items-center gap-4">
-              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-emerald-500 flex items-center justify-center text-xl font-bold text-black">
+              <div className="relative">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-cyan-500 to-emerald-500 blur-xl opacity-30" />
+                <div className="relative h-14 w-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-emerald-500 flex items-center justify-center text-xl font-bold text-black shadow-lg shadow-cyan-500/10">
                 {initial}
+                </div>
               </div>
               <div>
-                <p className="text-sm text-white/40">{greeting} 👋</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm text-white/40">{greeting}</p>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-white/[0.05] border border-white/[0.08] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white/60">
+                    {isCreator ? "Créateur" : "Designer"}
+                  </span>
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider border ${
+                      user.hasSubscription
+                        ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
+                        : "bg-orange-500/10 text-orange-300 border-orange-500/20"
+                    }`}
+                  >
+                    <span className={`h-1.5 w-1.5 rounded-full ${user.hasSubscription ? "bg-emerald-400" : "bg-orange-400"} animate-pulse`} />
+                    {user.hasSubscription ? "Pro" : "Paywall"}
+                  </span>
+                </div>
                 <h1 className="text-2xl font-bold text-white">
                   {user.displayName || user.email}
                 </h1>
@@ -165,13 +198,13 @@ function DashboardContent() {
             </div>
             
             <div className="flex items-center gap-3">
-              <Link href="/profile" className="h-10 px-5 rounded-full bg-white/[0.06] border border-white/[0.1] text-sm font-medium text-white/70 hover:text-white hover:bg-white/[0.1] transition-all flex items-center gap-2">
+              <Link href="/profile" className="h-10 px-5 rounded-full bg-white/[0.06] border border-white/[0.1] text-sm font-medium text-white/70 hover:text-white hover:bg-white/[0.1] transition-all flex items-center gap-2 hover:-translate-y-0.5 active:translate-y-0">
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
                 Profil
               </Link>
-              <Link href="/messages" className="h-10 px-5 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 text-sm font-semibold text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all flex items-center gap-2">
+              <Link href="/messages" className="h-10 px-5 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 text-sm font-semibold text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all flex items-center gap-2 hover:-translate-y-0.5 active:translate-y-0">
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
@@ -224,8 +257,9 @@ function DashboardContent() {
           <div className="grid lg:grid-cols-3 gap-5 mb-10">
             
             {/* Welcome Card */}
-            <div className="lg:col-span-2 rounded-3xl bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/[0.08] p-8 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-cyan-500/10 to-transparent rounded-full blur-3xl" />
+            <div className="group lg:col-span-2 rounded-3xl bg-gradient-to-br from-white/[0.07] to-white/[0.02] border border-white/[0.10] p-8 relative overflow-hidden backdrop-blur-sm shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
+              <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-cyan-500/12 via-emerald-500/6 to-transparent rounded-full blur-3xl" />
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-b from-white/[0.02] to-transparent" />
               
               {/* Logo flottant avec effet glow */}
               <div className="absolute -right-8 lg:right-8 top-1/2 -translate-y-1/2 opacity-20 lg:opacity-30 pointer-events-none">
@@ -246,7 +280,7 @@ function DashboardContent() {
                   <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
                   {isCreator ? "Créateur de contenu" : "Designer / Monteur"}
                 </div>
-                <h2 className="text-2xl lg:text-3xl font-bold mb-3">
+                <h2 className="text-2xl lg:text-3xl font-bold mb-3 leading-tight">
                   Bienvenue sur <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">CREIX</span>
                 </h2>
                 <p className="text-white/50 max-w-lg mb-6">
@@ -256,7 +290,7 @@ function DashboardContent() {
                 </p>
                 <Link 
                   href={isCreator ? "/missions/create" : "/missions"} 
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 text-sm font-semibold text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 text-sm font-semibold text-black hover:shadow-lg hover:shadow-cyan-500/25 transition-all hover:-translate-y-0.5 active:translate-y-0"
                 >
                   {isCreator ? "Créer une mission" : "Explorer les missions"}
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -273,7 +307,7 @@ function DashboardContent() {
                 user.hasSubscription 
                   ? "bg-emerald-500/[0.06] border-emerald-500/20" 
                   : "bg-orange-500/[0.06] border-orange-500/20"
-              }`}>
+              } backdrop-blur-sm shadow-[0_0_0_1px_rgba(255,255,255,0.02)] hover:-translate-y-0.5 transition-transform`}>
                 <div className="flex items-center justify-between mb-3">
                   <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${
                     user.hasSubscription ? "bg-emerald-500/20" : "bg-orange-500/20"
@@ -299,7 +333,7 @@ function DashboardContent() {
               </div>
 
               {/* Missions/Propositions */}
-              <div className="rounded-2xl bg-white/[0.04] border border-white/[0.08] p-5">
+              <div className="rounded-2xl bg-white/[0.04] border border-white/[0.10] p-5 backdrop-blur-sm shadow-[0_0_0_1px_rgba(255,255,255,0.02)] hover:-translate-y-0.5 transition-transform">
                 <div className="flex items-center justify-between mb-3">
                   <div className="h-10 w-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
                     <svg className="h-5 w-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -445,7 +479,7 @@ function DashboardContent() {
                 { href: "/profile", label: "Profil", icon: "👤" },
                 { href: isCreator ? "/missions/my" : "/missions", label: "Missions", icon: "📋" },
               ].map((link) => (
-                <Link key={link.href} href={link.href} className="px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.06] text-sm text-white/50 hover:text-white hover:bg-white/[0.08] hover:border-white/[0.12] transition-all">
+                <Link key={link.href} href={link.href} className="px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.08] text-sm text-white/50 hover:text-white hover:bg-white/[0.08] hover:border-white/[0.14] transition-all hover:-translate-y-0.5 active:translate-y-0">
                   {link.icon} {link.label}
                 </Link>
               ))}
@@ -468,10 +502,10 @@ function ActionCard({ href, icon, title, description, primary, badge }: {
 }) {
   return (
     <Link href={href} className="group">
-      <div className={`h-full rounded-2xl p-5 border transition-all ${
+      <div className={`h-full rounded-2xl p-5 border transition-all duration-200 backdrop-blur-sm hover:-translate-y-1 ${
         primary 
-          ? "bg-gradient-to-br from-cyan-500/10 to-emerald-500/5 border-cyan-500/20 hover:border-cyan-500/40" 
-          : "bg-white/[0.03] border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.05]"
+          ? "bg-gradient-to-br from-cyan-500/12 to-emerald-500/6 border-cyan-500/25 hover:border-cyan-500/45 hover:shadow-lg hover:shadow-cyan-500/10" 
+          : "bg-white/[0.03] border-white/[0.08] hover:border-white/[0.14] hover:bg-white/[0.05] hover:shadow-lg hover:shadow-black/30"
       }`}>
         <div className="flex items-start justify-between mb-4">
           <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${
