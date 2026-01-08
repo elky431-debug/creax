@@ -2,13 +2,26 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { writeFile, mkdir, unlink } from "fs/promises";
-import { join } from "path";
-import { existsSync } from "fs";
+import { supabase } from "@/lib/supabase";
 
 // Taille max : 2MB
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
+function extFromMime(mime: string): string {
+  if (mime === "image/jpeg") return "jpg";
+  if (mime === "image/png") return "png";
+  if (mime === "image/webp") return "webp";
+  return "bin";
+}
+
+function extractSupabaseKeyFromPublicUrl(url: string): string | null {
+  // Format attendu: https://<project>.supabase.co/storage/v1/object/public/uploads/<key>
+  const marker = "/storage/v1/object/public/uploads/";
+  const idx = url.indexOf(marker);
+  if (idx === -1) return null;
+  return url.slice(idx + marker.length);
+}
 
 export async function POST(req: Request) {
   try {
@@ -16,6 +29,14 @@ export async function POST(req: Request) {
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    }
+
+    // Guard: éviter un crash silencieux si Supabase n'est pas configuré en prod
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      return NextResponse.json(
+        { error: "Stockage non configuré. Contactez le support." },
+        { status: 500 }
+      );
     }
 
     const formData = await req.formData();
@@ -41,41 +62,44 @@ export async function POST(req: Request) {
       );
     }
 
-    // Récupérer le profil existant pour supprimer l'ancienne photo
+    // Récupérer le profil existant (pour éventuellement supprimer l'ancienne photo côté Storage)
     const existingProfile = await prisma.profile.findUnique({
       where: { userId: session.user.id }
     });
 
-    // Supprimer l'ancienne photo si elle existe
-    if (existingProfile?.avatarUrl && existingProfile.avatarUrl.startsWith("/uploads/")) {
-      try {
-        const oldPath = join(process.cwd(), "public", existingProfile.avatarUrl);
-        if (existsSync(oldPath)) {
-          await unlink(oldPath);
-        }
-      } catch {
-        // Ignorer les erreurs de suppression
-      }
-    }
-
-    // Créer le dossier uploads s'il n'existe pas
-    const uploadsDir = join(process.cwd(), "public", "uploads", "avatars");
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
-    }
-
     // Générer un nom de fichier unique
-    const ext = file.name.split(".").pop();
-    const filename = `${session.user.id}-${Date.now()}.${ext}`;
-    const filepath = join(uploadsDir, filename);
+    const ext = extFromMime(file.type);
+    const filename = `avatars/${session.user.id}/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
-    // Sauvegarder le fichier
+    // Upload vers Supabase Storage (bucket "uploads")
     const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    await writeFile(filepath, buffer);
+    const { error: uploadError } = await supabase.storage
+      .from("uploads")
+      .upload(filename, bytes, {
+        contentType: file.type,
+        upsert: true
+      });
+
+    if (uploadError) {
+      console.error("Erreur Supabase Storage (avatar):", uploadError);
+      return NextResponse.json({ error: "Erreur lors de l'upload" }, { status: 500 });
+    }
 
     // URL publique
-    const avatarUrl = `/uploads/avatars/${filename}`;
+    const { data: urlData } = supabase.storage.from("uploads").getPublicUrl(filename);
+    const avatarUrl = urlData.publicUrl;
+
+    // Best-effort: supprimer l'ancien fichier (si c'était un URL Supabase)
+    if (existingProfile?.avatarUrl) {
+      const oldKey = extractSupabaseKeyFromPublicUrl(existingProfile.avatarUrl);
+      if (oldKey) {
+        try {
+          await supabase.storage.from("uploads").remove([oldKey]);
+        } catch {
+          // ignore
+        }
+      }
+    }
 
     // Mettre à jour ou créer le profil
     const user = await prisma.user.findUnique({
@@ -121,15 +145,15 @@ export async function DELETE() {
       return NextResponse.json({ error: "Profil introuvable" }, { status: 404 });
     }
 
-    // Supprimer le fichier
-    if (profile.avatarUrl && profile.avatarUrl.startsWith("/uploads/")) {
-      try {
-        const filepath = join(process.cwd(), "public", profile.avatarUrl);
-        if (existsSync(filepath)) {
-          await unlink(filepath);
+    // Best-effort: supprimer le fichier sur Supabase si possible (ne bloque jamais la suppression)
+    if (profile.avatarUrl) {
+      const key = extractSupabaseKeyFromPublicUrl(profile.avatarUrl);
+      if (key) {
+        try {
+          await supabase.storage.from("uploads").remove([key]);
+        } catch {
+          // ignore
         }
-      } catch {
-        // Ignorer les erreurs
       }
     }
 
@@ -145,6 +169,8 @@ export async function DELETE() {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
+
+
 
 
 
