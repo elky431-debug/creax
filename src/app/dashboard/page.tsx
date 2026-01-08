@@ -175,6 +175,10 @@ function DashboardContent() {
                 </div>
               </div>
               <div>
+                <div className="mb-1 inline-flex items-center gap-2 rounded-full bg-white/[0.04] border border-white/[0.08] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/70 backdrop-blur-sm">
+                  <span className="text-base leading-none">📊</span>
+                  Dashboard
+                </div>
                 <div className="flex items-center gap-2">
                   <p className="text-sm text-white/40">{greeting}</p>
                   <span className="inline-flex items-center gap-1 rounded-full bg-white/[0.05] border border-white/[0.08] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white/60">
@@ -194,6 +198,11 @@ function DashboardContent() {
                 <h1 className="text-2xl font-bold text-white">
                   {user.displayName || user.email}
                 </h1>
+                <p className="text-sm text-white/40 mt-1">
+                  {isCreator
+                    ? "Vue d’ensemble de vos missions et candidatures."
+                    : "Vue d’ensemble de vos opportunités et paiements."}
+                </p>
               </div>
             </div>
             
@@ -254,7 +263,7 @@ function DashboardContent() {
           )}
 
           {/* Main Grid */}
-          <div className="grid lg:grid-cols-3 gap-5 mb-10">
+          <div className="grid lg:grid-cols-3 gap-5 mb-6">
             
             {/* Welcome Card */}
             <div className="group lg:col-span-2 rounded-3xl bg-gradient-to-br from-white/[0.07] to-white/[0.02] border border-white/[0.10] p-8 relative overflow-hidden backdrop-blur-sm shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
@@ -330,6 +339,11 @@ function DashboardContent() {
                 <p className={`text-xl font-bold ${user.hasSubscription ? "text-emerald-400" : "text-orange-400"}`}>
                   {user.hasSubscription ? "Pro" : "Inactif"}
                 </p>
+                {!user.hasSubscription && (
+                  <p className="mt-2 text-xs text-white/40">
+                    Activez votre abonnement pour accéder à toutes les fonctionnalités.
+                  </p>
+                )}
               </div>
 
               {/* Missions/Propositions */}
@@ -347,10 +361,105 @@ function DashboardContent() {
                 <p className="text-xs text-white/40 uppercase tracking-wider mb-1">
                   {isCreator ? "Missions" : "Propositions"}
                 </p>
-                <p className="text-xl font-bold text-white">{isCreator ? missionCount : proposalCounts.total}</p>
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="text-2xl font-black text-white">{isCreator ? missionCount : proposalCounts.total}</p>
+                  {isCreator && (
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-yellow-500/10 border border-yellow-500/20 px-2 py-1 text-[10px] font-semibold text-yellow-300">
+                        ⏳ {proposalCounts.pending}
+                      </span>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 text-[10px] font-semibold text-emerald-300">
+                        ✅ {proposalCounts.accepted}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                {isCreator && proposalCounts.total > 0 && (
+                  <div className="mt-4">
+                    <div className="flex items-center justify-between text-xs text-white/40 mb-2">
+                      <span>Propositions en attente</span>
+                      <span className="text-white/60 font-semibold">
+                        {proposalCounts.pending}/{proposalCounts.total}
+                      </span>
+                    </div>
+                    <div className="h-2 rounded-full bg-white/[0.06] border border-white/[0.08] overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500"
+                        style={{
+                          width: `${proposalCounts.total > 0 ? Math.min(100, Math.round((proposalCounts.pending / proposalCounts.total) * 100)) : 0}%`
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
+
+              {/* Paiement (Designers) */}
+              {!isCreator && (
+                <div className={`rounded-2xl p-5 border backdrop-blur-sm shadow-[0_0_0_1px_rgba(255,255,255,0.02)] hover:-translate-y-0.5 transition-transform ${
+                  bankStatus?.isConfigured
+                    ? "bg-emerald-500/[0.06] border-emerald-500/20"
+                    : "bg-orange-500/[0.06] border-orange-500/20"
+                }`}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${
+                      bankStatus?.isConfigured ? "bg-emerald-500/20" : "bg-orange-500/20"
+                    }`}>
+                      <svg className={`h-5 w-5 ${bankStatus?.isConfigured ? "text-emerald-400" : "text-orange-400"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                      </svg>
+                    </div>
+                    <Link href="/settings/bank" className={`text-xs font-medium ${bankStatus?.isConfigured ? "text-emerald-400" : "text-orange-400"}`}>
+                      {bankStatus?.isConfigured ? "Modifier →" : "Configurer →"}
+                    </Link>
+                  </div>
+                  <p className="text-xs text-white/40 uppercase tracking-wider mb-1">Paiements</p>
+                  <p className={`text-xl font-bold ${bankStatus?.isConfigured ? "text-emerald-400" : "text-orange-400"}`}>
+                    {bankStatus?.isConfigured ? "IBAN OK" : "IBAN manquant"}
+                  </p>
+                  <p className="mt-2 text-xs text-white/40">
+                    {bankStatus?.isConfigured
+                      ? "Vous êtes prêt à recevoir vos paiements."
+                      : "Ajoutez votre IBAN pour recevoir vos paiements."}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
+
+          {/* Overview (Creators only) */}
+          {isCreator && (
+            <section className="mb-10">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-sm font-semibold text-white/40 uppercase tracking-wider">Vue d’ensemble</h2>
+                <Link href="/proposals" className="text-xs font-medium text-cyan-400 hover:text-cyan-300 transition-colors">
+                  Ouvrir les propositions →
+                </Link>
+              </div>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  { label: "Missions", value: missionCount, icon: "📋", tone: "from-white/10 to-white/5", border: "border-white/10", valueColor: "text-white" },
+                  { label: "En attente", value: proposalCounts.pending, icon: "⏳", tone: "from-yellow-500/20 to-yellow-500/5", border: "border-yellow-500/20", valueColor: "text-yellow-300" },
+                  { label: "Acceptées", value: proposalCounts.accepted, icon: "✅", tone: "from-emerald-500/20 to-emerald-500/5", border: "border-emerald-500/20", valueColor: "text-emerald-300" },
+                  { label: "Refusées", value: proposalCounts.rejected, icon: "❌", tone: "from-red-500/20 to-red-500/5", border: "border-red-500/20", valueColor: "text-red-300" },
+                ].map((stat) => (
+                  <div key={stat.label} className="group relative rounded-2xl overflow-hidden">
+                    <div className={`absolute inset-0 bg-gradient-to-br ${stat.tone}`} />
+                    <div className="absolute inset-[1px] rounded-2xl bg-[#0a0a0a]" />
+                    <div className={`relative rounded-2xl border ${stat.border} p-5 backdrop-blur-sm transition-transform duration-150 group-hover:-translate-y-0.5`}>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-2xl">{stat.icon}</span>
+                        <span className="text-xs text-white/40">Ce mois</span>
+                      </div>
+                      <p className={`text-3xl font-black ${stat.valueColor}`}>{stat.value}</p>
+                      <p className="text-sm text-white/40 mt-1">{stat.label}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Quick Actions */}
           <section className="mb-10">

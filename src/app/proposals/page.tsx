@@ -263,8 +263,22 @@ export default function ProposalsPage() {
     <div className="min-h-screen bg-[#000] relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-yellow-500/10 rounded-full blur-3xl" />
+        {/* Orbs */}
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-gradient-to-b from-cyan-500/12 via-emerald-500/6 to-transparent blur-[110px]" />
+        <div className="absolute -bottom-56 left-0 w-[700px] h-[700px] bg-gradient-to-tr from-emerald-500/[0.06] via-cyan-500/[0.02] to-transparent blur-[120px]" />
+        <div className="absolute -bottom-56 right-0 w-[700px] h-[700px] bg-gradient-to-tl from-cyan-500/[0.06] via-emerald-500/[0.02] to-transparent blur-[120px]" />
+
+        {/* Grid overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.07]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px)",
+            backgroundSize: "48px 48px"
+          }}
+        />
+        {/* Vignette */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-6xl px-4 py-10">
@@ -320,28 +334,30 @@ export default function ProposalsPage() {
         {/* ============================================
             FILTRES
             ============================================ */}
-        <div className="mb-8 p-1 rounded-2xl bg-white/[0.02] border border-white/[0.06] inline-flex gap-1">
-          {STATUS_OPTIONS.map((opt) => (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => setStatusFilter(opt.value)}
-              className={`rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-150 flex items-center gap-2 ${
-                statusFilter === opt.value
-                  ? "bg-gradient-to-r from-cyan-500 to-emerald-500 text-slate-900 shadow-lg"
-                  : "text-white/50 hover:text-white hover:bg-white/[0.05]"
-              }`}
-            >
-              {opt.label}
-              {opt.value === "PENDING" && counts.pending > 0 && (
-                <span className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold ${
-                  statusFilter === opt.value ? "bg-slate-900/30 text-white" : "bg-yellow-500 text-slate-900"
-                }`}>
-                  {counts.pending}
-                </span>
-              )}
-            </button>
-          ))}
+        <div className="mb-8 sticky top-16 z-20">
+          <div className="p-1 rounded-2xl bg-white/[0.03] border border-white/[0.08] inline-flex gap-1 backdrop-blur-xl shadow-lg shadow-black/30">
+            {STATUS_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setStatusFilter(opt.value)}
+                className={`rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-150 flex items-center gap-2 ${
+                  statusFilter === opt.value
+                    ? "bg-gradient-to-r from-cyan-500 to-emerald-500 text-slate-900 shadow-lg shadow-cyan-500/15"
+                    : "text-white/50 hover:text-white hover:bg-white/[0.06]"
+                }`}
+              >
+                {opt.label}
+                {opt.value === "PENDING" && counts.pending > 0 && (
+                  <span className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold ${
+                    statusFilter === opt.value ? "bg-slate-900/30 text-white" : "bg-yellow-500 text-slate-900"
+                  }`}>
+                    {counts.pending}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* ============================================
