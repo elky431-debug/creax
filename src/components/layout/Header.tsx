@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -12,6 +13,7 @@ type UserProfile = {
 
 export function Header() {
   const { data: session, status } = useSession();
+  const pathname = usePathname();
   const [unreadCount, setUnreadCount] = useState(0);
   const [proposalCount, setProposalCount] = useState(0);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -104,9 +106,23 @@ export function Header() {
 
   const isLoggedIn = status === "authenticated";
 
+  function isActive(href: string) {
+    if (href === "/") return pathname === "/";
+    return pathname === href || pathname.startsWith(href + "/");
+  }
+
+  const missionsActive = pathname.startsWith("/missions") || pathname.startsWith("/proposals") || pathname.startsWith("/deliveries");
+
   return (
-    <header className="sticky top-0 z-50 border-b border-creix-blue/10 bg-creix-black">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
+    <header className="sticky top-0 z-50">
+      {/* Glass background */}
+      <div className="absolute inset-0 bg-creix-black/75 backdrop-blur-xl border-b border-white/[0.06]" />
+      {/* Subtle glow */}
+      <div className="absolute inset-x-0 -top-16 h-24 bg-gradient-to-r from-transparent via-creix-blue/20 to-transparent blur-2xl opacity-60 pointer-events-none" />
+      {/* Bottom gradient line */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-creix-blue/35 to-transparent" />
+
+      <div className="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
         {/* Logo */}
         <Link href="/" className="group flex items-center gap-2.5 shrink-0">
           <div className="relative">
@@ -128,10 +144,13 @@ export function Header() {
         <nav className="hidden items-center gap-0.5 sm:flex">
           <Link 
             href="/pricing" 
-            className="relative px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-creix-blue/80 transition-all duration-200 hover:text-creix-blue"
+            className={`relative px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium transition-all duration-200 rounded-lg ${
+              isActive("/pricing")
+                ? "text-white bg-creix-blue/10 border border-creix-blue/20"
+                : "text-creix-blue/80 hover:text-creix-blue hover:bg-creix-blue/10"
+            }`}
           >
             <span className="relative z-10">Tarifs</span>
-            <span className="absolute inset-0 rounded-lg bg-creix-blue/0 transition-colors duration-200 hover:bg-creix-blue/10" />
           </Link>
 
           {isLoggedIn ? (
@@ -140,7 +159,11 @@ export function Header() {
               <div className="relative" ref={missionsMenuRef}>
                 <button
                   onClick={() => setMissionsMenuOpen(!missionsMenuOpen)}
-                  className="relative flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-creix-blue/80 transition-all duration-200 hover:text-creix-blue rounded-lg hover:bg-creix-blue/10"
+                  className={`relative flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium transition-all duration-200 rounded-lg border ${
+                    missionsActive
+                      ? "text-white bg-creix-blue/10 border-creix-blue/20"
+                      : "text-creix-blue/80 border-transparent hover:text-creix-blue hover:bg-creix-blue/10"
+                  }`}
                 >
                   <svg className="h-4 w-4 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -150,7 +173,7 @@ export function Header() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                   {proposalCount > 0 && (
-                    <span className="absolute -top-0.5 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold text-slate-900 shadow-lg shadow-amber-500/30">
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold text-slate-900 shadow-lg shadow-amber-500/30 ring-2 ring-creix-black/70">
                       {proposalCount > 9 ? "9+" : proposalCount}
                     </span>
                   )}
@@ -255,14 +278,18 @@ export function Header() {
               {/* Bouton Messagerie avec notification */}
               <Link
                 href="/messages"
-                className="relative flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-creix-blue/80 transition-all duration-200 hover:text-creix-blue rounded-lg hover:bg-creix-blue/10"
+                className={`relative flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium transition-all duration-200 rounded-lg border ${
+                  isActive("/messages")
+                    ? "text-white bg-creix-blue/10 border-creix-blue/20"
+                    : "text-creix-blue/80 border-transparent hover:text-creix-blue hover:bg-creix-blue/10"
+                }`}
               >
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
                 <span className="hidden sm:inline">Messages</span>
                 {unreadCount > 0 && (
-                  <span className="absolute -top-0.5 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white shadow-lg shadow-rose-500/30">
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white shadow-lg shadow-rose-500/30 ring-2 ring-creix-black/70">
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}
@@ -270,7 +297,11 @@ export function Header() {
 
               <Link 
                 href="/dashboard" 
-                className="px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-creix-blue/80 transition-all duration-200 hover:text-creix-blue rounded-lg hover:bg-creix-blue/10"
+                className={`px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium transition-all duration-200 rounded-lg border ${
+                  isActive("/dashboard")
+                    ? "text-white bg-creix-blue/10 border-creix-blue/20"
+                    : "text-creix-blue/80 border-transparent hover:text-creix-blue hover:bg-creix-blue/10"
+                }`}
               >
                 <span className="hidden sm:inline">Dashboard</span>
                 <svg className="h-4 w-4 sm:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -280,10 +311,14 @@ export function Header() {
 
               <Link
                 href="/profile"
-                className="group ml-1 sm:ml-2 flex items-center gap-1 sm:gap-2 rounded-full bg-gradient-to-r from-creix-blue to-creix-blue/80 pl-1 pr-2 sm:pr-3 py-1 text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-creix-black shadow-lg shadow-creix-blue/20 transition-all duration-300 hover:shadow-creix-blue/40 hover:scale-[1.02]"
+                className={`group ml-1 sm:ml-2 flex items-center gap-2 rounded-full pl-1 pr-2 sm:pr-3 py-1 text-[10px] sm:text-xs font-semibold uppercase tracking-wide transition-all duration-300 hover:scale-[1.02] ${
+                  isActive("/profile")
+                    ? "bg-gradient-to-r from-creix-blue to-creix-blue/80 text-creix-black shadow-lg shadow-creix-blue/30 ring-1 ring-creix-blue/30"
+                    : "bg-gradient-to-r from-creix-blue/90 to-creix-blue/70 text-creix-black shadow-lg shadow-creix-blue/20 ring-1 ring-creix-blue/20 hover:shadow-creix-blue/40"
+                }`}
               >
                 {profile?.avatarUrl ? (
-                  <div className="relative h-6 w-6 sm:h-7 sm:w-7 rounded-full overflow-hidden ring-2 ring-creix-black/20">
+                  <div className="relative h-6 w-6 sm:h-7 sm:w-7 rounded-full overflow-hidden ring-2 ring-creix-black/25 shadow-sm">
                     <Image
                       src={profile.avatarUrl}
                       alt="Mon profil"
@@ -293,7 +328,7 @@ export function Header() {
                     />
                   </div>
                 ) : (
-                  <div className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-creix-black/20 text-[10px] sm:text-[11px] font-bold">
+                  <div className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-creix-black/20 text-[10px] sm:text-[11px] font-bold ring-2 ring-creix-black/25">
                     {(profile?.displayName || session?.user?.email || "U").charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -304,13 +339,17 @@ export function Header() {
             <>
               <Link 
                 href="/login" 
-                className="px-4 py-2 text-sm font-medium text-creix-blue/80 transition-all duration-200 hover:text-creix-blue rounded-lg hover:bg-creix-blue/10"
+                className={`px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg border ${
+                  isActive("/login")
+                    ? "text-white bg-creix-blue/10 border-creix-blue/20"
+                    : "text-creix-blue/80 border-transparent hover:text-creix-blue hover:bg-creix-blue/10"
+                }`}
               >
                 Connexion
               </Link>
               <Link
                 href="/signup"
-                className="ml-2 rounded-full bg-gradient-to-r from-creix-blue to-creix-blue/80 px-5 py-2.5 text-xs font-semibold uppercase tracking-wide text-creix-black shadow-lg shadow-creix-blue/20 transition-all duration-300 hover:shadow-creix-blue/40 hover:scale-[1.02]"
+                className="ml-2 rounded-full bg-gradient-to-r from-creix-blue to-creix-blue/80 px-5 py-2.5 text-xs font-semibold uppercase tracking-wide text-creix-black shadow-lg shadow-creix-blue/25 transition-all duration-300 hover:shadow-creix-blue/45 hover:scale-[1.02] ring-1 ring-creix-blue/25"
               >
                 Créer un compte
               </Link>
