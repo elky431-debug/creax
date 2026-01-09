@@ -121,13 +121,18 @@ export default function DeliveriesPage() {
 
   // Formater la date
   function formatDate(dateStr: string): string {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("fr-FR", { 
-      day: "numeric", 
-      month: "short",
-      hour: "2-digit",
-      minute: "2-digit"
-    });
+    try {
+      const date = new Date(dateStr);
+      if (Number.isNaN(date.getTime())) return "—";
+      return date.toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    } catch {
+      return "—";
+    }
   }
 
   // État de chargement
@@ -166,7 +171,7 @@ export default function DeliveriesPage() {
           <p className="text-white/50">
             {isCreator 
               ? "Validez les travaux et effectuez les paiements pour recevoir les versions finales"
-              : "Gérez vos livraisons et envoyez les versions finales après paiement"}
+              : "Gérez vos livraisons. CREIX débloque automatiquement la version finale après paiement"}
           </p>
         </div>
 
@@ -249,6 +254,9 @@ type DeliveryCardProps = {
 function DeliveryCard({ delivery, isCreator, formatDate }: DeliveryCardProps) {
   const statusInfo = STATUS_LABELS[delivery.status] || STATUS_LABELS.PENDING;
   const otherUser = isCreator ? delivery.freelancer : delivery.creator;
+  const safeName = otherUser?.displayName || "Utilisateur";
+  const initial = safeName.charAt(0).toUpperCase();
+  const typeLabel = TYPE_LABELS[delivery.mission?.type] || delivery.mission?.type || "—";
 
   return (
     <Link
@@ -266,13 +274,13 @@ function DeliveryCard({ delivery, isCreator, formatDate }: DeliveryCardProps) {
             {otherUser.avatarUrl ? (
               <Image
                 src={otherUser.avatarUrl}
-                alt={otherUser.displayName}
+                alt={safeName}
                 width={56}
                 height={56}
                 className="h-full w-full object-cover"
               />
             ) : (
-              otherUser.displayName.charAt(0).toUpperCase()
+              initial
             )}
           </div>
 
@@ -286,9 +294,9 @@ function DeliveryCard({ delivery, isCreator, formatDate }: DeliveryCardProps) {
             </div>
 
             <p className="text-sm text-white/40">
-              {isCreator ? "De" : "Pour"} : <span className="text-cyan-400">{otherUser.displayName}</span>
+              {isCreator ? "De" : "Pour"} : <span className="text-cyan-400">{safeName}</span>
               <span className="mx-2 text-white/20">•</span>
-              <span className="text-white/30">{TYPE_LABELS[delivery.mission.type]}</span>
+              <span className="text-white/30">{typeLabel}</span>
             </p>
 
             <div className="mt-3 flex flex-wrap items-center gap-4 text-sm">
