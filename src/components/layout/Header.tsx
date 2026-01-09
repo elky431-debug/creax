@@ -115,12 +115,17 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50">
-      {/* Solid background (non transparent) */}
-      <div className="absolute inset-0 bg-creix-black border-b border-white/[0.06]" />
-      {/* Subtle glow */}
-      <div className="absolute inset-x-0 -top-16 h-24 bg-gradient-to-r from-transparent via-creix-blue/20 to-transparent blur-2xl opacity-60 pointer-events-none" />
-      {/* Bottom gradient line */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-creix-blue/35 to-transparent" />
+      {/* Solid + modern CREIX gradient (opaque) */}
+      <div className="absolute inset-0 bg-creix-black border-b border-white/[0.08]" />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            "radial-gradient(900px circle at 20% -20%, rgba(4,139,154,0.35), transparent 55%), radial-gradient(800px circle at 85% 0%, rgba(2,111,122,0.28), transparent 52%), linear-gradient(to bottom, rgba(255,255,255,0.04), transparent 35%)"
+        }}
+      />
+      {/* Accent line */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-creix-blue/45 to-transparent" />
 
       <div className="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
         {/* Logo */}
