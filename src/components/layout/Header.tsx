@@ -115,8 +115,8 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50">
-      {/* Glass background */}
-      <div className="absolute inset-0 bg-creix-black/75 backdrop-blur-xl border-b border-white/[0.06]" />
+      {/* Solid background (non transparent) */}
+      <div className="absolute inset-0 bg-creix-black border-b border-white/[0.06]" />
       {/* Subtle glow */}
       <div className="absolute inset-x-0 -top-16 h-24 bg-gradient-to-r from-transparent via-creix-blue/20 to-transparent blur-2xl opacity-60 pointer-events-none" />
       {/* Bottom gradient line */}
