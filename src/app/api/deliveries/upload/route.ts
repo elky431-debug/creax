@@ -101,13 +101,8 @@ async function applyImageWatermark(
   
   const watermarkSvg = generateWatermarkSVG(freelancerName, width, height);
   
-  // Appliquer un flou modéré
-  const blurredImage = await sharp(imageBuffer)
-    .blur(8)
-    .toBuffer();
-  
-  // Appliquer le watermark
-  const watermarkedImage = await sharp(blurredImage)
+  // Pas de flou: on conserve l'image nette, on applique uniquement le filigrane
+  const watermarkedImage = await sharp(imageBuffer)
     .composite([
       {
         input: watermarkSvg,
@@ -115,7 +110,7 @@ async function applyImageWatermark(
         left: 0,
       }
     ])
-    .jpeg({ quality: 80 })
+    .jpeg({ quality: 85 })
     .toBuffer();
   
   return watermarkedImage;
