@@ -42,30 +42,58 @@ function PricingContent() {
   // Si l'utilisateur a déjà un abonnement, afficher un message
   if (!checkingSubscription && hasSubscription && !subscriptionRequired) {
     return (
-      <div className="min-h-screen bg-[#000] flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-10 h-10 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <h1 className="text-3xl font-bold text-white mb-4">Vous êtes déjà abonné ! 🎉</h1>
-          <p className="text-white/60 mb-8">
-            Vous avez déjà un abonnement actif. Profitez de toutes les fonctionnalités de CREIX !
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
-              href="/dashboard"
-              className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-emerald-500 text-black font-semibold rounded-xl hover:opacity-90 transition"
-            >
-              Aller au Dashboard
-            </Link>
-            <Link 
-              href="/profile"
-              className="px-6 py-3 bg-white/10 border border-white/20 text-white font-semibold rounded-xl hover:bg-white/20 transition"
-            >
-              Gérer mon abonnement
-            </Link>
+      <div className="min-h-screen bg-black relative overflow-hidden flex items-center justify-center px-4">
+        {/* Background */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[1100px] h-[700px] bg-gradient-to-b from-cyan-500/[0.08] via-emerald-500/[0.035] to-transparent blur-[110px]" />
+          <div className="absolute -bottom-56 left-0 w-[700px] h-[700px] bg-gradient-to-tr from-emerald-500/[0.06] via-cyan-500/[0.02] to-transparent blur-[120px]" />
+          <div
+            className="absolute inset-0 opacity-[0.08]"
+            style={{
+              backgroundImage:
+                "linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px)",
+              backgroundSize: "48px 48px"
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black" />
+        </div>
+
+        <div className="relative w-full max-w-lg">
+          <div className="relative rounded-3xl overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/12 via-transparent to-cyan-500/10" />
+            <div className="absolute inset-[1px] rounded-3xl bg-[#0a0a0a] border border-white/[0.10]" />
+            <div className="relative p-10 text-center">
+              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/15 border border-emerald-500/20">
+                <svg className="h-8 w-8 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+
+              <h1 className="text-3xl sm:text-4xl font-black text-white mb-3">
+                Abonnement actif
+              </h1>
+              <p className="text-white/55 mb-8 leading-relaxed">
+                Votre abonnement est déjà actif. Accédez à toutes les fonctionnalités de CREIX.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Link
+                  href="/dashboard"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-6 py-3.5 text-sm font-bold text-slate-900 transition hover:shadow-lg hover:shadow-cyan-500/20"
+                >
+                  Aller au Dashboard
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </Link>
+                <Link
+                  href="/profile"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/[0.12] bg-white/[0.03] px-6 py-3.5 text-sm font-semibold text-white/90 transition hover:bg-white/[0.06]"
+                >
+                  Gérer mon abonnement
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>
