@@ -151,11 +151,22 @@ export default function DeliveryDetailPage() {
   useEffect(() => {
     const payment = searchParams.get("payment");
     if (payment === "success") {
-      setSuccess("Paiement effectué avec succès ! Le freelance peut maintenant envoyer la version finale.");
+      setSuccess("Paiement effectué avec succès ! CREIX débloque la version finale automatiquement…");
+
+      // Rattrapage: si le webhook est en retard / raté, on force le déblocage
+      void (async () => {
+        try {
+          await fetch(`/api/deliveries/${deliveryId}/sync-now`, { method: "POST" });
+        } catch {
+          // ignore
+        } finally {
+          fetchDelivery();
+        }
+      })();
     } else if (payment === "cancelled") {
       setError("Paiement annulé.");
     }
-  }, [searchParams]);
+  }, [searchParams, deliveryId, fetchDelivery]);
 
   // Charger la livraison
   const fetchDelivery = useCallback(async () => {
