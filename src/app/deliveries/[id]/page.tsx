@@ -674,14 +674,9 @@ export default function DeliveryDetailPage() {
               )}
 
               {delivery.status === "PAID" && (
-                <button
-                  type="button"
-                  onClick={() => setShowFinalModal(true)}
-                  disabled={actionLoading}
-                  className="rounded-lg bg-emerald-500 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-emerald-400 disabled:opacity-50"
-                >
-                  Envoyer la version finale
-                </button>
+                <p className="text-sm text-emerald-300">
+                  Paiement reçu. <span className="text-white/80">CREIX débloque et envoie automatiquement la version finale au créateur.</span>
+                </p>
               )}
 
               {delivery.status === "FINAL_SENT" && (
