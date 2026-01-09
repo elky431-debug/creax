@@ -124,6 +124,8 @@ export function Header() {
             "radial-gradient(900px circle at 20% -20%, rgba(4,139,154,0.35), transparent 55%), radial-gradient(800px circle at 85% 0%, rgba(2,111,122,0.28), transparent 52%), linear-gradient(to bottom, rgba(255,255,255,0.04), transparent 35%)"
         }}
       />
+      {/* Soft depth */}
+      <div className="absolute inset-0 pointer-events-none shadow-[0_10px_40px_rgba(0,0,0,0.45)]" />
       {/* Accent line */}
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-creix-blue/45 to-transparent" />
 
@@ -146,13 +148,13 @@ export function Header() {
         </Link>
 
         {/* Desktop Navigation - visible sur tablette et plus */}
-        <nav className="hidden items-center gap-0.5 sm:flex">
+        <nav className="hidden items-center gap-1 sm:flex">
           <Link 
             href="/pricing" 
-            className={`relative px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium transition-all duration-200 rounded-lg ${
+            className={`relative px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 rounded-full border ${
               isActive("/pricing")
-                ? "text-white bg-creix-blue/10 border border-creix-blue/20"
-                : "text-creix-blue/80 hover:text-creix-blue hover:bg-creix-blue/10"
+                ? "text-white bg-white/[0.06] border-white/[0.12]"
+                : "text-white/75 border-transparent hover:text-white hover:bg-white/[0.06]"
             }`}
           >
             <span className="relative z-10">Tarifs</span>
@@ -164,10 +166,10 @@ export function Header() {
               <div className="relative" ref={missionsMenuRef}>
                 <button
                   onClick={() => setMissionsMenuOpen(!missionsMenuOpen)}
-                  className={`relative flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium transition-all duration-200 rounded-lg border ${
+                  className={`relative flex items-center gap-1 sm:gap-2 px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 rounded-full border ${
                     missionsActive
-                      ? "text-white bg-creix-blue/10 border-creix-blue/20"
-                      : "text-creix-blue/80 border-transparent hover:text-creix-blue hover:bg-creix-blue/10"
+                      ? "text-white bg-white/[0.06] border-white/[0.12]"
+                      : "text-white/75 border-transparent hover:text-white hover:bg-white/[0.06]"
                   }`}
                 >
                   <svg className="h-4 w-4 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -178,7 +180,7 @@ export function Header() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                   {proposalCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold text-slate-900 shadow-lg shadow-amber-500/30 ring-2 ring-creix-black/70">
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold text-slate-900 shadow-lg shadow-amber-500/30 ring-2 ring-creix-black">
                       {proposalCount > 9 ? "9+" : proposalCount}
                     </span>
                   )}
@@ -186,13 +188,13 @@ export function Header() {
 
                 {/* Dropdown menu */}
                 {missionsMenuOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-56 origin-top-right animate-slide-in-from-top-2 rounded-xl border border-creix-blue/20 bg-creix-black/95 p-1.5 shadow-xl shadow-black/40 backdrop-blur-xl">
+                  <div className="absolute top-full right-0 mt-2 w-56 origin-top-right animate-slide-in-from-top-2 rounded-2xl border border-white/[0.12] bg-creix-black p-1.5 shadow-2xl shadow-black/60">
                     {userRole === "CREATOR" ? (
                       <>
                         <Link
                           href="/missions/my"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/75 transition-all duration-150 hover:bg-white/[0.06] hover:text-white"
                         >
                           <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -202,7 +204,7 @@ export function Header() {
                         <Link
                           href="/proposals"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                          className="relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/75 transition-all duration-150 hover:bg-white/[0.06] hover:text-white"
                         >
                           <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -214,11 +216,11 @@ export function Header() {
                             </span>
                           )}
                         </Link>
-                        <div className="my-1.5 border-t border-creix-blue/10" />
+                        <div className="my-1.5 border-t border-white/[0.08]" />
                         <Link
                           href="/deliveries"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/75 transition-all duration-150 hover:bg-white/[0.06] hover:text-white"
                         >
                           <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -231,7 +233,7 @@ export function Header() {
                         <Link
                           href="/missions"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/75 transition-all duration-150 hover:bg-white/[0.06] hover:text-white"
                         >
                           <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -241,7 +243,7 @@ export function Header() {
                         <Link
                           href="/missions/assigned"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/75 transition-all duration-150 hover:bg-white/[0.06] hover:text-white"
                         >
                           <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -251,7 +253,7 @@ export function Header() {
                         <Link
                           href="/my-proposals"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                          className="relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/75 transition-all duration-150 hover:bg-white/[0.06] hover:text-white"
                         >
                           <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -263,11 +265,11 @@ export function Header() {
                             </span>
                           )}
                         </Link>
-                        <div className="my-1.5 border-t border-creix-blue/10" />
+                        <div className="my-1.5 border-t border-white/[0.08]" />
                         <Link
                           href="/deliveries"
                           onClick={() => setMissionsMenuOpen(false)}
-                          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/75 transition-all duration-150 hover:bg-white/[0.06] hover:text-white"
                         >
                           <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -283,10 +285,10 @@ export function Header() {
               {/* Bouton Messagerie avec notification */}
               <Link
                 href="/messages"
-                className={`relative flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium transition-all duration-200 rounded-lg border ${
+                className={`relative flex items-center gap-1 sm:gap-2 px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 rounded-full border ${
                   isActive("/messages")
-                    ? "text-white bg-creix-blue/10 border-creix-blue/20"
-                    : "text-creix-blue/80 border-transparent hover:text-creix-blue hover:bg-creix-blue/10"
+                    ? "text-white bg-white/[0.06] border-white/[0.12]"
+                    : "text-white/75 border-transparent hover:text-white hover:bg-white/[0.06]"
                 }`}
               >
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -294,7 +296,7 @@ export function Header() {
                 </svg>
                 <span className="hidden sm:inline">Messages</span>
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white shadow-lg shadow-rose-500/30 ring-2 ring-creix-black/70">
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white shadow-lg shadow-rose-500/30 ring-2 ring-creix-black">
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}
@@ -302,10 +304,10 @@ export function Header() {
 
               <Link 
                 href="/dashboard" 
-                className={`px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium transition-all duration-200 rounded-lg border ${
+                className={`px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 rounded-full border ${
                   isActive("/dashboard")
-                    ? "text-white bg-creix-blue/10 border-creix-blue/20"
-                    : "text-creix-blue/80 border-transparent hover:text-creix-blue hover:bg-creix-blue/10"
+                    ? "text-white bg-white/[0.06] border-white/[0.12]"
+                    : "text-white/75 border-transparent hover:text-white hover:bg-white/[0.06]"
                 }`}
               >
                 <span className="hidden sm:inline">Dashboard</span>
@@ -344,10 +346,10 @@ export function Header() {
             <>
               <Link 
                 href="/login" 
-                className={`px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg border ${
+                className={`px-4 py-2 text-sm font-semibold transition-all duration-200 rounded-full border ${
                   isActive("/login")
-                    ? "text-white bg-creix-blue/10 border-creix-blue/20"
-                    : "text-creix-blue/80 border-transparent hover:text-creix-blue hover:bg-creix-blue/10"
+                    ? "text-white bg-white/[0.06] border-white/[0.12]"
+                    : "text-white/75 border-transparent hover:text-white hover:bg-white/[0.06]"
                 }`}
               >
                 Connexion
@@ -367,7 +369,7 @@ export function Header() {
           {/* Tarifs link visible on mobile */}
           <Link 
             href="/pricing" 
-            className="text-sm font-medium text-creix-blue/80 transition-colors hover:text-creix-blue"
+            className="text-sm font-semibold text-white/75 transition-colors hover:text-white"
           >
             Tarifs
           </Link>
@@ -375,7 +377,7 @@ export function Header() {
           {/* Mobile menu button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-creix-blue/10 text-creix-blue transition-colors hover:bg-creix-blue/20"
+            className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.06] text-white transition-colors hover:bg-white/[0.10]"
             aria-label="Menu"
           >
             <svg 
@@ -403,11 +405,11 @@ export function Header() {
 
           {/* Mobile menu dropdown */}
           {mobileMenuOpen && (
-            <div className="absolute top-full left-0 right-0 mt-2 mx-4 origin-top animate-slide-in-from-top-2 rounded-2xl border border-creix-blue/20 bg-creix-black/95 p-2 shadow-xl shadow-black/40 backdrop-blur-xl">
+            <div className="absolute top-full left-0 right-0 mt-2 mx-4 origin-top animate-slide-in-from-top-2 rounded-2xl border border-white/[0.12] bg-creix-black p-2 shadow-2xl shadow-black/60">
               {isLoggedIn ? (
                 <>
                   {/* User profile header */}
-                  <div className="flex items-center gap-3 px-3 py-3 mb-2 rounded-xl bg-creix-blue/5">
+                  <div className="flex items-center gap-3 px-3 py-3 mb-2 rounded-xl bg-white/[0.04] border border-white/[0.06]">
                     {profile?.avatarUrl ? (
                       <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-creix-blue/30">
                         <Image
@@ -424,15 +426,15 @@ export function Header() {
                       </div>
                     )}
                     <div>
-                      <p className="text-sm font-medium text-creix-blue">{profile?.displayName || "Mon compte"}</p>
-                      <p className="text-xs text-creix-blue/50">{session?.user?.email}</p>
+                      <p className="text-sm font-semibold text-white">{profile?.displayName || "Mon compte"}</p>
+                      <p className="text-xs text-white/45">{session?.user?.email}</p>
                     </div>
                   </div>
 
                   <Link
                     href="/dashboard"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-white/80 transition-all duration-150 hover:bg-white/[0.06] hover:text-white"
                   >
                     <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -440,15 +442,15 @@ export function Header() {
                     Dashboard
                   </Link>
 
-                  <div className="my-2 border-t border-creix-blue/10" />
-                  <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-creix-blue/40">Missions</p>
+                  <div className="my-2 border-t border-white/[0.08]" />
+                  <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-white/35">Missions</p>
                   
                   {userRole === "CREATOR" ? (
                     <>
                       <Link
                         href="/missions/my"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-white/80 transition-all duration-150 hover:bg-white/[0.06] hover:text-white"
                       >
                         <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -458,7 +460,7 @@ export function Header() {
                       <Link
                         href="/proposals"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-white/80 transition-all duration-150 hover:bg-white/[0.06] hover:text-white"
                       >
                         <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -476,7 +478,7 @@ export function Header() {
                       <Link
                         href="/missions"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-white/80 transition-all duration-150 hover:bg-white/[0.06] hover:text-white"
                       >
                         <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -486,7 +488,7 @@ export function Header() {
                       <Link
                         href="/missions/assigned"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-white/80 transition-all duration-150 hover:bg-white/[0.06] hover:text-white"
                       >
                         <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -496,7 +498,7 @@ export function Header() {
                       <Link
                         href="/my-proposals"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-white/80 transition-all duration-150 hover:bg-white/[0.06] hover:text-white"
                       >
                         <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -514,7 +516,7 @@ export function Header() {
                   <Link
                     href="/deliveries"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-white/80 transition-all duration-150 hover:bg-white/[0.06] hover:text-white"
                   >
                     <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -522,12 +524,12 @@ export function Header() {
                     Livraisons
                   </Link>
 
-                  <div className="my-2 border-t border-creix-blue/10" />
+                  <div className="my-2 border-t border-white/[0.08]" />
 
                   <Link
                     href="/messages"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-white/80 transition-all duration-150 hover:bg-white/[0.06] hover:text-white"
                   >
                     <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -543,7 +545,7 @@ export function Header() {
                   <Link
                     href="/profile"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-creix-blue/80 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-white/80 transition-all duration-150 hover:bg-white/[0.06] hover:text-white"
                   >
                     <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -573,7 +575,7 @@ export function Header() {
                   <Link
                     href="/login"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-creix-blue transition-all duration-150 hover:bg-creix-blue/10"
+                    className="flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white/90 transition-all duration-150 hover:bg-white/[0.06]"
                   >
                     Connexion
                   </Link>
