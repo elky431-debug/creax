@@ -315,6 +315,9 @@ export async function PATCH(
             protectedUrl,
             protectedType: protectedType || "image",
             protectedNote,
+            // Si la version finale (originale) est fournie, la mettre à jour aussi
+            ...(finalUrl ? { finalUrl } : {}),
+            ...(finalFilename ? { finalFilename } : {}),
             status: "PROTECTED_SENT", // Retour au statut "envoyé" pour validation
             revisionNote: null, // Effacer la note de révision
             updatedAt: new Date()

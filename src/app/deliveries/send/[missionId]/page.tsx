@@ -200,9 +200,11 @@ export default function SendDeliveryPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           missionId,
-          protectedUrl: uploadData.url,
-          protectedType: uploadData.type,
+          protectedUrl: uploadData.protectedUrl,
+          protectedType: uploadData.protectedType,
           protectedNote: note || undefined,
+          finalUrl: uploadData.finalUrl,
+          finalFilename: uploadData.finalFilename,
           amount: priceNum * 100 // Convertir en centimes
         })
       });

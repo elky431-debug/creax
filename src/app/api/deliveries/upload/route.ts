@@ -1,11 +1,13 @@
 /**
- * API pour uploader un fichier de livraison avec watermark automatique
+ * API pour uploader un fichier de livraison (FINAL + PROTÉGÉ)
  * 
  * POST /api/deliveries/upload
  * 
  * Fonctionnalités :
- * - Upload d'images (jpg, png, webp) → watermark automatique CREIX
- * - Upload de vidéos (mp4, mov, webm) → stockage direct
+ * - Upload de la version finale (originale, sans filigrane)
+ * - Génération + upload de la version protégée
+ *   - Images (jpg, png, webp) → flou + watermark CREIX
+ *   - Vidéos (mp4, mov, webm) → copie (preview = même fichier pour le moment)
  * - Stockage sur Supabase Storage
  */
 
@@ -198,15 +200,16 @@ export async function POST(req: Request) {
       );
     }
 
-    // Convertir le fichier en buffer
+    // Convertir le fichier en buffer (version finale, originale)
     const bytes = await file.arrayBuffer();
-    let buffer = Buffer.from(bytes);
+    const finalBuffer = Buffer.from(bytes);
+    let protectedBuffer = finalBuffer;
 
     // Appliquer le flou + watermark pour les images
     if (isImage) {
       try {
         console.log("Application du flou et watermark...");
-        buffer = await applyImageWatermark(buffer, freelancerName);
+        protectedBuffer = await applyImageWatermark(finalBuffer, freelancerName);
         console.log("Flou et watermark appliqués avec succès!");
       } catch (error) {
         console.error("ERREUR watermark/flou:", error);
@@ -217,39 +220,65 @@ export async function POST(req: Request) {
       }
     }
 
-    // Générer un nom de fichier unique
+    // Générer un nom de fichier unique (2 fichiers: final + protected)
     const timestamp = Date.now();
     const randomStr = Math.random().toString(36).substring(2, 8);
-    const extension = isImage ? "jpg" : (file.name.split(".").pop() || "mp4");
-    const filename = `deliveries/delivery_${missionId}_${timestamp}_${randomStr}.${extension}`;
+    const originalExtension = (file.name.split(".").pop() || (isImage ? "jpg" : "mp4")).toLowerCase();
+    const finalPath = `deliveries/final_${missionId}_${timestamp}_${randomStr}.${originalExtension}`;
+    const protectedExtension = isImage ? "jpg" : originalExtension;
+    const protectedPath = `deliveries/protected_${missionId}_${timestamp}_${randomStr}.${protectedExtension}`;
 
-    // Upload vers Supabase Storage
-    const { data, error } = await supabase.storage
+    // Upload FINAL (original)
+    const { error: finalUploadError } = await supabase.storage
       .from("uploads")
-      .upload(filename, buffer, {
-        contentType: isImage ? "image/jpeg" : file.type,
+      .upload(finalPath, finalBuffer, {
+        contentType: file.type,
         upsert: false
       });
 
-    if (error) {
-      console.error("Erreur Supabase Storage:", error);
+    if (finalUploadError) {
+      console.error("Erreur Supabase Storage (final):", finalUploadError);
       return NextResponse.json(
         { error: "Erreur lors de l'upload du fichier" },
         { status: 500 }
       );
     }
 
-    // Obtenir l'URL publique
-    const { data: publicUrlData } = supabase.storage
+    // Upload PROTECTED (preview)
+    const { error: protectedUploadError } = await supabase.storage
       .from("uploads")
-      .getPublicUrl(filename);
+      .upload(protectedPath, protectedBuffer, {
+        contentType: isImage ? "image/jpeg" : file.type,
+        upsert: false
+      });
+
+    if (protectedUploadError) {
+      console.error("Erreur Supabase Storage (protected):", protectedUploadError);
+      return NextResponse.json(
+        { error: "Erreur lors de l'upload du fichier protégé" },
+        { status: 500 }
+      );
+    }
+
+    // Obtenir les URLs publiques
+    const { data: finalPublicUrlData } = supabase.storage
+      .from("uploads")
+      .getPublicUrl(finalPath);
+    const { data: protectedPublicUrlData } = supabase.storage
+      .from("uploads")
+      .getPublicUrl(protectedPath);
 
     return NextResponse.json({
-      url: publicUrlData.publicUrl,
-      type: isImage ? "image" : "video",
-      filename: file.name,
-      size: buffer.length,
-      watermarked: isImage
+      protectedUrl: protectedPublicUrlData.publicUrl,
+      protectedType: isImage ? "image" : "video",
+      protectedFilename: `protected_${file.name}`,
+      protectedSize: protectedBuffer.length,
+      watermarked: isImage,
+
+      finalUrl: finalPublicUrlData.publicUrl,
+      finalFilename: file.name,
+      finalSize: finalBuffer.length,
+      finalMimeType: file.type
     });
   } catch (error) {
     console.error("Erreur upload delivery:", error);

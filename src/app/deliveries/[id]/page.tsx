@@ -67,6 +67,11 @@ type DeliveryDetail = {
   isCreator: boolean;
 };
 
+function isImageFilename(name: string | null | undefined) {
+  const ext = (name || "").split(".").pop()?.toLowerCase();
+  return ext === "jpg" || ext === "jpeg" || ext === "png" || ext === "webp";
+}
+
 // =============================================
 // CONSTANTES
 // =============================================
@@ -350,9 +355,11 @@ export default function DeliveryDetailPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "SEND_REVISION",
-          protectedUrl: uploadData.url,
-          protectedType: uploadData.type,
-          protectedNote: revisionUploadNote
+          protectedUrl: uploadData.protectedUrl,
+          protectedType: uploadData.protectedType,
+          protectedNote: revisionUploadNote,
+          finalUrl: uploadData.finalUrl,
+          finalFilename: uploadData.finalFilename
         })
       });
 
@@ -495,16 +502,31 @@ export default function DeliveryDetailPage() {
               <p className="text-sm text-slate-300 mb-4">{delivery.finalNote}</p>
             )}
 
-            <a
-              href={delivery.finalUrl}
-              download={delivery.finalFilename || "fichier-final"}
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-emerald-400"
-            >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-              Télécharger la version finale
-            </a>
+            <div className="flex flex-wrap gap-3">
+              <a
+                href={delivery.finalUrl}
+                download={delivery.finalFilename || "fichier-final"}
+                className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-emerald-400"
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Télécharger (galerie)
+              </a>
+
+              {isImageFilename(delivery.finalFilename) && (
+                <a
+                  href={`/api/deliveries/${delivery.id}/download-pdf`}
+                  className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-6 py-3 text-sm font-semibold text-emerald-300 transition hover:bg-emerald-500/20"
+                >
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 20h9" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.5 3.5l4 4L7 21H3v-4L16.5 3.5z" />
+                  </svg>
+                  Télécharger en PDF
+                </a>
+              )}
+            </div>
 
             <p className="mt-3 text-xs text-slate-500">
               Ce lien expire dans 7 jours. Téléchargez votre fichier dès que possible.
@@ -618,7 +640,9 @@ export default function DeliveryDetailPage() {
 
               {delivery.status === "PAID" && (
                 <p className="text-sm text-slate-400">
-                  En attente de la version finale du freelance...
+                  {delivery.finalUrl
+                    ? "Paiement confirmé. Déblocage automatique de la version finale en cours..."
+                    : "Paiement confirmé. En attente de la version finale."}
                 </p>
               )}
             </div>

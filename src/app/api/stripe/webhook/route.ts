@@ -94,16 +94,34 @@ export async function POST(req: Request) {
           const deliveryId = session.metadata.deliveryId;
           
           if (deliveryId) {
-            // Mettre à jour le statut de la livraison
+            // Récupérer la livraison pour savoir si la version finale est déjà stockée
+            const existing = await prisma.missionDelivery.findUnique({
+              where: { id: deliveryId },
+              select: { id: true, finalUrl: true, missionId: true }
+            });
+
+            // Mettre à jour le statut de la livraison (débloquer automatiquement la finale si déjà présente)
+            const shouldUnlockFinal = !!existing?.finalUrl;
             await prisma.missionDelivery.update({
               where: { id: deliveryId },
               data: {
                 paymentStatus: "PAID",
-                status: "PAID",
+                status: shouldUnlockFinal ? "FINAL_SENT" : "PAID",
                 paidAt: new Date(),
+                ...(shouldUnlockFinal
+                  ? { finalExpiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) }
+                  : {}),
                 stripePaymentId: session.payment_intent as string
               }
             });
+
+            // Si la finale est déjà dispo, on peut marquer la mission terminée
+            if (shouldUnlockFinal && existing?.missionId) {
+              await prisma.mission.update({
+                where: { id: existing.missionId },
+                data: { status: "COMPLETED" }
+              });
+            }
 
             // Récupérer les infos pour notification
             const delivery = await prisma.missionDelivery.findUnique({
