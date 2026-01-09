@@ -5,8 +5,8 @@
  * - Affichage de la version protégée (image filigranée ou vidéo preview)
  * - Lecteur vidéo sécurisé anti-téléchargement
  * - Actions selon le statut et le rôle
- * - Paiement Stripe
- * - Upload version finale
+ * - Paiement par virement (hors CREIX)
+ * - Upload version finale après confirmation de paiement
  */
 
 "use client";
@@ -399,8 +399,14 @@ export default function DeliveryDetailPage() {
   // État de chargement
   if (loading || status === "loading") {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="relative">
+          <div className="h-12 w-12 rounded-full border-2 border-white/10 border-t-cyan-500 animate-spin" />
+          <div
+            className="absolute inset-0 h-12 w-12 rounded-full border-2 border-emerald-500/20 border-b-emerald-500 animate-spin"
+            style={{ animationDirection: "reverse", animationDuration: "1.2s" }}
+          />
+        </div>
       </div>
     );
   }
@@ -415,15 +421,31 @@ export default function DeliveryDetailPage() {
 
   return (
     <SubscriptionGuard>
-    <div className="min-h-screen bg-slate-950">
-      <div className="mx-auto max-w-4xl px-4 py-10">
+    <div className="min-h-screen bg-black relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[1100px] h-[700px] bg-gradient-to-b from-cyan-500/[0.08] via-emerald-500/[0.035] to-transparent blur-[110px]" />
+        <div className="absolute -bottom-56 left-0 w-[700px] h-[700px] bg-gradient-to-tr from-emerald-500/[0.06] via-cyan-500/[0.02] to-transparent blur-[120px]" />
+        <div className="absolute -bottom-56 right-0 w-[700px] h-[700px] bg-gradient-to-tl from-cyan-500/[0.06] via-emerald-500/[0.02] to-transparent blur-[120px]" />
+        <div
+          className="absolute inset-0 opacity-[0.08]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.08) 1px, transparent 1px)",
+            backgroundSize: "48px 48px"
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black" />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-4xl px-4 py-10">
         {/* ============================================
             HEADER
             ============================================ */}
         <div className="mb-8">
           <Link 
             href="/deliveries"
-            className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white mb-4"
+            className="inline-flex items-center gap-2 text-sm text-white/55 hover:text-white mb-4 transition"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -431,28 +453,36 @@ export default function DeliveryDetailPage() {
             Retour aux livraisons
           </Link>
 
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-white">{delivery.mission.title}</h1>
-              <p className="mt-1 text-slate-400">
-                {delivery.isCreator ? "Livraison de" : "Livraison pour"} {otherUserName}
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/10 px-4 py-2 mb-3 backdrop-blur-sm">
+                <svg className="h-4 w-4 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span className="text-xs font-semibold uppercase tracking-[0.15em] text-white/70">Livraison</span>
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-black text-white">{delivery.mission.title}</h1>
+              <p className="mt-2 text-white/50">
+                {delivery.isCreator ? "Livraison de" : "Livraison pour"} <span className="text-white/80 font-semibold">{otherUserName}</span>
               </p>
             </div>
-            <div className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium ${statusInfo.color} bg-slate-800`}>
-              <span className="h-2 w-2 rounded-full bg-current" />
-              {statusInfo.label}
+            <div className="shrink-0">
+              <div className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold bg-white/[0.04] border border-white/[0.10] text-white">
+                <span className={`h-2 w-2 rounded-full ${statusInfo.color.replace("text-", "bg-")}`} />
+                <span className={statusInfo.color}>{statusInfo.label}</span>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Messages de succès/erreur */}
         {success && (
-          <div className="mb-6 rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-4 text-emerald-400">
+          <div className="mb-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-4 text-emerald-300">
             {success}
           </div>
         )}
         {error && (
-          <div className="mb-6 rounded-lg bg-red-500/10 border border-red-500/20 p-4 text-red-400">
+          <div className="mb-6 rounded-2xl bg-red-500/10 border border-red-500/20 p-4 text-red-300">
             {error}
           </div>
         )}
@@ -460,20 +490,27 @@ export default function DeliveryDetailPage() {
         {/* ============================================
             TIMELINE
             ============================================ */}
-        <div className="mb-8 rounded-xl bg-slate-900/80 border border-slate-800 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Progression</h2>
+        <div className="mb-8 relative rounded-3xl overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5" />
+          <div className="absolute inset-[1px] rounded-3xl bg-[#0a0a0a] border border-white/[0.08]" />
+          <div className="relative p-6">
+          <h2 className="text-lg font-bold text-white mb-4">Progression</h2>
           <DeliveryTimeline status={delivery.status} />
-          <p className="mt-4 text-sm text-slate-400">{statusInfo.description}</p>
+          <p className="mt-4 text-sm text-white/45">{statusInfo.description}</p>
+          </div>
         </div>
 
         {/* ============================================
             VERSION PROTÉGÉE
             ============================================ */}
         {delivery.protectedUrl && (
-          <div className="mb-8 rounded-xl bg-slate-900/80 border border-slate-800 p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">
+          <div className="mb-8 relative rounded-3xl overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5" />
+            <div className="absolute inset-[1px] rounded-3xl bg-[#0a0a0a] border border-white/[0.08]" />
+            <div className="relative p-6">
+            <h2 className="text-lg font-bold text-white mb-4">
               Version protégée
-              <span className="ml-2 text-xs text-slate-500 font-normal">(filigranée)</span>
+              <span className="ml-2 text-xs text-white/35 font-normal">(filigranée)</span>
             </h2>
 
             {delivery.protectedType === "video" ? (
@@ -483,11 +520,12 @@ export default function DeliveryDetailPage() {
             )}
 
             {delivery.protectedNote && (
-              <div className="mt-4 rounded-lg bg-slate-800 p-4">
-                <p className="text-xs text-slate-500 mb-1">Note du freelance</p>
-                <p className="text-sm text-slate-300">{delivery.protectedNote}</p>
+              <div className="mt-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] p-4">
+                <p className="text-xs text-white/45 mb-1">Note du freelance</p>
+                <p className="text-sm text-white/75">{delivery.protectedNote}</p>
               </div>
             )}
+            </div>
           </div>
         )}
 
@@ -495,11 +533,11 @@ export default function DeliveryDetailPage() {
             DEMANDE DE RÉVISION
             ============================================ */}
         {delivery.revisionNote && (
-          <div className="mb-8 rounded-xl bg-orange-500/10 border border-orange-500/20 p-6">
-            <h2 className="text-lg font-semibold text-orange-400 mb-2">
+          <div className="mb-8 rounded-3xl bg-orange-500/10 border border-orange-500/20 p-6">
+            <h2 className="text-lg font-bold text-orange-300 mb-2">
               Modifications demandées ({delivery.revisionCount})
             </h2>
-            <p className="text-sm text-slate-300">{delivery.revisionNote}</p>
+            <p className="text-sm text-white/75">{delivery.revisionNote}</p>
           </div>
         )}
 
@@ -507,20 +545,23 @@ export default function DeliveryDetailPage() {
             VERSION FINALE
             ============================================ */}
         {delivery.finalUrl && delivery.paymentStatus === "PAID" && (
-          <div className="mb-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-6">
-            <h2 className="text-lg font-semibold text-emerald-400 mb-4">
+          <div className="mb-8 relative rounded-3xl overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/14 via-transparent to-cyan-500/10" />
+            <div className="absolute inset-[1px] rounded-3xl bg-[#0a0a0a] border border-emerald-500/20" />
+            <div className="relative p-6">
+            <h2 className="text-lg font-bold text-emerald-300 mb-4">
               Version finale disponible
             </h2>
 
             {delivery.finalNote && (
-              <p className="text-sm text-slate-300 mb-4">{delivery.finalNote}</p>
+              <p className="text-sm text-white/75 mb-4">{delivery.finalNote}</p>
             )}
 
             <div className="flex flex-wrap gap-3">
               <a
                 href={delivery.finalUrl}
                 download={delivery.finalFilename || "fichier-final"}
-                className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-emerald-400"
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-6 py-3 text-sm font-bold text-slate-900 transition hover:shadow-lg hover:shadow-emerald-500/20"
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -531,7 +572,7 @@ export default function DeliveryDetailPage() {
               {isImageFilename(delivery.finalFilename) && (
                 <a
                   href={`/api/deliveries/${delivery.id}/download-pdf`}
-                  className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-6 py-3 text-sm font-semibold text-emerald-300 transition hover:bg-emerald-500/20"
+                  className="inline-flex items-center gap-2 rounded-xl border border-white/[0.12] bg-white/[0.03] px-6 py-3 text-sm font-semibold text-white/85 transition hover:bg-white/[0.06]"
                 >
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 20h9" />
@@ -542,9 +583,10 @@ export default function DeliveryDetailPage() {
               )}
             </div>
 
-            <p className="mt-3 text-xs text-slate-500">
+            <p className="mt-3 text-xs text-white/35">
               Ce lien expire dans 7 jours. Téléchargez votre fichier dès que possible.
             </p>
+            </div>
           </div>
         )}
 
@@ -553,25 +595,33 @@ export default function DeliveryDetailPage() {
             ============================================ */}
         <div className="mb-8 grid gap-6 sm:grid-cols-2">
           {/* Montant */}
-          <div className="rounded-xl bg-slate-900/80 border border-slate-800 p-6">
-            <p className="text-xs text-slate-500 mb-1">Montant</p>
-            <p className="text-2xl font-bold text-emerald-400">
-              {(delivery.amount / 100).toFixed(2)} €
-            </p>
-            <p className={`text-sm mt-1 ${
-              delivery.paymentStatus === "PAID" ? "text-emerald-400" : "text-yellow-400"
-            }`}>
-              {delivery.paymentStatus === "PAID" ? "✓ Payé" : "En attente de paiement"}
-            </p>
+          <div className="relative rounded-3xl overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5" />
+            <div className="absolute inset-[1px] rounded-3xl bg-[#0a0a0a] border border-white/[0.08]" />
+            <div className="relative p-6">
+              <p className="text-xs text-white/45 mb-1">Montant</p>
+              <p className="text-3xl font-black text-white">
+                {(delivery.amount / 100).toFixed(2)} <span className="text-white/50">€</span>
+              </p>
+              <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/[0.04] border border-white/[0.08] px-3 py-1.5 text-xs font-semibold">
+                <span className={`h-2 w-2 rounded-full ${delivery.paymentStatus === "PAID" ? "bg-emerald-400" : "bg-yellow-400"}`} />
+                <span className={delivery.paymentStatus === "PAID" ? "text-emerald-300" : "text-yellow-300"}>
+                  {delivery.paymentStatus === "PAID" ? "Paiement confirmé" : "Virement en attente"}
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* Profil */}
-          <div className="rounded-xl bg-slate-900/80 border border-slate-800 p-6">
-            <p className="text-xs text-slate-500 mb-2">
+          <div className="relative rounded-3xl overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5" />
+            <div className="absolute inset-[1px] rounded-3xl bg-[#0a0a0a] border border-white/[0.08]" />
+            <div className="relative p-6">
+            <p className="text-xs text-white/45 mb-3">
               {delivery.isCreator ? "Freelance" : "Créateur"}
             </p>
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 text-lg font-bold text-slate-900 overflow-hidden">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-emerald-500 text-lg font-black text-slate-900 overflow-hidden ring-2 ring-black/30">
                 {otherUser.profile?.avatarUrl ? (
                   <Image
                     src={otherUser.profile.avatarUrl}
@@ -602,11 +652,15 @@ export default function DeliveryDetailPage() {
                       router.push(`/messages?conversation=${data.conversation.id}`);
                     }
                   }}
-                  className="text-sm text-cyan-400 hover:underline"
+                  className="mt-1 inline-flex items-center gap-2 text-sm text-cyan-300 hover:text-white transition"
                 >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
                   Envoyer un message
                 </button>
               </div>
+            </div>
             </div>
           </div>
         </div>
@@ -614,8 +668,11 @@ export default function DeliveryDetailPage() {
         {/* ============================================
             ACTIONS
             ============================================ */}
-        <div className="rounded-xl bg-slate-900/80 border border-slate-800 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Actions</h2>
+        <div className="relative rounded-3xl overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5" />
+          <div className="absolute inset-[1px] rounded-3xl bg-[#0a0a0a] border border-white/[0.08]" />
+          <div className="relative p-6">
+          <h2 className="text-lg font-bold text-white mb-4">Actions</h2>
 
           {/* Actions pour le créateur */}
           {delivery.isCreator && (
@@ -626,7 +683,7 @@ export default function DeliveryDetailPage() {
                     type="button"
                     onClick={() => setShowRevisionModal(true)}
                     disabled={actionLoading}
-                    className="flex-1 sm:flex-none rounded-lg border border-orange-500/30 bg-orange-500/10 px-6 py-3 text-sm font-semibold text-orange-400 transition hover:bg-orange-500/20 disabled:opacity-50"
+                    className="flex-1 sm:flex-none rounded-xl border border-orange-500/30 bg-orange-500/10 px-6 py-3 text-sm font-semibold text-orange-200 transition hover:bg-orange-500/15 disabled:opacity-50"
                   >
                     Demander des modifications
                   </button>
@@ -634,7 +691,7 @@ export default function DeliveryDetailPage() {
                     type="button"
                     onClick={handleValidate}
                     disabled={actionLoading}
-                    className="flex-1 sm:flex-none rounded-lg bg-cyan-500 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400 disabled:opacity-50"
+                    className="flex-1 sm:flex-none rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-6 py-3 text-sm font-bold text-slate-900 transition hover:shadow-lg hover:shadow-cyan-500/20 disabled:opacity-50"
                   >
                     {actionLoading ? "..." : "Valider et obtenir le RIB"}
                   </button>
@@ -643,27 +700,27 @@ export default function DeliveryDetailPage() {
 
               {delivery.status === "VALIDATED" && (
                 <div className="w-full space-y-3">
-                  <p className="text-sm text-yellow-300">
+                  <p className="text-sm text-yellow-200">
                     Effectuez un <span className="font-semibold text-white">virement bancaire</span> au freelance (paiement hors CREIX).
                   </p>
-                  <div className="rounded-lg bg-slate-800/70 border border-slate-700 p-4 text-sm text-slate-200">
+                  <div className="rounded-2xl bg-white/[0.03] border border-white/[0.08] p-4 text-sm text-white/80">
                     <div className="grid gap-2 sm:grid-cols-2">
                       <div>
-                        <p className="text-xs text-slate-400">Montant</p>
+                        <p className="text-xs text-white/45">Montant</p>
                         <p className="font-semibold text-emerald-300">{(delivery.amount / 100).toFixed(2)} €</p>
                       </div>
                       <div>
-                        <p className="text-xs text-slate-400">Bénéficiaire</p>
+                        <p className="text-xs text-white/45">Bénéficiaire</p>
                         <p className="font-semibold">{delivery.freelancer.profile?.bankAccountHolder || (delivery.freelancer.profile?.displayName || delivery.freelancer.email)}</p>
                       </div>
                       <div className="sm:col-span-2">
-                        <p className="text-xs text-slate-400">IBAN</p>
-                        <p className="font-mono break-all">{delivery.freelancer.profile?.iban || "IBAN non renseigné"}</p>
+                        <p className="text-xs text-white/45">IBAN</p>
+                        <p className="font-mono break-all text-white/85">{delivery.freelancer.profile?.iban || "IBAN non renseigné"}</p>
                       </div>
                       {(delivery.freelancer.profile?.bic || delivery.freelancer.profile?.bankName) && (
                         <div className="sm:col-span-2">
-                          <p className="text-xs text-slate-400">Banque</p>
-                          <p className="text-slate-200">
+                          <p className="text-xs text-white/45">Banque</p>
+                          <p className="text-white/75">
                             {delivery.freelancer.profile?.bankName || ""}
                             {delivery.freelancer.profile?.bic ? ` • BIC: ${delivery.freelancer.profile?.bic}` : ""}
                           </p>
@@ -671,14 +728,14 @@ export default function DeliveryDetailPage() {
                       )}
                     </div>
                   </div>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-white/40">
                     Après le virement, le freelance confirmera la réception puis vous enverra la version finale.
                   </p>
                 </div>
               )}
 
               {delivery.status === "PAID" && (
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-white/55">
                   Paiement confirmé par le freelance. En attente de la version finale.
                 </p>
               )}
@@ -690,14 +747,14 @@ export default function DeliveryDetailPage() {
             <div className="flex flex-wrap gap-3">
               {delivery.status === "NEEDS_REVISION" && (
                 <div className="w-full">
-                  <p className="text-sm text-orange-400 mb-3">
+                  <p className="text-sm text-orange-200 mb-3">
                     Le créateur a demandé des modifications. Envoyez une nouvelle version protégée.
                   </p>
                   <button
                     type="button"
                     onClick={() => setShowRevisionUploadModal(true)}
                     disabled={actionLoading}
-                    className="rounded-lg bg-orange-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-400 disabled:opacity-50"
+                    className="rounded-xl bg-orange-500 px-6 py-3 text-sm font-bold text-slate-900 transition hover:bg-orange-400 disabled:opacity-50"
                   >
                     📤 Envoyer la nouvelle version
                   </button>
@@ -706,14 +763,14 @@ export default function DeliveryDetailPage() {
 
               {delivery.status === "VALIDATED" && (
                 <>
-                  <p className="text-sm text-yellow-300">
+                  <p className="text-sm text-yellow-200">
                     En attente du virement bancaire du créateur.
                   </p>
                   <button
                     type="button"
                     onClick={handleConfirmTransfer}
                     disabled={actionLoading}
-                    className="rounded-lg bg-emerald-500 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-emerald-400 disabled:opacity-50"
+                    className="rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-6 py-3 text-sm font-bold text-slate-900 transition hover:shadow-lg hover:shadow-emerald-500/20 disabled:opacity-50"
                   >
                     {actionLoading ? "..." : "Confirmer paiement reçu"}
                   </button>
@@ -725,19 +782,20 @@ export default function DeliveryDetailPage() {
                   type="button"
                   onClick={() => setShowFinalModal(true)}
                   disabled={actionLoading}
-                  className="rounded-lg bg-emerald-500 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-emerald-400 disabled:opacity-50"
+                  className="rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-6 py-3 text-sm font-bold text-slate-900 transition hover:shadow-lg hover:shadow-emerald-500/20 disabled:opacity-50"
                 >
                   Envoyer la version finale
                 </button>
               )}
 
               {delivery.status === "FINAL_SENT" && (
-                <p className="text-sm text-emerald-400">
+                <p className="text-sm text-emerald-300 font-semibold">
                   ✓ Version finale envoyée. Mission terminée !
                 </p>
               )}
             </div>
           )}
+          </div>
         </div>
 
         {/* ============================================
@@ -745,8 +803,8 @@ export default function DeliveryDetailPage() {
             ============================================ */}
         {showRevisionModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-            <div className="w-full max-w-md rounded-xl bg-slate-900 border border-slate-800 p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">
+            <div className="w-full max-w-md rounded-3xl bg-[#0a0a0a] border border-white/[0.10] p-6 shadow-2xl shadow-black/60">
+              <h3 className="text-lg font-bold text-white mb-4">
                 Demander des modifications
               </h3>
               <textarea
@@ -754,13 +812,13 @@ export default function DeliveryDetailPage() {
                 onChange={(e) => setRevisionNote(e.target.value)}
                 placeholder="Décrivez les modifications souhaitées..."
                 rows={4}
-                className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+                className="w-full rounded-2xl border border-white/[0.10] bg-white/[0.03] px-4 py-3 text-white placeholder-white/30 focus:border-cyan-500/50 focus:outline-none"
               />
               <div className="mt-4 flex gap-3">
                 <button
                   type="button"
                   onClick={() => setShowRevisionModal(false)}
-                  className="flex-1 rounded-lg border border-slate-700 bg-slate-800 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+                  className="flex-1 rounded-xl border border-white/[0.12] bg-white/[0.03] py-3 text-sm font-semibold text-white/90 transition hover:bg-white/[0.06]"
                 >
                   Annuler
                 </button>
@@ -768,7 +826,7 @@ export default function DeliveryDetailPage() {
                   type="button"
                   onClick={handleRequestRevision}
                   disabled={actionLoading}
-                  className="flex-1 rounded-lg bg-orange-500 py-3 text-sm font-semibold text-slate-900 transition hover:bg-orange-400 disabled:opacity-50"
+                  className="flex-1 rounded-xl bg-orange-500 py-3 text-sm font-bold text-slate-900 transition hover:bg-orange-400 disabled:opacity-50"
                 >
                   {actionLoading ? "..." : "Envoyer"}
                 </button>
@@ -782,13 +840,13 @@ export default function DeliveryDetailPage() {
             ============================================ */}
         {showFinalModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-            <div className="w-full max-w-md rounded-xl bg-slate-900 border border-slate-800 p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">
+            <div className="w-full max-w-md rounded-3xl bg-[#0a0a0a] border border-white/[0.10] p-6 shadow-2xl shadow-black/60">
+              <h3 className="text-lg font-bold text-white mb-4">
                 Envoyer la version finale
               </h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm text-slate-400 mb-2">
+                  <label className="block text-sm text-white/55 mb-2">
                     Fichier final (image ou vidéo)
                   </label>
                   <div className="relative">
@@ -801,29 +859,29 @@ export default function DeliveryDetailPage() {
                     />
                     <label
                       htmlFor="final-file-input"
-                      className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-700 rounded-lg cursor-pointer hover:border-emerald-500 transition"
+                      className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/[0.16] rounded-2xl bg-white/[0.02] cursor-pointer hover:border-emerald-500/60 hover:bg-white/[0.04] transition"
                     >
                       {finalFile ? (
                         <div className="text-center">
                           <p className="text-sm text-white font-medium">{finalFile.name}</p>
-                          <p className="text-xs text-slate-500 mt-1">
+                          <p className="text-xs text-white/35 mt-1">
                             {(finalFile.size / 1024 / 1024).toFixed(2)} MB
                           </p>
                         </div>
                       ) : (
                         <div className="text-center">
-                          <svg className="w-8 h-8 text-slate-500 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg className="w-8 h-8 text-white/35 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                           </svg>
-                          <p className="text-sm text-slate-400">Cliquez pour sélectionner</p>
-                          <p className="text-xs text-slate-500">JPG, PNG, WebP, MP4, MOV, WebM</p>
+                          <p className="text-sm text-white/55">Cliquez pour sélectionner</p>
+                          <p className="text-xs text-white/35">JPG, PNG, WebP, MP4, MOV, WebM</p>
                         </div>
                       )}
                     </label>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm text-slate-400 mb-2">
+                  <label className="block text-sm text-white/55 mb-2">
                     Note (optionnel)
                   </label>
                   <textarea
@@ -831,7 +889,7 @@ export default function DeliveryDetailPage() {
                     onChange={(e) => setFinalNote(e.target.value)}
                     placeholder="Instructions de téléchargement, fichiers inclus..."
                     rows={3}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+                    className="w-full rounded-2xl border border-white/[0.10] bg-white/[0.03] px-4 py-3 text-white placeholder-white/30 focus:border-cyan-500/50 focus:outline-none"
                   />
                 </div>
               </div>
@@ -839,7 +897,7 @@ export default function DeliveryDetailPage() {
                 <button
                   type="button"
                   onClick={() => setShowFinalModal(false)}
-                  className="flex-1 rounded-lg border border-slate-700 bg-slate-800 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+                  className="flex-1 rounded-xl border border-white/[0.12] bg-white/[0.03] py-3 text-sm font-semibold text-white/90 transition hover:bg-white/[0.06]"
                 >
                   Annuler
                 </button>
@@ -847,7 +905,7 @@ export default function DeliveryDetailPage() {
                   type="button"
                   onClick={handleSendFinal}
                   disabled={actionLoading || uploadingFinal || !finalFile}
-                  className="flex-1 rounded-lg bg-emerald-500 py-3 text-sm font-semibold text-slate-900 transition hover:bg-emerald-400 disabled:opacity-50"
+                  className="flex-1 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 py-3 text-sm font-bold text-slate-900 transition hover:shadow-lg hover:shadow-emerald-500/20 disabled:opacity-50"
                 >
                   {actionLoading || uploadingFinal ? "Envoi..." : "Envoyer"}
                 </button>
@@ -861,18 +919,18 @@ export default function DeliveryDetailPage() {
             ============================================ */}
         {showRevisionUploadModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-            <div className="w-full max-w-md rounded-xl bg-slate-900 border border-slate-800 p-6">
-              <h3 className="text-lg font-semibold text-white mb-2">
+            <div className="w-full max-w-md rounded-3xl bg-[#0a0a0a] border border-white/[0.10] p-6 shadow-2xl shadow-black/60">
+              <h3 className="text-lg font-bold text-white mb-2">
                 Envoyer une nouvelle version
               </h3>
-              <p className="text-sm text-slate-400 mb-4">
-                Uploadez votre travail corrigé. CREIX ajoutera automatiquement le filigrane et le flou de protection.
+              <p className="text-sm text-white/55 mb-4">
+                Uploadez votre travail corrigé. CREIX ajoutera automatiquement le filigrane de protection.
               </p>
               
               <div className="space-y-4">
                 {/* Zone d'upload */}
                 <div>
-                  <label className="block text-sm text-slate-400 mb-2">
+                  <label className="block text-sm text-white/55 mb-2">
                     Fichier (image ou vidéo)
                   </label>
                   <div className="relative">
@@ -885,22 +943,22 @@ export default function DeliveryDetailPage() {
                     />
                     <label
                       htmlFor="revision-file-input"
-                      className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-700 rounded-lg cursor-pointer hover:border-orange-500 transition"
+                      className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/[0.16] rounded-2xl bg-white/[0.02] cursor-pointer hover:border-orange-500/60 hover:bg-white/[0.04] transition"
                     >
                       {revisionFile ? (
                         <div className="text-center">
                           <p className="text-sm text-white font-medium">{revisionFile.name}</p>
-                          <p className="text-xs text-slate-500 mt-1">
+                          <p className="text-xs text-white/35 mt-1">
                             {(revisionFile.size / 1024 / 1024).toFixed(2)} MB
                           </p>
                         </div>
                       ) : (
                         <div className="text-center">
-                          <svg className="w-8 h-8 text-slate-500 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg className="w-8 h-8 text-white/35 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                           </svg>
-                          <p className="text-sm text-slate-400">Cliquez pour sélectionner</p>
-                          <p className="text-xs text-slate-500">JPG, PNG, WebP, MP4, MOV, WebM</p>
+                          <p className="text-sm text-white/55">Cliquez pour sélectionner</p>
+                          <p className="text-xs text-white/35">JPG, PNG, WebP, MP4, MOV, WebM</p>
                         </div>
                       )}
                     </label>
@@ -909,7 +967,7 @@ export default function DeliveryDetailPage() {
 
                 {/* Note */}
                 <div>
-                  <label className="block text-sm text-slate-400 mb-2">
+                  <label className="block text-sm text-white/55 mb-2">
                     Note pour le créateur (optionnel)
                   </label>
                   <textarea
@@ -917,7 +975,7 @@ export default function DeliveryDetailPage() {
                     onChange={(e) => setRevisionUploadNote(e.target.value)}
                     placeholder="Décrivez les modifications apportées..."
                     rows={3}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-white placeholder-slate-500 focus:border-orange-500 focus:outline-none"
+                    className="w-full rounded-2xl border border-white/[0.10] bg-white/[0.03] px-4 py-3 text-white placeholder-white/30 focus:border-orange-500/50 focus:outline-none"
                   />
                 </div>
               </div>
@@ -930,7 +988,7 @@ export default function DeliveryDetailPage() {
                     setRevisionFile(null);
                     setRevisionUploadNote("");
                   }}
-                  className="flex-1 rounded-lg border border-slate-700 bg-slate-800 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+                  className="flex-1 rounded-xl border border-white/[0.12] bg-white/[0.03] py-3 text-sm font-semibold text-white/90 transition hover:bg-white/[0.06]"
                 >
                   Annuler
                 </button>
@@ -938,7 +996,7 @@ export default function DeliveryDetailPage() {
                   type="button"
                   onClick={handleSendRevision}
                   disabled={uploadingRevision || !revisionFile}
-                  className="flex-1 rounded-lg bg-orange-500 py-3 text-sm font-semibold text-white transition hover:bg-orange-400 disabled:opacity-50"
+                  className="flex-1 rounded-xl bg-orange-500 py-3 text-sm font-bold text-slate-900 transition hover:bg-orange-400 disabled:opacity-50"
                 >
                   {uploadingRevision ? "Envoi en cours..." : "Envoyer"}
                 </button>
@@ -961,7 +1019,7 @@ function DeliveryTimeline({ status }: { status: string }) {
     { key: "PENDING", label: "Créée" },
     { key: "PROTECTED_SENT", label: "Version protégée" },
     { key: "VALIDATED", label: "Validée" },
-    { key: "PAID", label: "Payée" },
+    { key: "PAID", label: "Paiement confirmé" },
     { key: "FINAL_SENT", label: "Version finale" }
   ];
 
@@ -978,28 +1036,28 @@ function DeliveryTimeline({ status }: { status: string }) {
         return (
           <div key={step.key} className="flex items-center gap-2 flex-1">
             <div className={`flex flex-col items-center ${index < steps.length - 1 ? "flex-1" : ""}`}>
-              <div className={`h-4 w-4 rounded-full ${
+              <div className={`h-4 w-4 rounded-full ring-2 ring-black/40 ${
                 isRevision
                   ? "bg-orange-500"
                   : isCompleted 
                   ? "bg-emerald-500" 
                   : isCurrent 
                   ? "bg-cyan-500" 
-                  : "bg-slate-700"
+                  : "bg-white/10"
               }`} />
               <span className={`mt-2 text-xs text-center ${
                 isRevision
-                  ? "text-orange-400"
+                  ? "text-orange-200"
                   : isCompleted || isCurrent 
                   ? "text-white" 
-                  : "text-slate-500"
+                  : "text-white/35"
               }`}>
                 {isRevision ? "Révision" : step.label}
               </span>
             </div>
             {index < steps.length - 1 && (
               <div className={`h-0.5 flex-1 ${
-                isCompleted ? "bg-emerald-500" : "bg-slate-700"
+                isCompleted ? "bg-emerald-500" : "bg-white/10"
               }`} />
             )}
           </div>
@@ -1018,7 +1076,7 @@ function SecureVideoPlayer({ url }: { url: string }) {
   
   return (
     <div 
-      className="relative rounded-lg overflow-hidden bg-black"
+      className="relative rounded-2xl overflow-hidden bg-black border border-white/[0.10]"
       onContextMenu={(e) => e.preventDefault()}
     >
       {/* Vidéo */}
@@ -1104,7 +1162,7 @@ function SecureVideoPlayer({ url }: { url: string }) {
 function SecureImageViewer({ url }: { url: string }) {
   return (
     <div 
-      className="relative rounded-lg overflow-hidden bg-black"
+      className="relative rounded-2xl overflow-hidden bg-black border border-white/[0.10]"
       onContextMenu={(e) => e.preventDefault()}
       onDragStart={(e) => e.preventDefault()}
       style={{
