@@ -1038,65 +1038,19 @@ function SecureVideoPlayer({ url }: { url: string }) {
 // =============================================
 
 function SecureImageViewer({ url }: { url: string }) {
-  // Bloquer les captures d'écran via CSS et événements
-  useEffect(() => {
-    // Bloquer PrintScreen
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "PrintScreen" || (e.metaKey && e.shiftKey && (e.key === "3" || e.key === "4" || e.key === "5"))) {
-        e.preventDefault();
-        alert("Les captures d'écran sont désactivées pour protéger ce contenu.");
-      }
-    };
-    
-    // Bloquer copie
-    const handleCopy = (e: ClipboardEvent) => {
-      e.preventDefault();
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("keyup", handleKeyDown);
-    document.addEventListener("copy", handleCopy);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("keyup", handleKeyDown);
-      document.removeEventListener("copy", handleCopy);
-    };
-  }, []);
-
   return (
     <div 
-      className="secure-media-container relative rounded-lg overflow-hidden bg-black"
+      className="relative rounded-lg overflow-hidden bg-black"
       onContextMenu={(e) => e.preventDefault()}
-      onCopy={(e) => e.preventDefault()}
-      onCut={(e) => e.preventDefault()}
       onDragStart={(e) => e.preventDefault()}
       style={{
-        // Protection anti-screenshot CSS
         WebkitTouchCallout: "none",
         WebkitUserSelect: "none",
-        userSelect: "none",
-        // Ces propriétés peuvent déclencher la protection DRM sur certains navigateurs
-        filter: "blur(0)",
-        WebkitFilter: "blur(0)",
-        backfaceVisibility: "hidden",
-        WebkitBackfaceVisibility: "hidden",
-        transform: "translateZ(0)",
-        WebkitTransform: "translateZ(0)",
+        userSelect: "none"
       }}
     >
-      {/* Overlay de protection invisible qui capture les interactions */}
-      <div 
-        className="absolute inset-0 z-30"
-        style={{
-          background: "transparent",
-          // Cette technique peut rendre noir en screenshot sur certains navigateurs
-          mixBlendMode: "normal",
-        }}
-      />
-      
-      {/* Image avec protection */}
-      <div className="relative" style={{ isolation: "isolate" }}>
+      {/* Image */}
+      <div className="relative">
         <Image
           src={url}
           alt="Version protégée"
@@ -1108,9 +1062,6 @@ function SecureImageViewer({ url }: { url: string }) {
             userSelect: "none",
             pointerEvents: "none",
             WebkitTouchCallout: "none",
-            // Technique anti-screenshot
-            WebkitFilter: "blur(0)",
-            filter: "blur(0)",
           }}
           draggable={false}
           unoptimized
