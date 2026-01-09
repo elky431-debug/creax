@@ -181,6 +181,7 @@ export default function SendDeliveryPage() {
       const formData = new FormData();
       formData.append("file", upload.file);
       formData.append("missionId", missionId);
+      formData.append("mode", "protected");
 
       const uploadRes = await fetch("/api/deliveries/upload", {
         method: "POST",
@@ -200,11 +201,9 @@ export default function SendDeliveryPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           missionId,
-          protectedUrl: uploadData.protectedUrl,
-          protectedType: uploadData.protectedType,
+          protectedUrl: uploadData.url,
+          protectedType: uploadData.type,
           protectedNote: note || undefined,
-          finalUrl: uploadData.finalUrl,
-          finalFilename: uploadData.finalFilename,
           amount: priceNum * 100 // Convertir en centimes
         })
       });

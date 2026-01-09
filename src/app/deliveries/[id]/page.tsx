@@ -12,7 +12,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useRouter, useParams, useSearchParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -40,6 +40,10 @@ type DeliveryDetail = {
       avatarUrl: string | null;
       bio: string | null;
       skills: string | null;
+      iban?: string | null;
+      bic?: string | null;
+      bankName?: string | null;
+      bankAccountHolder?: string | null;
     } | null;
   };
   creator: {
@@ -95,12 +99,12 @@ const STATUS_LABELS: Record<string, { label: string; color: string; description:
   VALIDATED: { 
     label: "Validée", 
     color: "text-yellow-400",
-    description: "En attente du paiement pour débloquer la version finale"
+    description: "Virement bancaire requis (hors CREIX)"
   },
   PAID: { 
-    label: "Payée", 
+    label: "Paiement confirmé", 
     color: "text-emerald-400",
-    description: "Le freelance peut maintenant envoyer la version finale"
+    description: "Le freelance peut envoyer la version finale"
   },
   FINAL_SENT: { 
     label: "Version finale envoyée", 
@@ -121,7 +125,6 @@ const STATUS_LABELS: Record<string, { label: string; color: string; description:
 export default function DeliveryDetailPage() {
   const router = useRouter();
   const params = useParams();
-  const searchParams = useSearchParams();
   const { data: session, status } = useSession();
 
   const [delivery, setDelivery] = useState<DeliveryDetail | null>(null);
@@ -136,7 +139,8 @@ export default function DeliveryDetailPage() {
 
   // Modal d'upload final
   const [showFinalModal, setShowFinalModal] = useState(false);
-  const [finalUrl, setFinalUrl] = useState("");
+  const [finalFile, setFinalFile] = useState<File | null>(null);
+  const [uploadingFinal, setUploadingFinal] = useState(false);
   const [finalNote, setFinalNote] = useState("");
 
   // Modal d'upload révision (freelance)
@@ -147,26 +151,7 @@ export default function DeliveryDetailPage() {
 
   const deliveryId = params.id as string;
 
-  // Vérifier le statut du paiement dans l'URL
-  useEffect(() => {
-    const payment = searchParams.get("payment");
-    if (payment === "success") {
-      setSuccess("Paiement effectué avec succès ! CREIX débloque la version finale automatiquement…");
-
-      // Rattrapage: si le webhook est en retard / raté, on force le déblocage
-      void (async () => {
-        try {
-          await fetch(`/api/deliveries/${deliveryId}/sync-now`, { method: "POST" });
-        } catch {
-          // ignore
-        } finally {
-          fetchDelivery();
-        }
-      })();
-    } else if (payment === "cancelled") {
-      setError("Paiement annulé.");
-    }
-  }, [searchParams, deliveryId, fetchDelivery]);
+  // Paiements Stripe supprimés (virements hors plateforme)
 
   // Charger la livraison
   const fetchDelivery = useCallback(async () => {
@@ -266,27 +251,23 @@ export default function DeliveryDetailPage() {
     }
   }
 
-  // Payer
-  async function handlePay() {
+  // Confirmer la réception du virement (freelance)
+  async function handleConfirmTransfer() {
     setActionLoading(true);
     setError(null);
-
     try {
-      const res = await fetch(`/api/deliveries/${deliveryId}/pay`, {
-        method: "POST"
+      const res = await fetch(`/api/deliveries/${deliveryId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "CONFIRM_TRANSFER" })
       });
-
       const data = await res.json();
-
       if (!res.ok) {
-        setError(data.error || "Erreur lors du paiement");
+        setError(data.error || "Erreur lors de la confirmation");
         return;
       }
-
-      // Rediriger vers Stripe
-      if (data.url) {
-        window.location.href = data.url;
-      }
+      setSuccess(data.message);
+      fetchDelivery();
     } catch {
       setError("Erreur réseau");
     } finally {
@@ -296,8 +277,8 @@ export default function DeliveryDetailPage() {
 
   // Envoyer la version finale
   async function handleSendFinal() {
-    if (!finalUrl.trim()) {
-      setError("Veuillez fournir l'URL de la version finale");
+    if (!finalFile) {
+      setError("Veuillez sélectionner un fichier final");
       return;
     }
 
@@ -305,13 +286,34 @@ export default function DeliveryDetailPage() {
     setError(null);
 
     try {
+      setUploadingFinal(true);
+
+      // 1) Upload final (sans watermark)
+      const formData = new FormData();
+      formData.append("file", finalFile);
+      formData.append("missionId", delivery?.missionId || "");
+      formData.append("mode", "final");
+
+      const uploadRes = await fetch("/api/deliveries/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      const uploadData = await uploadRes.json();
+      if (!uploadRes.ok) {
+        setError(uploadData.error || "Erreur lors de l'upload final");
+        return;
+      }
+
+      // 2) Enregistrer l'URL finale sur la livraison
       const res = await fetch(`/api/deliveries/${deliveryId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           action: "SEND_FINAL",
-          finalUrl,
-          finalNote 
+          finalUrl: uploadData.url,
+          finalFilename: uploadData.filename,
+          finalNote
         })
       });
 
@@ -324,10 +326,12 @@ export default function DeliveryDetailPage() {
 
       setSuccess(data.message);
       setShowFinalModal(false);
+      setFinalFile(null);
       fetchDelivery();
     } catch {
       setError("Erreur réseau");
     } finally {
+      setUploadingFinal(false);
       setActionLoading(false);
     }
   }
@@ -347,6 +351,7 @@ export default function DeliveryDetailPage() {
       const formData = new FormData();
       formData.append("file", revisionFile);
       formData.append("missionId", delivery?.missionId || "");
+      formData.append("mode", "protected");
 
       const uploadRes = await fetch("/api/deliveries/upload", {
         method: "POST",
@@ -366,11 +371,9 @@ export default function DeliveryDetailPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "SEND_REVISION",
-          protectedUrl: uploadData.protectedUrl,
-          protectedType: uploadData.protectedType,
-          protectedNote: revisionUploadNote,
-          finalUrl: uploadData.finalUrl,
-          finalFilename: uploadData.finalFilename
+          protectedUrl: uploadData.url,
+          protectedType: uploadData.type,
+          protectedNote: revisionUploadNote
         })
       });
 
@@ -633,27 +636,50 @@ export default function DeliveryDetailPage() {
                     disabled={actionLoading}
                     className="flex-1 sm:flex-none rounded-lg bg-cyan-500 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400 disabled:opacity-50"
                   >
-                    {actionLoading ? "..." : "Valider et passer au paiement"}
+                    {actionLoading ? "..." : "Valider et obtenir le RIB"}
                   </button>
                 </>
               )}
 
               {delivery.status === "VALIDATED" && (
-                <button
-                  type="button"
-                  onClick={handlePay}
-                  disabled={actionLoading}
-                  className="rounded-lg bg-emerald-500 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-emerald-400 disabled:opacity-50"
-                >
-                  {actionLoading ? "Redirection..." : `Payer ${(delivery.amount / 100).toFixed(2)} €`}
-                </button>
+                <div className="w-full space-y-3">
+                  <p className="text-sm text-yellow-300">
+                    Effectuez un <span className="font-semibold text-white">virement bancaire</span> au freelance (paiement hors CREIX).
+                  </p>
+                  <div className="rounded-lg bg-slate-800/70 border border-slate-700 p-4 text-sm text-slate-200">
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <div>
+                        <p className="text-xs text-slate-400">Montant</p>
+                        <p className="font-semibold text-emerald-300">{(delivery.amount / 100).toFixed(2)} €</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-400">Bénéficiaire</p>
+                        <p className="font-semibold">{delivery.freelancer.profile?.bankAccountHolder || (delivery.freelancer.profile?.displayName || delivery.freelancer.email)}</p>
+                      </div>
+                      <div className="sm:col-span-2">
+                        <p className="text-xs text-slate-400">IBAN</p>
+                        <p className="font-mono break-all">{delivery.freelancer.profile?.iban || "IBAN non renseigné"}</p>
+                      </div>
+                      {(delivery.freelancer.profile?.bic || delivery.freelancer.profile?.bankName) && (
+                        <div className="sm:col-span-2">
+                          <p className="text-xs text-slate-400">Banque</p>
+                          <p className="text-slate-200">
+                            {delivery.freelancer.profile?.bankName || ""}
+                            {delivery.freelancer.profile?.bic ? ` • BIC: ${delivery.freelancer.profile?.bic}` : ""}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-400">
+                    Après le virement, le freelance confirmera la réception puis vous enverra la version finale.
+                  </p>
+                </div>
               )}
 
               {delivery.status === "PAID" && (
                 <p className="text-sm text-slate-400">
-                  {delivery.finalUrl
-                    ? "Paiement confirmé. Déblocage automatique de la version finale en cours..."
-                    : "Paiement confirmé. En attente de la version finale."}
+                  Paiement confirmé par le freelance. En attente de la version finale.
                 </p>
               )}
             </div>
@@ -679,15 +705,30 @@ export default function DeliveryDetailPage() {
               )}
 
               {delivery.status === "VALIDATED" && (
-                <p className="text-sm text-yellow-400">
-                  En attente du paiement du créateur...
-                </p>
+                <>
+                  <p className="text-sm text-yellow-300">
+                    En attente du virement bancaire du créateur.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleConfirmTransfer}
+                    disabled={actionLoading}
+                    className="rounded-lg bg-emerald-500 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-emerald-400 disabled:opacity-50"
+                  >
+                    {actionLoading ? "..." : "Confirmer paiement reçu"}
+                  </button>
+                </>
               )}
 
               {delivery.status === "PAID" && (
-                <p className="text-sm text-emerald-300">
-                  Paiement reçu. <span className="text-white/80">CREIX débloque et envoie automatiquement la version finale au créateur.</span>
-                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowFinalModal(true)}
+                  disabled={actionLoading}
+                  className="rounded-lg bg-emerald-500 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-emerald-400 disabled:opacity-50"
+                >
+                  Envoyer la version finale
+                </button>
               )}
 
               {delivery.status === "FINAL_SENT" && (
@@ -748,15 +789,38 @@ export default function DeliveryDetailPage() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm text-slate-400 mb-2">
-                    URL du fichier final (Google Drive, Dropbox, etc.)
+                    Fichier final (image ou vidéo)
                   </label>
-                  <input
-                    type="url"
-                    value={finalUrl}
-                    onChange={(e) => setFinalUrl(e.target.value)}
-                    placeholder="https://..."
-                    className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
-                  />
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm"
+                      onChange={(e) => setFinalFile(e.target.files?.[0] || null)}
+                      className="hidden"
+                      id="final-file-input"
+                    />
+                    <label
+                      htmlFor="final-file-input"
+                      className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-700 rounded-lg cursor-pointer hover:border-emerald-500 transition"
+                    >
+                      {finalFile ? (
+                        <div className="text-center">
+                          <p className="text-sm text-white font-medium">{finalFile.name}</p>
+                          <p className="text-xs text-slate-500 mt-1">
+                            {(finalFile.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <svg className="w-8 h-8 text-slate-500 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                          </svg>
+                          <p className="text-sm text-slate-400">Cliquez pour sélectionner</p>
+                          <p className="text-xs text-slate-500">JPG, PNG, WebP, MP4, MOV, WebM</p>
+                        </div>
+                      )}
+                    </label>
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm text-slate-400 mb-2">
@@ -782,10 +846,10 @@ export default function DeliveryDetailPage() {
                 <button
                   type="button"
                   onClick={handleSendFinal}
-                  disabled={actionLoading}
+                  disabled={actionLoading || uploadingFinal || !finalFile}
                   className="flex-1 rounded-lg bg-emerald-500 py-3 text-sm font-semibold text-slate-900 transition hover:bg-emerald-400 disabled:opacity-50"
                 >
-                  {actionLoading ? "..." : "Envoyer"}
+                  {actionLoading || uploadingFinal ? "Envoi..." : "Envoyer"}
                 </button>
               </div>
             </div>

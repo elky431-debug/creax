@@ -17,7 +17,8 @@ const updateDeliverySchema = z.object({
     "VALIDATE",       // Créateur valide la version protégée
     "REQUEST_REVISION", // Créateur demande des modifications
     "SEND_FINAL",     // Freelance envoie la version finale
-    "SEND_REVISION"   // Freelance envoie une nouvelle version après révision
+    "SEND_REVISION",  // Freelance envoie une nouvelle version après révision
+    "CONFIRM_TRANSFER" // Freelance confirme réception du virement
   ]),
   revisionNote: z.string().optional(),
   finalUrl: z.string().min(1).optional(),
@@ -70,7 +71,11 @@ export async function GET(
                 displayName: true,
                 avatarUrl: true,
                 bio: true,
-                skills: true
+                skills: true,
+                iban: true,
+                bic: true,
+                bankName: true,
+                bankAccountHolder: true
               }
             }
           }
@@ -188,13 +193,100 @@ export async function PATCH(
           where: { id: deliveryId },
           data: {
             status: "VALIDATED",
+            paymentStatus: "PENDING", // virement en attente
             updatedAt: new Date()
           }
         });
 
+        // Notification (message système) au créateur avec IBAN du freelance
+        try {
+          const deliveryWithBank = await prisma.missionDelivery.findUnique({
+            where: { id: deliveryId },
+            select: {
+              missionId: true,
+              creatorId: true,
+              freelancerId: true,
+              amount: true,
+              freelancer: {
+                select: {
+                  email: true,
+                  profile: {
+                    select: {
+                      displayName: true,
+                      iban: true,
+                      bic: true,
+                      bankName: true,
+                      bankAccountHolder: true
+                    }
+                  }
+                }
+              }
+            }
+          });
+
+          if (deliveryWithBank) {
+            const conv = await prisma.conversation.upsert({
+              where: {
+                missionId_creatorId_designerId: {
+                  missionId: deliveryWithBank.missionId,
+                  creatorId: deliveryWithBank.creatorId,
+                  designerId: deliveryWithBank.freelancerId
+                }
+              },
+              update: {},
+              create: {
+                missionId: deliveryWithBank.missionId,
+                creatorId: deliveryWithBank.creatorId,
+                designerId: deliveryWithBank.freelancerId
+              }
+            });
+
+            const freelancerName =
+              deliveryWithBank.freelancer.profile?.displayName || deliveryWithBank.freelancer.email;
+            const amountEuro = (deliveryWithBank.amount / 100).toFixed(2);
+            const iban = deliveryWithBank.freelancer.profile?.iban || "IBAN non renseigné";
+            const bic = deliveryWithBank.freelancer.profile?.bic || "";
+            const bankName = deliveryWithBank.freelancer.profile?.bankName || "";
+            const holder = deliveryWithBank.freelancer.profile?.bankAccountHolder || freelancerName;
+
+            const lines = [
+              `✅ Livraison validée.`,
+              `Paiement à effectuer par virement bancaire (hors CREIX) : ${amountEuro} €`,
+              ``,
+              `Bénéficiaire : ${holder}`,
+              bankName ? `Banque : ${bankName}` : null,
+              `IBAN : ${iban}`,
+              bic ? `BIC : ${bic}` : null,
+              ``,
+              `Une fois le virement effectué, le freelance confirmera la réception et vous enverra la version finale.`
+            ].filter(Boolean).join("\n");
+
+            await prisma.message.create({
+              data: {
+                conversationId: conv.id,
+                senderId: deliveryWithBank.freelancerId,
+                type: "SYSTEM",
+                content: lines,
+                status: "SENT"
+              }
+            });
+
+            await prisma.conversation.update({
+              where: { id: conv.id },
+              data: {
+                lastMessageAt: new Date(),
+                lastMessagePreview: `Virement requis (${amountEuro} €)`,
+                unreadForCreator: { increment: 1 }
+              }
+            });
+          }
+        } catch (e) {
+          console.error("Erreur notification virement:", e);
+        }
+
         return NextResponse.json({ 
           delivery: updatedDelivery,
-          message: "Livraison validée. Procédez au paiement pour recevoir la version finale."
+          message: "Livraison validée. Procédez au virement bancaire (hors CREIX) pour recevoir la version finale."
         });
       }
 
@@ -246,10 +338,10 @@ export async function PATCH(
           );
         }
 
-        // Vérifier que le paiement a été effectué
+        // Vérifier que le paiement (virement) a été confirmé par le freelance
         if (delivery.paymentStatus !== "PAID") {
           return NextResponse.json(
-            { error: "Le paiement doit être effectué avant d'envoyer la version finale" },
+            { error: "Le paiement par virement doit être confirmé avant d'envoyer la version finale" },
             { status: 400 }
           );
         }
@@ -272,6 +364,40 @@ export async function PATCH(
             updatedAt: new Date()
           }
         });
+
+        // Message système au créateur: finale disponible
+        try {
+          const conv = await prisma.conversation.findUnique({
+            where: {
+              missionId_creatorId_designerId: {
+                missionId: delivery.missionId,
+                creatorId: delivery.creatorId,
+                designerId: delivery.freelancerId
+              }
+            }
+          });
+          if (conv) {
+            await prisma.message.create({
+              data: {
+                conversationId: conv.id,
+                senderId: delivery.freelancerId,
+                type: "SYSTEM",
+                content: "🎉 Version finale envoyée. Vous pouvez maintenant la télécharger depuis l’onglet Livraisons.",
+                status: "SENT"
+              }
+            });
+            await prisma.conversation.update({
+              where: { id: conv.id },
+              data: {
+                lastMessageAt: new Date(),
+                lastMessagePreview: "Version finale envoyée",
+                unreadForCreator: { increment: 1 }
+              }
+            });
+          }
+        } catch (e) {
+          console.error("Erreur notif finale:", e);
+        }
 
         // Mettre à jour le statut de la mission
         await prisma.mission.update({
@@ -315,9 +441,6 @@ export async function PATCH(
             protectedUrl,
             protectedType: protectedType || "image",
             protectedNote,
-            // Si la version finale (originale) est fournie, la mettre à jour aussi
-            ...(finalUrl ? { finalUrl } : {}),
-            ...(finalFilename ? { finalFilename } : {}),
             status: "PROTECTED_SENT", // Retour au statut "envoyé" pour validation
             revisionNote: null, // Effacer la note de révision
             updatedAt: new Date()
@@ -327,6 +450,72 @@ export async function PATCH(
         return NextResponse.json({ 
           delivery: updatedDelivery,
           message: "Nouvelle version envoyée ! En attente de validation du créateur."
+        });
+      }
+
+      case "CONFIRM_TRANSFER": {
+        // Seul le freelance peut confirmer réception du virement
+        if (!isFreelancer) {
+          return NextResponse.json(
+            { error: "Seul le freelance peut confirmer la réception du virement" },
+            { status: 403 }
+          );
+        }
+
+        if (delivery.status !== "VALIDATED") {
+          return NextResponse.json(
+            { error: "Le virement ne peut être confirmé que lorsque la livraison est validée" },
+            { status: 400 }
+          );
+        }
+
+        const updatedDelivery = await prisma.missionDelivery.update({
+          where: { id: deliveryId },
+          data: {
+            paymentStatus: "PAID",
+            status: "PAID",
+            paidAt: new Date(),
+            updatedAt: new Date()
+          }
+        });
+
+        // Message système au créateur: paiement confirmé
+        try {
+          const conv = await prisma.conversation.findUnique({
+            where: {
+              missionId_creatorId_designerId: {
+                missionId: delivery.missionId,
+                creatorId: delivery.creatorId,
+                designerId: delivery.freelancerId
+              }
+            }
+          });
+          if (conv) {
+            await prisma.message.create({
+              data: {
+                conversationId: conv.id,
+                senderId: delivery.freelancerId,
+                type: "SYSTEM",
+                content: "✅ Paiement par virement confirmé par le freelance. La version finale sera envoyée dès que possible.",
+                status: "SENT"
+              }
+            });
+            await prisma.conversation.update({
+              where: { id: conv.id },
+              data: {
+                lastMessageAt: new Date(),
+                lastMessagePreview: "Paiement confirmé",
+                unreadForCreator: { increment: 1 }
+              }
+            });
+          }
+        } catch (e) {
+          console.error("Erreur notif paiement confirmé:", e);
+        }
+
+        return NextResponse.json({
+          delivery: updatedDelivery,
+          message: "Paiement confirmé. Vous pouvez maintenant envoyer la version finale."
         });
       }
 

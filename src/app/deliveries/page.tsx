@@ -55,8 +55,8 @@ const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }
   PENDING: { label: "En attente", color: "text-slate-400", bg: "bg-slate-500/20" },
   PROTECTED_SENT: { label: "Version protégée envoyée", color: "text-cyan-400", bg: "bg-cyan-500/20" },
   NEEDS_REVISION: { label: "Modifications demandées", color: "text-orange-400", bg: "bg-orange-500/20" },
-  VALIDATED: { label: "Validée - En attente paiement", color: "text-yellow-400", bg: "bg-yellow-500/20" },
-  PAID: { label: "Payée - En attente version finale", color: "text-emerald-400", bg: "bg-emerald-500/20" },
+  VALIDATED: { label: "Validée - Virement requis", color: "text-yellow-400", bg: "bg-yellow-500/20" },
+  PAID: { label: "Paiement confirmé", color: "text-emerald-400", bg: "bg-emerald-500/20" },
   FINAL_SENT: { label: "Version finale envoyée", color: "text-emerald-400", bg: "bg-emerald-500/20" },
   COMPLETED: { label: "Terminée", color: "text-emerald-400", bg: "bg-emerald-500/20" }
 };
@@ -170,8 +170,8 @@ export default function DeliveriesPage() {
           </h1>
           <p className="text-white/50">
             {isCreator 
-              ? "Validez les travaux et effectuez les paiements pour recevoir les versions finales"
-              : "Gérez vos livraisons. CREIX débloque automatiquement la version finale après paiement"}
+              ? "Validez les travaux puis effectuez le virement bancaire au freelance pour recevoir la version finale"
+              : "Gérez vos livraisons (virement hors CREIX), confirmez le paiement reçu et envoyez la version finale"}
           </p>
         </div>
 

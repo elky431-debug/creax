@@ -1,13 +1,13 @@
 /**
- * API pour uploader un fichier de livraison (FINAL + PROTÉGÉ)
+ * API pour uploader un fichier de livraison (PROTÉGÉ ou FINAL)
  * 
  * POST /api/deliveries/upload
  * 
  * Fonctionnalités :
- * - Upload de la version finale (originale, sans filigrane)
- * - Génération + upload de la version protégée
+ * - mode=protected: upload d'une version protégée
  *   - Images (jpg, png, webp) → flou + watermark CREIX
- *   - Vidéos (mp4, mov, webm) → copie (preview = même fichier pour le moment)
+ *   - Vidéos (mp4, mov, webm) → stockage direct (preview)
+ * - mode=final: upload de la version finale (originale, sans filigrane)
  * - Stockage sur Supabase Storage
  */
 
@@ -155,6 +155,7 @@ export async function POST(req: Request) {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
     const missionId = formData.get("missionId") as string | null;
+    const mode = (formData.get("mode") as string | null) || "protected"; // protected | final
 
     if (!file) {
       return NextResponse.json({ error: "Aucun fichier fourni" }, { status: 400 });
@@ -200,16 +201,16 @@ export async function POST(req: Request) {
       );
     }
 
-    // Convertir le fichier en buffer (version finale, originale)
+    // Convertir le fichier en buffer
     const bytes = await file.arrayBuffer();
-    const finalBuffer = Buffer.from(bytes);
-    let protectedBuffer = finalBuffer;
+    const inputBuffer = Buffer.from(bytes);
+    let outputBuffer = inputBuffer;
 
-    // Appliquer le flou + watermark pour les images
-    if (isImage) {
+    // Appliquer le flou + watermark uniquement pour mode=protected et images
+    if (mode === "protected" && isImage) {
       try {
         console.log("Application du flou et watermark...");
-        protectedBuffer = await applyImageWatermark(finalBuffer, freelancerName);
+        outputBuffer = await applyImageWatermark(inputBuffer, freelancerName);
         console.log("Flou et watermark appliqués avec succès!");
       } catch (error) {
         console.error("ERREUR watermark/flou:", error);
@@ -220,65 +221,54 @@ export async function POST(req: Request) {
       }
     }
 
-    // Générer un nom de fichier unique (2 fichiers: final + protected)
+    // Générer un nom de fichier unique
     const timestamp = Date.now();
     const randomStr = Math.random().toString(36).substring(2, 8);
     const originalExtension = (file.name.split(".").pop() || (isImage ? "jpg" : "mp4")).toLowerCase();
-    const finalPath = `deliveries/final_${missionId}_${timestamp}_${randomStr}.${originalExtension}`;
-    const protectedExtension = isImage ? "jpg" : originalExtension;
-    const protectedPath = `deliveries/protected_${missionId}_${timestamp}_${randomStr}.${protectedExtension}`;
+    const storedExtension =
+      mode === "protected" && isImage ? "jpg" : originalExtension;
 
-    // Upload FINAL (original)
-    const { error: finalUploadError } = await supabase.storage
+    const prefix = mode === "final" ? "final" : "protected";
+    const path = `deliveries/${prefix}_${missionId}_${timestamp}_${randomStr}.${storedExtension}`;
+
+    // Upload vers Supabase Storage
+    const { error: uploadError } = await supabase.storage
       .from("uploads")
-      .upload(finalPath, finalBuffer, {
-        contentType: file.type,
+      .upload(path, outputBuffer, {
+        contentType: mode === "protected" && isImage ? "image/jpeg" : file.type,
         upsert: false
       });
 
-    if (finalUploadError) {
-      console.error("Erreur Supabase Storage (final):", finalUploadError);
+    if (uploadError) {
+      console.error("Erreur Supabase Storage:", uploadError);
       return NextResponse.json(
         { error: "Erreur lors de l'upload du fichier" },
         { status: 500 }
       );
     }
 
-    // Upload PROTECTED (preview)
-    const { error: protectedUploadError } = await supabase.storage
+    const { data: publicUrlData } = supabase.storage
       .from("uploads")
-      .upload(protectedPath, protectedBuffer, {
-        contentType: isImage ? "image/jpeg" : file.type,
-        upsert: false
-      });
+      .getPublicUrl(path);
 
-    if (protectedUploadError) {
-      console.error("Erreur Supabase Storage (protected):", protectedUploadError);
-      return NextResponse.json(
-        { error: "Erreur lors de l'upload du fichier protégé" },
-        { status: 500 }
-      );
+    // Réponse compatible (selon mode)
+    if (mode === "final") {
+      return NextResponse.json({
+        url: publicUrlData.publicUrl,
+        filename: file.name,
+        size: outputBuffer.length,
+        mimeType: file.type,
+        mode: "final"
+      });
     }
 
-    // Obtenir les URLs publiques
-    const { data: finalPublicUrlData } = supabase.storage
-      .from("uploads")
-      .getPublicUrl(finalPath);
-    const { data: protectedPublicUrlData } = supabase.storage
-      .from("uploads")
-      .getPublicUrl(protectedPath);
-
     return NextResponse.json({
-      protectedUrl: protectedPublicUrlData.publicUrl,
-      protectedType: isImage ? "image" : "video",
-      protectedFilename: `protected_${file.name}`,
-      protectedSize: protectedBuffer.length,
+      url: publicUrlData.publicUrl,
+      type: isImage ? "image" : "video",
+      filename: file.name,
+      size: outputBuffer.length,
       watermarked: isImage,
-
-      finalUrl: finalPublicUrlData.publicUrl,
-      finalFilename: file.name,
-      finalSize: finalBuffer.length,
-      finalMimeType: file.type
+      mode: "protected"
     });
   } catch (error) {
     console.error("Erreur upload delivery:", error);

@@ -17,8 +17,6 @@ const createDeliverySchema = z.object({
   protectedUrl: z.string().min(1, "URL du fichier requise"),
   protectedType: z.enum(["image", "video"], { errorMap: () => ({ message: "Type de fichier invalide" }) }),
   protectedNote: z.string().optional(),
-  finalUrl: z.string().min(1, "URL du fichier final requise"),
-  finalFilename: z.string().min(1, "Nom du fichier final requis"),
   amount: z.number({ invalid_type_error: "Le prix doit être un nombre" }).int().positive("Le prix doit être positif")
 });
 
@@ -176,7 +174,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { missionId, protectedUrl, protectedType, protectedNote, finalUrl, finalFilename, amount } = parsed.data;
+    const { missionId, protectedUrl, protectedType, protectedNote, amount } = parsed.data;
 
     // Vérifier que la mission existe et est en cours
     const mission = await prisma.mission.findUnique({
@@ -233,8 +231,6 @@ export async function POST(req: Request) {
             protectedUrl,
             protectedType,
             protectedNote,
-            finalUrl,
-            finalFilename,
             status: "PROTECTED_SENT",
             protectedExpiresAt: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 heures
             updatedAt: new Date()
@@ -248,8 +244,6 @@ export async function POST(req: Request) {
             protectedUrl,
             protectedType,
             protectedNote,
-            finalUrl,
-            finalFilename,
             amount,
             status: "PROTECTED_SENT",
             protectedExpiresAt: new Date(Date.now() + 2 * 60 * 60 * 1000) // 2 heures
