@@ -287,14 +287,51 @@ function PricingContent() {
                 {/* Features */}
                 <div className="space-y-4 mb-10">
                   {[
-                    { icon: "🔍", text: "Recherche illimitée de talents" },
-                    { icon: "💬", text: "Messagerie sécurisée" },
-                    { icon: "📊", text: "Dashboard de gestion" },
-                    { icon: "🔔", text: "Notifications en temps réel" },
-                    { icon: "⭐", text: "Support prioritaire" }
+                    {
+                      icon: (
+                        <svg className="h-5 w-5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m1.1-4.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z" />
+                        </svg>
+                      ),
+                      text: "Recherche illimitée de talents"
+                    },
+                    {
+                      icon: (
+                        <svg className="h-5 w-5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                      ),
+                      text: "Messagerie intégrée"
+                    },
+                    {
+                      icon: (
+                        <svg className="h-5 w-5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18h18M7 15v3m4-8v8m4-5v5" />
+                        </svg>
+                      ),
+                      text: "Dashboard de gestion"
+                    },
+                    {
+                      icon: (
+                        <svg className="h-5 w-5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0a3 3 0 11-6 0h6z" />
+                        </svg>
+                      ),
+                      text: "Notifications en temps réel"
+                    },
+                    {
+                      icon: (
+                        <svg className="h-5 w-5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.809c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      ),
+                      text: "Support prioritaire"
+                    }
                   ].map((f, i) => (
                     <div key={i} className="flex items-center gap-4">
-                      <span className="text-lg">{f.icon}</span>
+                      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-500/10 border border-cyan-500/20">
+                        {f.icon}
+                      </span>
                       <span className="text-white/70 text-sm">{f.text}</span>
                     </div>
                   ))}
@@ -360,14 +397,51 @@ function PricingContent() {
                 {/* Features */}
                 <div className="space-y-4 mb-10">
                   {[
-                    { icon: "🎨", text: "Portfolio public optimisé" },
-                    { icon: "📩", text: "Demandes de créateurs qualifiés" },
-                    { icon: "💬", text: "Messagerie & historique" },
-                    { icon: "📈", text: "Statistiques de profil" },
-                    { icon: "🚀", text: "Mise en avant premium" }
+                    {
+                      icon: (
+                        <svg className="h-5 w-5 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
+                        </svg>
+                      ),
+                      text: "Portfolio public optimisé"
+                    },
+                    {
+                      icon: (
+                        <svg className="h-5 w-5 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M21 15a4 4 0 01-4 4H7l-4 3V7a4 4 0 014-4h10a4 4 0 014 4v8z" />
+                        </svg>
+                      ),
+                      text: "Demandes de créateurs qualifiés"
+                    },
+                    {
+                      icon: (
+                        <svg className="h-5 w-5 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                      ),
+                      text: "Messagerie & historique"
+                    },
+                    {
+                      icon: (
+                        <svg className="h-5 w-5 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4 19V5m0 14h16M7 16V8m4 8V6m4 10v-4" />
+                        </svg>
+                      ),
+                      text: "Statistiques de profil"
+                    },
+                    {
+                      icon: (
+                        <svg className="h-5 w-5 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                      ),
+                      text: "Mise en avant premium"
+                    }
                   ].map((f, i) => (
                     <div key={i} className="flex items-center gap-4">
-                      <span className="text-lg">{f.icon}</span>
+                      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                        {f.icon}
+                      </span>
                       <span className="text-white/70 text-sm">{f.text}</span>
                     </div>
                   ))}
@@ -395,23 +469,15 @@ function PricingContent() {
           {/* Trust indicators */}
           <div className="flex flex-wrap items-center justify-center gap-8 mb-8">
             {[
-              { icon: "🔒", text: "Paiement 100% sécurisé" },
-              { icon: "⚡", text: "Activation instantanée" },
-              { icon: "🔄", text: "Annulation en 1 clic" }
+              { text: "Zéro commission sur vos projets" },
+              { text: "Annulation en 1 clic" },
+              { text: "Support rapide" }
             ].map((item, i) => (
               <div key={i} className="flex items-center gap-2 text-white/40">
-                <span>{item.icon}</span>
+                <span className="h-1.5 w-1.5 rounded-full bg-cyan-400/60" />
                 <span className="text-sm">{item.text}</span>
               </div>
             ))}
-          </div>
-          
-          {/* Stripe badge */}
-          <div className="inline-flex items-center gap-2 text-white/20 text-xs">
-            <span>Propulsé par</span>
-            <svg className="h-5" viewBox="0 0 60 25" fill="currentColor">
-              <path d="M59.64 14.28h-8.06c.19 1.93 1.6 2.55 3.2 2.55 1.64 0 2.96-.37 4.05-.95v3.32a8.33 8.33 0 0 1-4.56 1.1c-4.01 0-6.83-2.5-6.83-7.48 0-4.19 2.39-7.52 6.3-7.52 3.92 0 5.96 3.28 5.96 7.5 0 .4-.02 1.04-.06 1.48zm-3.67-3.14c0-1.42-.6-3.28-2.37-3.28-1.72 0-2.5 1.86-2.6 3.28h4.97zM40.95 20.3c-1.44 0-2.32-.7-2.91-1.18l-.02 5.22-3.45.74V5.57h3.45v1.29c.6-.5 1.51-1.29 2.98-1.29 2.63 0 5.27 2.16 5.27 7.05 0 5.57-2.67 7.68-5.32 7.68zm-.77-11.44c-.98 0-1.57.36-1.97.79l.04 5.56c.34.35.89.69 1.93.69 1.49 0 2.46-1.62 2.46-3.51 0-1.99-.97-3.53-2.46-3.53zM28.24 5.57h3.45v14.43h-3.45V5.57zm0-5.57h3.45v3.35h-3.45V0zM25.3 5.57h3.44V20h-3.44v-1.31c-.8.67-1.93 1.61-3.68 1.61-2.78 0-4.09-2.16-4.09-4.94V5.57h3.45v8.56c0 1.7.65 2.48 1.92 2.48 1.04 0 1.67-.52 2.4-1.15V5.57zm-12.78 0l-.1 2.02c-.24-.04-.45-.06-.65-.06-1.33 0-2.62.72-2.93 2.05V20H5.39V5.57h3.42v1.86c.74-1.38 2.02-2.16 3.71-2.16V5.57zM4.45 8.66H2.35V5.57h2.1V2.32L7.9 1.58v4h2.76v3.08H7.9v6.53c0 .9.38 1.31 1.17 1.31.42 0 .84-.11 1.2-.23l.8 2.87a6.14 6.14 0 0 1-2.77.56c-2.45 0-3.85-1.3-3.85-3.9V8.66z"/>
-            </svg>
           </div>
         </div>
       </div>

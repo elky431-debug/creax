@@ -88,7 +88,9 @@ function PricingCards({
         {/* Header */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/10 px-4 py-2 mb-6">
-            <span className="text-lg">💎</span>
+            <svg className="h-4 w-4 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 2l4 6-4 14-4-14 4-6z" />
+            </svg>
             <span className="text-xs font-semibold uppercase tracking-[0.15em] text-white/70">
               {hasActiveSubscription ? "Mon abonnement" : "Tarification simple"}
             </span>
@@ -163,8 +165,8 @@ function SubscriptionCard({
 }) {
   const isCreator = role === "CREATOR";
   const features = isCreator 
-    ? ["Accès illimité aux talents", "Messagerie directe", "Paiements sécurisés", "Support prioritaire"]
-    : ["Visibilité maximale", "Portfolio intégré", "Demandes qualifiées", "Paiements sécurisés"];
+    ? ["Accès illimité aux talents", "Messagerie directe", "Zéro commission sur vos projets", "Support prioritaire"]
+    : ["Visibilité maximale", "Portfolio intégré", "Demandes qualifiées", "Zéro commission sur vos projets"];
 
   const periodEnd = new Date(subscription.currentPeriodEnd).toLocaleDateString("fr-FR", {
     day: "numeric",
@@ -197,7 +199,16 @@ function SubscriptionCard({
       <div className="relative p-8 sm:p-10">
         {/* Icon */}
         <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${isCreator ? 'from-cyan-500/20 to-cyan-500/5 border-cyan-500/20' : 'from-emerald-500/20 to-emerald-500/5 border-emerald-500/20'} border flex items-center justify-center mb-6`}>
-          <span className="text-2xl">{isCreator ? "🎬" : "🎨"}</span>
+          {isCreator ? (
+            <svg className="h-7 w-7 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14" />
+              <rect x="3" y="6" width="12" height="12" rx="2" ry="2" />
+            </svg>
+          ) : (
+            <svg className="h-7 w-7 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
+            </svg>
+          )}
         </div>
         
         <h3 className="text-xl font-bold text-white mb-2">
@@ -303,7 +314,10 @@ function CreatorPricingCard({ isLoggedIn }: { isLoggedIn?: boolean }) {
       
       <div className="relative p-8 sm:p-10">
         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 border border-cyan-500/20 flex items-center justify-center mb-6">
-          <span className="text-2xl">🎬</span>
+          <svg className="h-7 w-7 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14" />
+            <rect x="3" y="6" width="12" height="12" rx="2" ry="2" />
+          </svg>
         </div>
         
         <h3 className="text-xl font-bold text-white mb-2">Créateurs</h3>
@@ -320,7 +334,7 @@ function CreatorPricingCard({ isLoggedIn }: { isLoggedIn?: boolean }) {
         </div>
         
         <ul className="space-y-3 mb-8">
-          {["Accès illimité aux talents", "Messagerie directe", "Paiements sécurisés via Stripe"].map((f, i) => (
+          {["Accès illimité aux talents", "Messagerie directe", "Zéro commission sur vos projets"].map((f, i) => (
             <li key={i} className="flex items-center gap-3 text-sm text-white/60">
               <svg className="w-5 h-5 text-cyan-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -399,7 +413,9 @@ function DesignerPricingCard({ isLoggedIn }: { isLoggedIn?: boolean }) {
       
       <div className="relative p-8 sm:p-10">
         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border border-emerald-500/20 flex items-center justify-center mb-6">
-          <span className="text-2xl">🎨</span>
+          <svg className="h-7 w-7 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
+          </svg>
         </div>
         
         <h3 className="text-xl font-bold text-white mb-2">Designers</h3>
@@ -416,7 +432,7 @@ function DesignerPricingCard({ isLoggedIn }: { isLoggedIn?: boolean }) {
         </div>
         
         <ul className="space-y-3 mb-8">
-          {["Visibilité maximale", "Portfolio intégré", "Paiements sécurisés via Stripe"].map((f, i) => (
+          {["Visibilité maximale", "Portfolio intégré", "Zéro commission sur vos projets"].map((f, i) => (
             <li key={i} className="flex items-center gap-3 text-sm text-white/60">
               <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
