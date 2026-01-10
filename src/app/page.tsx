@@ -74,7 +74,7 @@ export default function HomePage() {
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              <span className="text-xs font-medium">Paiements sécurisés</span>
+              <span className="text-xs font-medium">Zéro commission</span>
             </div>
             <div className="flex items-center gap-2 text-white/30">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -191,103 +191,97 @@ export default function HomePage() {
       </section>
 
       {/* Pour les graphistes */}
-      <section className="relative py-20 md:py-32 px-4 overflow-hidden">
-        {/* Background effects - optimized */}
-        <div className="absolute inset-0 bg-gradient-to-b from-creix-blue/[0.03] via-creix-blue/[0.08] to-creix-blue/[0.03] pointer-events-none" />
-        <div className="hidden md:block absolute top-1/2 left-0 w-[600px] h-[600px] bg-creix-blue/10 rounded-full blur-3xl -translate-y-1/2 pointer-events-none" />
-        <div className="hidden md:block absolute top-1/2 right-0 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-2xl -translate-y-1/2 pointer-events-none" />
-        
-        <div className="relative z-10 max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-8">
-              {/* Badge animé */}
-              <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-creix-blue/10 to-emerald-500/10 border border-creix-blue/20 px-4 py-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="hidden md:inline-flex animate-ping absolute h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+      <section className="relative py-20 md:py-28 px-4">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/70">
+                  Pour les graphistes & monteurs
                 </span>
-                <span className="text-xs font-medium uppercase tracking-widest text-creix-blue">
-                Pour les graphistes & monteurs
-              </span>
               </div>
-              
-              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-                <span className="text-white">Montrez votre talent,</span>
+
+              <h2 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.05] tracking-tight text-white">
+                Montrez votre talent,
                 <br />
-                <span className="bg-gradient-to-r from-creix-blue via-emerald-400 to-creix-blue bg-clip-text text-transparent">
-                  trouvez des clients
-                </span>
+                <span className="text-creix-blue">trouvez des clients</span>
               </h2>
-              
-              <p className="text-creix-blue/70 text-lg leading-relaxed max-w-lg">
-                Des créateurs ont besoin de vous. Proposez vos services, gagnez des clients.
+
+              <p className="mt-4 max-w-lg text-base sm:text-lg leading-relaxed text-white/55">
+                Répondez aux besoins des créateurs, échangez en direct, et développez votre activité.
               </p>
-              
-              {/* Features avec icônes modernes */}
-              <ul className="space-y-5">
+
+              <ul className="mt-8 space-y-4">
                 {[
-                  { icon: "✓", title: "Profil professionnel", desc: "Présentez votre portfolio aux créateurs" },
-                  { icon: "✓", title: "Messagerie intégrée", desc: "Communiquez directement avec les créateurs" },
-                  { icon: "✓", title: "Paiements sécurisés", desc: "Via Stripe, sans tracas administratifs" }
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-4 group">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-creix-blue/20 to-emerald-500/10 border border-creix-blue/20 flex items-center justify-center flex-shrink-0 group-hover:from-creix-blue/30 group-hover:to-emerald-500/20 transition-all duration-150">
-                      <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  { title: "Profil professionnel", desc: "Un portfolio clair pour être contacté plus vite." },
+                  { title: "Messagerie intégrée", desc: "Discutez, brief, fichiers et suivi au même endroit." },
+                  { title: "Paiement direct", desc: "Le règlement se fait entre vous et le créateur (virement bancaire)." }
+                ].map((item) => (
+                  <li key={item.title} className="flex gap-4">
+                    <span className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03]">
+                      <svg className="h-5 w-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <div>
-                      <h4 className="font-semibold text-white group-hover:text-creix-blue transition-colors">{item.title}</h4>
-                      <p className="text-sm text-creix-blue/50">{item.desc}</p>
-                  </div>
-                </li>
+                      </svg>
+                    </span>
+                    <div>
+                      <p className="font-semibold text-white">{item.title}</p>
+                      <p className="text-sm text-white/45">{item.desc}</p>
+                    </div>
+                  </li>
                 ))}
               </ul>
-              
+
               <a
                 href="/signup?role=DESIGNER"
-                className="group inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-creix-blue to-emerald-500 px-8 py-4 text-base font-semibold text-creix-black shadow-lg shadow-creix-blue/25 hover:shadow-creix-blue/40 transition-all duration-150 hover:scale-105"
+                className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-creix-blue px-8 py-4 text-base font-bold text-black transition hover:bg-cyan-400"
               >
                 Je suis graphiste / monteur
-                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </a>
             </div>
-            
-            {/* Cards avec effet glassmorphism */}
-            <div className="relative">
-              {/* Glow background - hidden on mobile */}
-              <div className="hidden md:block absolute -inset-4 bg-gradient-to-br from-creix-blue/30 via-emerald-500/20 to-creix-blue/30 rounded-[40px] blur-2xl opacity-50 pointer-events-none" />
-              
-              {/* Card container */}
-              <div className="relative space-y-4">
+
+            <div className="rounded-3xl border border-white/[0.10] bg-white/[0.02] p-6 md:p-8">
+              <div className="space-y-3">
                 {[
-                  { emoji: "🎨", title: "Portfolio visible", desc: "Montrez vos meilleures créations", color: "from-cyan-500/20 to-blue-500/10", border: "border-cyan-500/30" },
-                  { emoji: "💬", title: "Demandes qualifiées", desc: "Des créateurs qui savent ce qu'ils veulent", color: "from-emerald-500/20 to-teal-500/10", border: "border-emerald-500/30" },
-                  { emoji: "💰", title: "Revenus réguliers", desc: "Construisez une clientèle fidèle", color: "from-amber-500/20 to-orange-500/10", border: "border-amber-500/30" }
-                ].map((card, i) => (
-                  <div
-                    key={i}
-                    className={`group relative rounded-2xl bg-gradient-to-br ${card.color} border ${card.border} p-6 active:scale-[0.98] md:hover:scale-[1.02] transition-transform cursor-default`}
-                  >
-                    {/* Inner glow on hover - desktop only */}
-                    <div className="hidden md:block absolute inset-0 rounded-2xl bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                    
-                    <div className="relative flex items-center gap-5">
-                      <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-3xl">
-                        {card.emoji}
-                  </div>
-                      <div className="flex-1">
-                        <h4 className="font-bold text-white text-lg mb-1">{card.title}</h4>
-                        <p className="text-sm text-white/60">{card.desc}</p>
-                  </div>
-                      <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
-                        <svg className="w-5 h-5 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                  </div>
-                </div>
+                  {
+                    title: "Portfolio visible",
+                    desc: "Montrez vos meilleures créations.",
+                    icon: (
+                      <svg className="h-5 w-5 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
+                      </svg>
+                    )
+                  },
+                  {
+                    title: "Demandes qualifiées",
+                    desc: "Des créateurs qui savent ce qu’ils veulent.",
+                    icon: (
+                      <svg className="h-5 w-5 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 15a4 4 0 01-4 4H7l-4 3V7a4 4 0 014-4h10a4 4 0 014 4v8z" />
+                      </svg>
+                    )
+                  },
+                  {
+                    title: "Revenus réguliers",
+                    desc: "Construisez une clientèle fidèle.",
+                    icon: (
+                      <svg className="h-5 w-5 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-10V6m0 12v2m8-10a8 8 0 11-16 0 8 8 0 0116 0z" />
+                      </svg>
+                    )
+                  }
+                ].map((row) => (
+                  <div key={row.title} className="flex items-start gap-4 rounded-2xl border border-white/[0.08] bg-black/30 p-5">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/[0.10] bg-white/[0.03]">
+                      {row.icon}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-white">{row.title}</p>
+                      <p className="text-sm text-white/45">{row.desc}</p>
+                    </div>
                   </div>
                 ))}
               </div>
