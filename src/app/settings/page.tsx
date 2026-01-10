@@ -141,7 +141,7 @@ export default function SettingsPage() {
           <SettingCard
             title="Sécurité"
             description="Modifier votre mot de passe et sécuriser l’accès."
-            href="/profile#security"
+            href="/settings/security"
             accent="emerald"
             icon={
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -153,7 +153,7 @@ export default function SettingsPage() {
           <SettingCard
             title="Abonnement"
             description="Statut, résiliation et gestion de votre abonnement."
-            href="/profile#subscription"
+            href="/settings/subscription"
             accent="amber"
             icon={
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -178,7 +178,7 @@ export default function SettingsPage() {
             <SettingCard
               title="Zone de danger"
               description="Suppression de compte et actions irréversibles."
-              href="/profile#danger"
+              href="/settings/danger"
               accent="red"
               icon={
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -188,6 +188,23 @@ export default function SettingsPage() {
             />
           )}
         </div>
+
+        {/* Always show danger zone as a dedicated page (even for designers) */}
+        {isDesigner && (
+          <div className="mt-4">
+            <SettingCard
+              title="Zone de danger"
+              description="Suppression de compte et actions irréversibles."
+              href="/settings/danger"
+              accent="red"
+              icon={
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.73 3z" />
+                </svg>
+              }
+            />
+          </div>
+        )}
 
         <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-5">
           <button
