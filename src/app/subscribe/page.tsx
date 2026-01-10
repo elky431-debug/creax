@@ -118,7 +118,7 @@ function SubscribeContent() {
 
   const isCreator = session.user?.role === "CREATOR";
   const planName = isCreator ? "Créateur" : "Graphiste / Monteur";
-  const planPrice = isCreator ? "4,99" : "9,99";
+  const planPrice = isCreator ? "9,99" : "14,99";
   const planDescription = isCreator
     ? "Publiez vos missions et trouvez les meilleurs talents pour vos projets créatifs."
     : "Accédez aux missions des créateurs et développez votre activité freelance.";

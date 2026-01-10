@@ -221,7 +221,7 @@ function SubscriptionCard({
         {/* Price */}
         <div className="flex items-baseline gap-1 mb-2">
           <span className={`text-5xl font-black bg-gradient-to-r ${isCreator ? 'from-cyan-400 to-emerald-400' : 'from-emerald-400 to-cyan-400'} bg-clip-text text-transparent`}>
-            {isCreator ? "4,99" : "9,99"}
+            {isCreator ? "9,99" : "14,99"}
           </span>
           <span className="text-xl font-bold text-white/50">€</span>
           <span className="text-white/30 ml-1">/mois</span>
@@ -308,9 +308,7 @@ function CreatorPricingCard({ isLoggedIn }: { isLoggedIn?: boolean }) {
       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/50 via-cyan-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
       <div className="absolute inset-[1px] rounded-3xl bg-[#0a0a0a]" />
       
-      <div className="absolute top-4 right-4 z-10 bg-gradient-to-r from-orange-500 to-red-500 text-white text-[10px] font-bold py-1 px-3 rounded-full">
-        -50%
-      </div>
+      {/* No promo badge (prices are the real current prices) */}
       
       <div className="relative p-8 sm:p-10">
         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 border border-cyan-500/20 flex items-center justify-center mb-6">
@@ -324,14 +322,11 @@ function CreatorPricingCard({ isLoggedIn }: { isLoggedIn?: boolean }) {
         <p className="text-white/40 text-sm mb-6">Pour les créateurs de contenu</p>
         
         <div className="flex items-baseline gap-1 mb-2">
-          <span className="text-5xl font-black bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">4,99</span>
+          <span className="text-5xl font-black bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">9,99</span>
           <span className="text-xl font-bold text-white/50">€</span>
           <span className="text-white/30 ml-1">/mois</span>
         </div>
-        <div className="flex items-center gap-2 mb-6">
-          <span className="text-sm text-white/30 line-through">9,99€</span>
-          <span className="text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded">ÉCONOMISEZ 5€</span>
-        </div>
+        <div className="mb-6" />
         
         <ul className="space-y-3 mb-8">
           {["Accès illimité aux talents", "Messagerie directe", "Zéro commission sur vos projets"].map((f, i) => (
@@ -407,9 +402,7 @@ function DesignerPricingCard({ isLoggedIn }: { isLoggedIn?: boolean }) {
       <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/50 via-emerald-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
       <div className="absolute inset-[1px] rounded-3xl bg-[#0a0a0a]" />
       
-      <div className="absolute top-4 right-4 z-10 bg-gradient-to-r from-orange-500 to-red-500 text-white text-[10px] font-bold py-1 px-3 rounded-full">
-        -50%
-      </div>
+      {/* No promo badge (prices are the real current prices) */}
       
       <div className="relative p-8 sm:p-10">
         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border border-emerald-500/20 flex items-center justify-center mb-6">
@@ -422,14 +415,11 @@ function DesignerPricingCard({ isLoggedIn }: { isLoggedIn?: boolean }) {
         <p className="text-white/40 text-sm mb-6">Pour les graphistes & monteurs</p>
         
         <div className="flex items-baseline gap-1 mb-2">
-          <span className="text-5xl font-black bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">9,99</span>
+          <span className="text-5xl font-black bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">14,99</span>
           <span className="text-xl font-bold text-white/50">€</span>
           <span className="text-white/30 ml-1">/mois</span>
         </div>
-        <div className="flex items-center gap-2 mb-6">
-          <span className="text-sm text-white/30 line-through">19,99€</span>
-          <span className="text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded">ÉCONOMISEZ 10€</span>
-        </div>
+        <div className="mb-6" />
         
         <ul className="space-y-3 mb-8">
           {["Visibilité maximale", "Portfolio intégré", "Zéro commission sur vos projets"].map((f, i) => (

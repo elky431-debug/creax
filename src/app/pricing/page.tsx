@@ -257,11 +257,6 @@ function PricingContent() {
               {/* Inner glow */}
               <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
               
-              {/* Promo ribbon */}
-              <div className="absolute top-6 -right-8 rotate-45 bg-gradient-to-r from-orange-500 to-red-500 text-white text-[10px] font-bold py-1 px-10 shadow-lg">
-                -50%
-              </div>
-
               <div className="relative p-8 md:p-10">
                 {/* Tag */}
                 <div className="inline-flex items-center gap-2 rounded-full bg-cyan-500/10 border border-cyan-500/20 px-3 py-1 mb-6">
@@ -275,14 +270,11 @@ function PricingContent() {
 
                 {/* Price */}
                 <div className="flex items-baseline gap-2 mb-2">
-                  <span className="text-6xl font-bold text-white tracking-tight">4,99</span>
+                  <span className="text-6xl font-bold text-white tracking-tight">9,99</span>
                   <span className="text-2xl text-white/30">€</span>
                   <span className="text-white/30">/mois</span>
                 </div>
-                <div className="flex items-center gap-3 mb-10">
-                  <span className="text-sm text-white/30 line-through">9,99€</span>
-                  <span className="text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded">ÉCONOMISEZ 5€</span>
-                </div>
+                <div className="mb-10" />
 
                 {/* Features */}
                 <div className="space-y-4 mb-10">
@@ -367,11 +359,6 @@ function PricingContent() {
               {/* Inner glow */}
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
               
-              {/* Promo ribbon */}
-              <div className="absolute top-6 -right-8 rotate-45 bg-gradient-to-r from-orange-500 to-red-500 text-white text-[10px] font-bold py-1 px-10 shadow-lg">
-                -50%
-              </div>
-
               <div className="relative p-8 md:p-10">
                 {/* Tag */}
                 <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 mb-6">
@@ -385,14 +372,11 @@ function PricingContent() {
 
                 {/* Price */}
                 <div className="flex items-baseline gap-2 mb-2">
-                  <span className="text-6xl font-bold text-white tracking-tight">9,99</span>
+                  <span className="text-6xl font-bold text-white tracking-tight">14,99</span>
                   <span className="text-2xl text-white/30">€</span>
                   <span className="text-white/30">/mois</span>
                 </div>
-                <div className="flex items-center gap-3 mb-10">
-                  <span className="text-sm text-white/30 line-through">19,99€</span>
-                  <span className="text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded">ÉCONOMISEZ 10€</span>
-                </div>
+                <div className="mb-10" />
 
                 {/* Features */}
                 <div className="space-y-4 mb-10">
