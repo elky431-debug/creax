@@ -312,6 +312,21 @@ export function Header() {
               </Link>
 
               <Link
+                href="/settings"
+                className={`px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 rounded-full border ${
+                  isActive("/settings")
+                    ? "text-creix-blue bg-creix-blue/10 border-creix-blue/25"
+                    : "text-creix-blue/90 border-transparent hover:text-creix-blue hover:bg-creix-blue/10"
+                }`}
+              >
+                <span className={`hidden sm:inline ${navGradientText}`}>Réglages</span>
+                <svg className="h-4 w-4 sm:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.983 13.321a1.341 1.341 0 100-2.683 1.341 1.341 0 000 2.683z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.6 13.321a8.2 8.2 0 00.05-1.321 8.2 8.2 0 00-.05-1.321l-1.89-.311a6.67 6.67 0 00-.745-1.795l1.114-1.57a8.32 8.32 0 00-1.87-1.87l-1.57 1.114a6.67 6.67 0 00-1.795-.745l-.311-1.89A8.2 8.2 0 0012 3.35a8.2 8.2 0 00-1.321.05l-.311 1.89a6.67 6.67 0 00-1.795.745L7.003 4.92a8.32 8.32 0 00-1.87 1.87l1.114 1.57a6.67 6.67 0 00-.745 1.795l-1.89.311A8.2 8.2 0 003.35 12c0 .45.02.89.05 1.321l1.89.311c.17.63.424 1.23.745 1.795l-1.114 1.57c.54.72 1.15 1.33 1.87 1.87l1.57-1.114c.565.321 1.165.575 1.795.745l.311 1.89c.431.03.87.05 1.321.05.45 0 .89-.02 1.321-.05l.311-1.89a6.67 6.67 0 001.795-.745l1.57 1.114c.72-.54 1.33-1.15 1.87-1.87l-1.114-1.57c.321-.565.575-1.165.745-1.795l1.89-.311z" />
+                </svg>
+              </Link>
+
+              <Link
                 href="/profile"
                 className={`group ml-1 sm:ml-2 flex items-center gap-2 rounded-full pl-1 pr-2 sm:pr-3 py-1 text-[10px] sm:text-xs font-semibold uppercase tracking-wide transition-all duration-300 hover:scale-[1.02] ${
                   isActive("/profile")
@@ -546,6 +561,18 @@ export function Header() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                     Mon profil
+                  </Link>
+
+                  <Link
+                    href="/settings"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                  >
+                    <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.983 13.321a1.341 1.341 0 100-2.683 1.341 1.341 0 000 2.683z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.6 13.321a8.2 8.2 0 00.05-1.321 8.2 8.2 0 00-.05-1.321l-1.89-.311a6.67 6.67 0 00-.745-1.795l1.114-1.57a8.32 8.32 0 00-1.87-1.87l-1.57 1.114a6.67 6.67 0 00-1.795-.745l-.311-1.89A8.2 8.2 0 0012 3.35a8.2 8.2 0 00-1.321.05l-.311 1.89a6.67 6.67 0 00-1.795.745L7.003 4.92a8.32 8.32 0 00-1.87 1.87l1.114 1.57a6.67 6.67 0 00-.745 1.795l-1.89.311A8.2 8.2 0 003.35 12c0 .45.02.89.05 1.321l1.89.311c.17.63.424 1.23.745 1.795l-1.114 1.57c.54.72 1.15 1.33 1.87 1.87l1.57-1.114c.565.321 1.165.575 1.795.745l.311 1.89c.431.03.87.05 1.321.05.45 0 .89-.02 1.321-.05l.311-1.89a6.67 6.67 0 001.795-.745l1.57 1.114c.72-.54 1.33-1.15 1.87-1.87l-1.114-1.57c.321-.565.575-1.165.745-1.795l1.89-.311z" />
+                    </svg>
+                    Réglages
                   </Link>
 
                   <button

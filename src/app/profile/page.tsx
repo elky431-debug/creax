@@ -462,7 +462,10 @@ function DangerZone({ hasSubscription }: { hasSubscription: boolean }) {
 
   return (
     <>
-      <div className="mt-8 rounded-2xl border border-red-500/25 bg-red-500/5 backdrop-blur-xl p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]">
+      <div
+        id="danger"
+        className="mt-8 rounded-2xl border border-red-500/25 bg-red-500/5 backdrop-blur-xl p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]"
+      >
         <h2 className="text-lg font-semibold text-red-200 mb-2">Zone de danger</h2>
         <p className="text-sm text-white/55 mb-6">
           Ces actions sont irréversibles. Procédez avec précaution.
@@ -663,7 +666,10 @@ function ChangePasswordSection() {
   }
 
   return (
-    <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]">
+    <div
+      id="security"
+      className="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]"
+    >
       <div className="flex items-center gap-3 mb-6">
         <div className="h-10 w-10 rounded-xl bg-cyan-500/20 flex items-center justify-center">
           <svg className="h-5 w-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -807,7 +813,10 @@ function PaymentSettingsSection() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]">
+      <div
+        id="payments"
+        className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]"
+      >
         <div className="flex items-center gap-3">
           <div className="h-5 w-5 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
           <span className="text-white/55">Chargement...</span>
@@ -817,11 +826,14 @@ function PaymentSettingsSection() {
   }
 
   return (
-    <div className={`rounded-2xl border p-6 backdrop-blur-xl shadow-[0_30px_90px_rgba(0,0,0,0.55)] ${
+    <div
+      id="payments"
+      className={`rounded-2xl border p-6 backdrop-blur-xl shadow-[0_30px_90px_rgba(0,0,0,0.55)] ${
       bankInfo?.isConfigured 
         ? "bg-emerald-500/5 border-emerald-500/25" 
         : "bg-orange-500/5 border-orange-500/25"
-    }`}>
+    }`}
+    >
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${
@@ -945,7 +957,10 @@ function SubscriptionSection({ hasSubscription }: { hasSubscription: boolean }) 
   }
 
   return (
-    <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]">
+    <div
+      id="subscription"
+      className="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]"
+    >
       <h2 className="text-lg font-semibold text-white mb-4">Abonnement</h2>
 
       {hasSubscription && subscription ? (
