@@ -1,6 +1,11 @@
 import PricingSection from "@/components/home/PricingSection";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const session = await getServerSession(authOptions);
+  const isLoggedIn = !!session?.user;
+
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
@@ -244,15 +249,17 @@ export default function HomePage() {
                 ))}
               </ul>
 
-              <a
-                href="/signup?role=DESIGNER"
-                className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 via-emerald-400 to-cyan-500 px-8 py-4 text-base font-bold text-slate-900 transition hover:opacity-90"
-              >
-                Je suis graphiste / monteur
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </a>
+              {!isLoggedIn && (
+                <a
+                  href="/signup?role=DESIGNER"
+                  className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 via-emerald-400 to-cyan-500 px-8 py-4 text-base font-bold text-slate-900 transition hover:opacity-90"
+                >
+                  Je suis graphiste / monteur
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </a>
+              )}
             </div>
 
             <div className="rounded-3xl border border-white/[0.10] bg-white/[0.02] p-6 md:p-8">
@@ -440,16 +447,29 @@ export default function HomePage() {
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href="/signup"
-              className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 px-8 md:px-10 py-4 md:py-5 text-base md:text-lg font-bold text-slate-900 shadow-xl md:shadow-2xl shadow-cyan-500/25 md:shadow-cyan-500/30 active:scale-95 md:hover:scale-105 transition-transform overflow-hidden"
-            >
-              <span className="relative z-10">Créer mon compte gratuitement</span>
-              <svg className="relative z-10 w-5 h-5 md:group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-              <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </a>
+            {!isLoggedIn ? (
+              <a
+                href="/signup"
+                className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 px-8 md:px-10 py-4 md:py-5 text-base md:text-lg font-bold text-slate-900 shadow-xl md:shadow-2xl shadow-cyan-500/25 md:shadow-cyan-500/30 active:scale-95 md:hover:scale-105 transition-transform overflow-hidden"
+              >
+                <span className="relative z-10">Créer mon compte gratuitement</span>
+                <svg className="relative z-10 w-5 h-5 md:group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+                <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </a>
+            ) : (
+              <a
+                href="/dashboard"
+                className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 px-8 md:px-10 py-4 md:py-5 text-base md:text-lg font-bold text-slate-900 shadow-xl md:shadow-2xl shadow-cyan-500/25 md:shadow-cyan-500/30 active:scale-95 md:hover:scale-105 transition-transform overflow-hidden"
+              >
+                <span className="relative z-10">Aller au dashboard</span>
+                <svg className="relative z-10 w-5 h-5 md:group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+                <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </a>
+            )}
           </div>
         </div>
       </section>
