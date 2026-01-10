@@ -115,12 +115,12 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50">
-      {/* Solid black header */}
-      <div className="absolute inset-0 bg-creix-black border-b border-creix-blue/20" />
+      {/* Gradient header (same as "aux meilleurs talents") */}
+      <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 border-b border-white/20" />
       {/* Soft depth */}
       <div className="absolute inset-0 pointer-events-none shadow-[0_10px_40px_rgba(0,0,0,0.45)]" />
       {/* Accent line */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-creix-blue/25" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-white/35" />
 
       <div className="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-3 md:px-6">
         {/* Logo */}
@@ -135,7 +135,7 @@ export function Header() {
               className="relative rounded-xl shadow-lg shadow-creix-blue/10 transition-transform duration-300 group-hover:scale-105"
             />
           </div>
-          <span className="text-lg font-bold tracking-tight text-creix-blue transition-colors duration-300 group-hover:text-white md:text-xl">
+          <span className="text-lg font-bold tracking-tight text-slate-900 transition-colors duration-300 group-hover:text-black md:text-xl">
             CREIX
           </span>
         </Link>
@@ -146,8 +146,8 @@ export function Header() {
             href="/pricing" 
             className={`relative px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 rounded-full border ${
               isActive("/pricing")
-                ? "text-creix-blue bg-creix-blue/10 border-creix-blue/25"
-                : "text-creix-blue/90 border-transparent hover:text-creix-blue hover:bg-creix-blue/10"
+                ? "text-slate-900 bg-white/30 border-white/45"
+                : "text-slate-900/80 border-transparent hover:text-slate-900 hover:bg-white/20"
             }`}
           >
             <span className="relative z-10">Tarifs</span>
@@ -161,8 +161,8 @@ export function Header() {
                   onClick={() => setMissionsMenuOpen(!missionsMenuOpen)}
                   className={`relative flex items-center gap-1 sm:gap-2 px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 rounded-full border ${
                     missionsActive
-                      ? "text-creix-blue bg-creix-blue/10 border-creix-blue/25"
-                      : "text-creix-blue/90 border-transparent hover:text-creix-blue hover:bg-creix-blue/10"
+                      ? "text-slate-900 bg-white/30 border-white/45"
+                      : "text-slate-900/80 border-transparent hover:text-slate-900 hover:bg-white/20"
                   }`}
                 >
                   <svg className="h-4 w-4 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -173,7 +173,7 @@ export function Header() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                   {proposalCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold text-slate-900 shadow-lg shadow-amber-500/30 ring-2 ring-creix-black">
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold text-slate-900 shadow-lg shadow-amber-500/30 ring-2 ring-black/25">
                       {proposalCount > 9 ? "9+" : proposalCount}
                     </span>
                   )}
@@ -280,8 +280,8 @@ export function Header() {
                 href="/messages"
                 className={`relative flex items-center gap-1 sm:gap-2 px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 rounded-full border ${
                   isActive("/messages")
-                    ? "text-creix-blue bg-creix-blue/10 border-creix-blue/25"
-                    : "text-creix-blue/90 border-transparent hover:text-creix-blue hover:bg-creix-blue/10"
+                    ? "text-slate-900 bg-white/30 border-white/45"
+                    : "text-slate-900/80 border-transparent hover:text-slate-900 hover:bg-white/20"
                 }`}
               >
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -289,7 +289,7 @@ export function Header() {
                 </svg>
                 <span className="hidden sm:inline">Messages</span>
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white shadow-lg shadow-rose-500/30 ring-2 ring-creix-black">
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white shadow-lg shadow-rose-500/30 ring-2 ring-black/25">
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}
@@ -299,8 +299,8 @@ export function Header() {
                 href="/dashboard" 
                 className={`px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 rounded-full border ${
                   isActive("/dashboard")
-                    ? "text-creix-blue bg-creix-blue/10 border-creix-blue/25"
-                    : "text-creix-blue/90 border-transparent hover:text-creix-blue hover:bg-creix-blue/10"
+                    ? "text-slate-900 bg-white/30 border-white/45"
+                    : "text-slate-900/80 border-transparent hover:text-slate-900 hover:bg-white/20"
                 }`}
               >
                 <span className="hidden sm:inline">Dashboard</span>
@@ -313,12 +313,12 @@ export function Header() {
                 href="/profile"
                 className={`group ml-1 sm:ml-2 flex items-center gap-2 rounded-full pl-1 pr-2 sm:pr-3 py-1 text-[10px] sm:text-xs font-semibold uppercase tracking-wide transition-all duration-300 hover:scale-[1.02] ${
                   isActive("/profile")
-                    ? "bg-creix-blue/10 text-creix-blue shadow-lg shadow-creix-blue/10 ring-1 ring-creix-blue/25"
-                    : "bg-creix-blue/10 text-creix-blue shadow-lg shadow-creix-blue/10 ring-1 ring-creix-blue/20 hover:bg-creix-blue/15"
+                    ? "bg-white/35 text-slate-900 shadow-lg shadow-black/10 ring-1 ring-black/10"
+                    : "bg-white/25 text-slate-900 shadow-lg shadow-black/10 ring-1 ring-black/10 hover:bg-white/30"
                 }`}
               >
                 {profile?.avatarUrl ? (
-                  <div className="relative h-6 w-6 sm:h-7 sm:w-7 rounded-full overflow-hidden ring-2 ring-creix-black/25 shadow-sm">
+                  <div className="relative h-6 w-6 sm:h-7 sm:w-7 rounded-full overflow-hidden ring-2 ring-black/20 shadow-sm">
                     <Image
                       src={profile.avatarUrl}
                       alt="Mon profil"
@@ -328,7 +328,7 @@ export function Header() {
                     />
                   </div>
                 ) : (
-                  <div className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-creix-black/20 text-[10px] sm:text-[11px] font-bold ring-2 ring-creix-black/25">
+                  <div className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-black/10 text-[10px] sm:text-[11px] font-bold ring-2 ring-black/20">
                     {(profile?.displayName || session?.user?.email || "U").charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -341,15 +341,15 @@ export function Header() {
                 href="/login" 
                 className={`px-4 py-2 text-sm font-semibold transition-all duration-200 rounded-full border ${
                   isActive("/login")
-                    ? "text-creix-blue bg-creix-blue/10 border-creix-blue/25"
-                    : "text-creix-blue/90 border-transparent hover:text-creix-blue hover:bg-creix-blue/10"
+                    ? "text-slate-900 bg-white/30 border-white/45"
+                    : "text-slate-900/80 border-transparent hover:text-slate-900 hover:bg-white/20"
                 }`}
               >
                 Connexion
               </Link>
               <Link
                 href="/signup"
-                className="ml-2 rounded-full border border-creix-blue/30 bg-creix-blue/10 px-5 py-2.5 text-xs font-semibold uppercase tracking-wide text-creix-blue shadow-lg shadow-creix-blue/10 transition-all duration-300 hover:bg-creix-blue/15 hover:shadow-creix-blue/20 hover:scale-[1.02]"
+                className="ml-2 rounded-full border border-white/35 bg-white/25 px-5 py-2.5 text-xs font-semibold uppercase tracking-wide text-slate-900 shadow-lg shadow-black/10 transition-all duration-300 hover:bg-white/30 hover:shadow-black/15 hover:scale-[1.02]"
               >
                 Créer un compte
               </Link>
@@ -362,7 +362,7 @@ export function Header() {
           {/* Tarifs link visible on mobile */}
           <Link 
             href="/pricing" 
-            className="text-sm font-semibold text-creix-blue/90 transition-colors hover:text-creix-blue"
+            className="text-sm font-semibold text-slate-900/80 transition-colors hover:text-slate-900"
           >
             Tarifs
           </Link>
@@ -370,7 +370,7 @@ export function Header() {
           {/* Mobile menu button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-creix-blue/10 text-creix-blue transition-colors hover:bg-creix-blue/15"
+            className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-white/25 text-slate-900 transition-colors hover:bg-white/30"
             aria-label="Menu"
           >
             <svg 
