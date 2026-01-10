@@ -8,12 +8,12 @@ export default function HomePage() {
         {/* Animated background - optimized for mobile */}
         <div className="absolute inset-0 pointer-events-none">
           {/* Main gradient orbs - simplified on mobile */}
-          <div className="absolute top-1/4 left-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-cyan-500/15 md:bg-cyan-500/20 rounded-full blur-2xl md:blur-3xl" />
+          <div className="absolute top-1/4 left-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-creix-blue/15 md:bg-creix-blue/20 rounded-full blur-2xl md:blur-3xl" />
           <div className="absolute bottom-1/4 right-1/4 w-[250px] md:w-[400px] h-[250px] md:h-[400px] bg-emerald-500/10 md:bg-emerald-500/15 rounded-full blur-2xl md:blur-3xl" />
           <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-cyan-500/10 via-transparent to-emerald-500/10 rounded-full blur-3xl" />
           
           {/* Grid pattern - hidden on mobile */}
-          <div className="hidden md:block absolute inset-0 bg-[linear-gradient(rgba(0,212,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,212,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
+          <div className="hidden md:block absolute inset-0 bg-[linear-gradient(rgba(4,139,154,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(4,139,154,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
           
           {/* Radial gradient overlay */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#000_70%)]" />
@@ -23,8 +23,8 @@ export default function HomePage() {
           {/* Badge */}
           <div className="inline-flex items-center gap-3 rounded-full bg-white/[0.03] border border-white/10 px-5 py-2.5 mb-8">
             <span className="relative flex h-2 w-2">
-              <span className="hidden md:inline-flex animate-ping absolute h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+              <span className="hidden md:inline-flex animate-ping absolute h-full w-full rounded-full bg-creix-blue opacity-60"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-creix-blue"></span>
             </span>
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">La plateforme créative</span>
           </div>
@@ -42,7 +42,7 @@ export default function HomePage() {
           {/* Subtitle */}
           <p className="max-w-2xl mx-auto text-lg sm:text-xl text-white/50 leading-relaxed mb-12">
             CREIX met en relation créateurs de contenu et graphistes/monteurs vidéo 
-            pour des collaborations <span className="text-cyan-400">simples</span>, <span className="text-emerald-400">rapides</span> et <span className="text-white/70">sécurisées</span>.
+            pour des collaborations <span className="text-creix-blue">simples</span>, <span className="text-creix-blue">rapides</span> et <span className="text-white/70">fluides</span>.
           </p>
           
           {/* CTA Buttons */}
@@ -179,7 +179,7 @@ export default function HomePage() {
           <div className="text-center mt-14">
             <a
               href="/signup?role=CREATOR"
-              className="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-creix-blue to-cyan-400 px-8 py-4 text-base font-bold text-creix-black shadow-lg shadow-creix-blue/25 hover:shadow-creix-blue/40 hover:scale-105 transition-all duration-150"
+              className="group inline-flex items-center gap-3 rounded-full bg-creix-blue px-8 py-4 text-base font-bold text-black shadow-lg shadow-creix-blue/25 hover:bg-creix-blue/90 hover:shadow-creix-blue/40 hover:scale-105 transition-all duration-150"
             >
               <span>Je suis créateur</span>
               <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
