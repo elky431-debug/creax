@@ -224,10 +224,14 @@ export default function CreateMissionPage() {
         formData.append("missionId", missionId);
         formData.append("type", "attachment");
 
-        await fetch("/api/missions/attachments", {
+        const upRes = await fetch("/api/missions/attachments", {
           method: "POST",
           body: formData
         });
+        if (!upRes.ok) {
+          const upData = await upRes.json().catch(() => ({}));
+          throw new Error(upData?.error || `Erreur upload: ${attachment.file.name}`);
+        }
       }
 
       // Upload des images de référence
@@ -237,10 +241,14 @@ export default function CreateMissionPage() {
         formData.append("missionId", missionId);
         formData.append("type", "reference");
 
-        await fetch("/api/missions/attachments", {
+        const upRes = await fetch("/api/missions/attachments", {
           method: "POST",
           body: formData
         });
+        if (!upRes.ok) {
+          const upData = await upRes.json().catch(() => ({}));
+          throw new Error(upData?.error || `Erreur upload: ${reference.file.name}`);
+        }
       }
 
       setSuccess(true);
@@ -249,8 +257,8 @@ export default function CreateMissionPage() {
       setTimeout(() => {
         router.push("/dashboard");
       }, 2000);
-    } catch {
-      setError("Erreur réseau lors de la création de la mission");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur réseau lors de la création de la mission");
     } finally {
       setLoading(false);
     }
