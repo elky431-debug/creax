@@ -258,7 +258,7 @@ export default function BankSettingsPage() {
           <button
             type="submit"
             disabled={isSaving || (!iban && !isConfigured)}
-            className="w-full py-4 bg-gradient-to-r from-creix-cyan to-emerald-500 text-black 
+            className="w-full py-4 bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 text-black 
                      font-bold rounded-xl hover:opacity-90 transition-all disabled:opacity-50 
                      disabled:cursor-not-allowed"
           >
@@ -307,6 +307,8 @@ export default function BankSettingsPage() {
     </div>
   );
 }
+
+
 
 
 
