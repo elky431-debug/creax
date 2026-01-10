@@ -42,7 +42,15 @@ export default function HomePage() {
           {/* Subtitle */}
           <p className="max-w-2xl mx-auto text-lg sm:text-xl text-white/50 leading-relaxed mb-12">
             CREIX met en relation créateurs de contenu et graphistes/monteurs vidéo 
-            pour des collaborations <span className="text-creix-blue">simples</span>, <span className="text-creix-blue">rapides</span> et <span className="text-white/70">fluides</span>.
+            pour des collaborations{" "}
+            <span className="bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+              simples
+            </span>
+            ,{" "}
+            <span className="bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+              rapides
+            </span>{" "}
+            et <span className="text-white/70">fluides</span>.
           </p>
           
           {/* CTA Buttons */}
@@ -104,12 +112,14 @@ export default function HomePage() {
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/10 px-4 py-2 mb-6">
               <span className="text-lg">🎬</span>
-              <span className="text-xs font-medium uppercase tracking-widest text-creix-blue">Pour les créateurs</span>
+              <span className="text-xs font-medium uppercase tracking-widest bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+                Pour les créateurs
+              </span>
             </div>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
             Vous créez du contenu ?
           </h2>
-          <p className="max-w-xl mx-auto text-creix-blue text-lg">
+          <p className="max-w-xl mx-auto text-lg bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">
             Miniatures, montages, visuels... Publiez ce dont vous avez besoin, les pros répondent.
           </p>
           </div>
@@ -179,7 +189,7 @@ export default function HomePage() {
           <div className="text-center mt-14">
             <a
               href="/signup?role=CREATOR"
-              className="group inline-flex items-center gap-3 rounded-full bg-creix-blue px-8 py-4 text-base font-bold text-black shadow-lg shadow-creix-blue/25 hover:bg-creix-blue/90 hover:shadow-creix-blue/40 hover:scale-105 transition-all duration-150"
+              className="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 via-emerald-400 to-cyan-500 px-8 py-4 text-base font-bold text-slate-900 shadow-lg shadow-cyan-500/20 hover:opacity-90 hover:shadow-cyan-500/30 hover:scale-105 transition-all duration-150"
             >
               <span>Je suis créateur</span>
               <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -301,10 +311,12 @@ export default function HomePage() {
           {/* Header */}
           <div className="text-center mb-20">
             <span className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/10 px-4 py-2 mb-6">
-              <svg className="w-4 h-4 text-creix-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="w-4 h-4 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
-              <span className="text-xs font-medium uppercase tracking-widest text-creix-blue">Simple & rapide</span>
+              <span className="text-xs font-medium uppercase tracking-widest bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+                Simple & rapide
+              </span>
             </span>
             <h2 className="text-4xl sm:text-5xl font-bold text-white">
               Comment ça marche ?
@@ -356,10 +368,10 @@ export default function HomePage() {
                   </span>
                   
                   {/* Content */}
-                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-creix-blue transition-colors">
+                  <h3 className="text-xl font-bold text-white mb-3 transition-all group-hover:bg-gradient-to-r group-hover:from-cyan-400 group-hover:via-emerald-400 group-hover:to-cyan-400 group-hover:bg-clip-text group-hover:text-transparent">
                     {step.title}
                   </h3>
-                  <p className="text-creix-blue leading-relaxed max-w-xs">
+                  <p className="leading-relaxed max-w-xs bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">
                     {step.desc}
                 </p>
               </div>
@@ -371,7 +383,7 @@ export default function HomePage() {
           <div className="text-center mt-16">
             <a
               href="/signup"
-              className="inline-flex items-center gap-2 text-creix-blue hover:text-white transition-colors group"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent hover:opacity-90 transition-opacity group"
             >
               <span className="font-medium">Commencer maintenant</span>
               <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
