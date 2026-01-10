@@ -60,25 +60,40 @@ export default async function HomePage() {
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href="/pricing"
-              className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 px-8 py-4 text-base font-bold text-slate-900 shadow-xl md:shadow-2xl shadow-cyan-500/20 md:shadow-cyan-500/25 active:scale-95 md:hover:scale-105 transition-transform overflow-hidden"
-            >
-              <span className="relative z-10">S&apos;abonner maintenant</span>
-              <svg className="relative z-10 w-5 h-5 md:group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-              <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </a>
-            <a
-              href="/pricing"
-              className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/[0.02] px-8 py-4 text-base font-semibold text-white active:bg-white/[0.05] md:hover:bg-white/[0.05] md:hover:border-white/30 transition-colors"
-            >
-              <span>Voir les tarifs</span>
-              <svg className="w-4 h-4 text-white/50 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
-            </a>
+            {!isLoggedIn ? (
+              <>
+                <a
+                  href="/pricing"
+                  className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 px-8 py-4 text-base font-bold text-slate-900 shadow-xl md:shadow-2xl shadow-cyan-500/20 md:shadow-cyan-500/25 active:scale-95 md:hover:scale-105 transition-transform overflow-hidden"
+                >
+                  <span className="relative z-10">S&apos;abonner maintenant</span>
+                  <svg className="relative z-10 w-5 h-5 md:group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                  <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+                <a
+                  href="/pricing"
+                  className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/[0.02] px-8 py-4 text-base font-semibold text-white active:bg-white/[0.05] md:hover:bg-white/[0.05] md:hover:border-white/30 transition-colors"
+                >
+                  <span>Voir les tarifs</span>
+                  <svg className="w-4 h-4 text-white/50 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </a>
+              </>
+            ) : (
+              <a
+                href="/dashboard"
+                className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 px-8 py-4 text-base font-bold text-slate-900 shadow-xl md:shadow-2xl shadow-cyan-500/20 md:shadow-cyan-500/25 active:scale-95 md:hover:scale-105 transition-transform overflow-hidden"
+              >
+                <span className="relative z-10">Aller au dashboard</span>
+                <svg className="relative z-10 w-5 h-5 md:group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+                <div className="hidden md:block absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </a>
+            )}
           </div>
           
           {/* Trust badges */}
@@ -192,15 +207,17 @@ export default async function HomePage() {
           
           {/* CTA */}
           <div className="text-center mt-14">
-            <a
-              href="/signup?role=CREATOR"
-              className="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 via-emerald-400 to-cyan-500 px-8 py-4 text-base font-bold text-slate-900 shadow-lg shadow-cyan-500/20 hover:opacity-90 hover:shadow-cyan-500/30 hover:scale-105 transition-all duration-150"
-            >
-              <span>Je suis créateur</span>
-              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </a>
+            {!isLoggedIn && (
+              <a
+                href="/signup?role=CREATOR"
+                className="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 via-emerald-400 to-cyan-500 px-8 py-4 text-base font-bold text-slate-900 shadow-lg shadow-cyan-500/20 hover:opacity-90 hover:shadow-cyan-500/30 hover:scale-105 transition-all duration-150"
+              >
+                <span>Je suis créateur</span>
+                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </a>
+            )}
           </div>
         </div>
       </section>
