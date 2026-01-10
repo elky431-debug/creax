@@ -131,12 +131,24 @@ export default function ProfilePage() {
 
   return (
     <SubscriptionGuard>
-    <div className="min-h-screen bg-slate-950">
-      <div className="mx-auto max-w-3xl px-4 py-10">
+    <div className="min-h-screen bg-black relative overflow-hidden">
+      {/* Ambient background */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-40 left-1/2 h-[520px] w-[920px] -translate-x-1/2 rounded-full bg-cyan-500/10 blur-3xl" />
+        <div className="absolute top-44 -left-40 h-[420px] w-[420px] rounded-full bg-emerald-500/10 blur-3xl" />
+        <div className="absolute -bottom-48 -right-40 h-[520px] w-[520px] rounded-full bg-cyan-500/10 blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_45%)]" />
+      </div>
+
+      <div className="relative mx-auto max-w-4xl px-4 py-10">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white">Mon profil</h1>
-          <p className="mt-2 text-slate-400">
+          <h1 className="text-4xl font-black tracking-tight text-white">
+            <span className="bg-gradient-to-r from-white via-white to-white/70 bg-clip-text text-transparent">
+              Mon profil
+            </span>
+          </h1>
+          <p className="mt-2 text-white/55">
             Gérez vos informations publiques et optimisez votre visibilité.
           </p>
         </div>
@@ -144,37 +156,37 @@ export default function ProfilePage() {
         {/* Formulaire */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Info compte */}
-          <div className="rounded-xl bg-slate-900/80 border border-slate-800 p-6">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]">
             <h2 className="text-lg font-semibold text-white mb-4">Informations du compte</h2>
             
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-white/70 mb-1">
                   Email
                 </label>
                 <input
                   type="email"
                   value={user.email}
                   disabled
-                  className="w-full rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-2 text-sm text-slate-400"
+                  className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-2.5 text-sm text-white/40"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-white/70 mb-1">
                   Type de compte
                 </label>
                 <input
                   type="text"
                   value={isCreator ? "Créateur de contenu" : "Graphiste / Monteur"}
                   disabled
-                  className="w-full rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-2 text-sm text-slate-400"
+                  className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-2.5 text-sm text-white/40"
                 />
               </div>
             </div>
           </div>
 
           {/* Photo de profil */}
-          <div className="rounded-xl bg-slate-900/80 border border-slate-800 p-6">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]">
             <h2 className="text-lg font-semibold text-white mb-4">Photo de profil</h2>
             <AvatarUploader
               currentAvatarUrl={user.profile?.avatarUrl || null}
@@ -183,12 +195,12 @@ export default function ProfilePage() {
           </div>
 
           {/* Profil public */}
-          <div className="rounded-xl bg-slate-900/80 border border-slate-800 p-6">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]">
             <h2 className="text-lg font-semibold text-white mb-4">Profil public</h2>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-white/70 mb-1">
                   Nom affiché *
                 </label>
                 <input
@@ -196,13 +208,13 @@ export default function ProfilePage() {
                   required
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-black/35 px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20"
                   placeholder="Votre nom ou pseudo"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-white/70 mb-1">
                   Bio
                 </label>
                 <textarea
@@ -210,21 +222,21 @@ export default function ProfilePage() {
                   onChange={(e) => setBio(e.target.value)}
                   rows={4}
                   maxLength={500}
-                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-black/35 px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20"
                   placeholder="Décrivez-vous en quelques lignes..."
                 />
-                <p className="mt-1 text-xs text-slate-500">{bio.length}/500 caractères</p>
+                <p className="mt-1 text-xs text-white/35">{bio.length}/500 caractères</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-white/70 mb-1">
                   Disponibilité
                 </label>
                 <input
                   type="text"
                   value={availability}
                   onChange={(e) => setAvailability(e.target.value)}
-                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+                  className="w-full rounded-xl border border-white/10 bg-black/35 px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20"
                   placeholder="Temps plein, temps partiel, en soirée..."
                 />
               </div>
@@ -233,77 +245,77 @@ export default function ProfilePage() {
 
           {/* Champs spécifiques au rôle */}
           {isCreator ? (
-            <div className="rounded-xl bg-slate-900/80 border border-slate-800 p-6">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]">
               <h2 className="text-lg font-semibold text-white mb-4">Informations créateur</h2>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-white/70 mb-1">
                     Types de contenu
                   </label>
                   <input
                     type="text"
                     value={contentTypes}
                     onChange={(e) => setContentTypes(e.target.value)}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-black/35 px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20"
                     placeholder="YouTube, TikTok, Twitch, Instagram..."
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-white/70 mb-1">
                     Vos besoins
                   </label>
                   <textarea
                     value={needs}
                     onChange={(e) => setNeeds(e.target.value)}
                     rows={3}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-black/35 px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20"
                     placeholder="Miniatures, montages vidéo, identité visuelle..."
                   />
                 </div>
               </div>
             </div>
           ) : (
-            <div className="rounded-xl bg-slate-900/80 border border-slate-800 p-6">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]">
               <h2 className="text-lg font-semibold text-white mb-4">Informations graphiste / monteur</h2>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-white/70 mb-1">
                     Compétences
                   </label>
                   <input
                     type="text"
                     value={skills}
                     onChange={(e) => setSkills(e.target.value)}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-black/35 px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20"
                     placeholder="Montage vidéo, miniatures, motion design, After Effects..."
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-white/70 mb-1">
                     Portfolio
                   </label>
                   <input
                     type="url"
                     value={portfolioUrl}
                     onChange={(e) => setPortfolioUrl(e.target.value)}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-black/35 px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20"
                     placeholder="https://behance.net/votre-portfolio"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-white/70 mb-1">
                     Tarifs
                   </label>
                   <input
                     type="text"
                     value={rate}
                     onChange={(e) => setRate(e.target.value)}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+                    className="w-full rounded-xl border border-white/10 bg-black/35 px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20"
                     placeholder="À partir de 50€/miniature, 200€/montage..."
                   />
                 </div>
@@ -319,12 +331,12 @@ export default function ProfilePage() {
 
           {/* Messages */}
           {error && (
-            <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-4 text-sm text-red-400">
+            <div className="rounded-xl border border-red-500/25 bg-red-500/10 p-4 text-sm text-red-200">
               {error}
             </div>
           )}
           {message && (
-            <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-4 text-sm text-emerald-400">
+            <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-4 text-sm text-emerald-200">
               {message}
             </div>
           )}
@@ -334,13 +346,13 @@ export default function ProfilePage() {
             <button
               type="submit"
               disabled={saving}
-              className="rounded-lg bg-cyan-500 px-8 py-3 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400 disabled:opacity-50"
+              className="rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-8 py-3 text-sm font-bold text-slate-900 shadow-lg shadow-cyan-500/20 transition hover:from-cyan-400 hover:to-emerald-400 disabled:opacity-50"
             >
               {saving ? "Enregistrement..." : "Enregistrer les modifications"}
             </button>
             <a
               href="/dashboard"
-              className="rounded-lg border border-slate-700 bg-slate-800 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+              className="rounded-xl border border-white/10 bg-white/[0.03] px-6 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/[0.06]"
             >
               Retour au dashboard
             </a>
@@ -357,10 +369,10 @@ export default function ProfilePage() {
         <DangerZone hasSubscription={user.hasSubscription} />
 
         {/* Bouton Déconnexion */}
-        <div className="mt-8 pt-8 border-t border-slate-800">
+        <div className="mt-8 pt-8 border-t border-white/10">
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
-            className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-6 py-3 text-sm font-semibold text-red-400 transition hover:bg-red-500/20 hover:border-red-500/50"
+            className="flex items-center gap-2 rounded-xl border border-red-500/25 bg-red-500/10 px-6 py-3 text-sm font-semibold text-red-200 transition hover:bg-red-500/15 hover:border-red-500/40"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -450,21 +462,21 @@ function DangerZone({ hasSubscription }: { hasSubscription: boolean }) {
 
   return (
     <>
-      <div className="mt-8 rounded-xl bg-red-950/30 border border-red-500/20 p-6">
-        <h2 className="text-lg font-semibold text-red-400 mb-2">Zone de danger</h2>
-        <p className="text-sm text-slate-400 mb-6">
+      <div className="mt-8 rounded-2xl border border-red-500/25 bg-red-500/5 backdrop-blur-xl p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]">
+        <h2 className="text-lg font-semibold text-red-200 mb-2">Zone de danger</h2>
+        <p className="text-sm text-white/55 mb-6">
           Ces actions sont irréversibles. Procédez avec précaution.
         </p>
 
         <div className="space-y-4">
           {/* Annuler l'abonnement */}
           {hasSubscription && (
-            <div className="flex items-center justify-between p-4 rounded-lg bg-slate-900/50 border border-slate-800">
+            <div className="flex items-center justify-between p-4 rounded-xl bg-black/30 border border-white/10">
               <div>
                 <h3 className="text-sm font-medium text-white">
                   {cancelAtPeriodEnd ? "Résiliation programmée" : "Résilier mon abonnement"}
                 </h3>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-white/35 mt-1">
                   {cancelAtPeriodEnd && periodEnd
                     ? `Votre abonnement prendra fin le ${new Date(periodEnd).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}`
                     : "Votre abonnement restera actif jusqu'à la fin de la période en cours."
@@ -472,13 +484,13 @@ function DangerZone({ hasSubscription }: { hasSubscription: boolean }) {
                 </p>
               </div>
               {cancelAtPeriodEnd ? (
-                <span className="rounded-lg bg-orange-500/20 px-4 py-2 text-sm font-semibold text-orange-400">
+                <span className="rounded-xl bg-orange-500/15 px-4 py-2 text-sm font-semibold text-orange-200 border border-orange-500/20">
                   ✓ Résiliation confirmée
                 </span>
               ) : (
                 <button
                   onClick={() => setShowCancelModal(true)}
-                  className="rounded-lg border border-orange-500/30 bg-orange-500/10 px-4 py-2 text-sm font-semibold text-orange-400 transition hover:bg-orange-500/20"
+                  className="rounded-xl border border-orange-500/25 bg-orange-500/10 px-4 py-2 text-sm font-semibold text-orange-200 transition hover:bg-orange-500/15"
                 >
                   Résilier
                 </button>
@@ -487,16 +499,16 @@ function DangerZone({ hasSubscription }: { hasSubscription: boolean }) {
           )}
 
           {/* Supprimer le compte */}
-          <div className="flex items-center justify-between p-4 rounded-lg bg-slate-900/50 border border-slate-800">
+          <div className="flex items-center justify-between p-4 rounded-xl bg-black/30 border border-white/10">
             <div>
               <h3 className="text-sm font-medium text-white">Supprimer mon compte</h3>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-white/35 mt-1">
                 Toutes vos données seront définitivement supprimées.
               </p>
             </div>
             <button
               onClick={() => setShowDeleteModal(true)}
-              className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-400 transition hover:bg-red-500/20"
+              className="rounded-xl border border-red-500/25 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-200 transition hover:bg-red-500/15"
             >
               Supprimer le compte
             </button>
@@ -507,14 +519,14 @@ function DangerZone({ hasSubscription }: { hasSubscription: boolean }) {
       {/* Modal Annulation abonnement */}
       {showCancelModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-md rounded-xl bg-slate-900 border border-slate-800 p-6">
+          <div className="w-full max-w-md rounded-2xl bg-black/80 border border-white/10 backdrop-blur-xl p-6 shadow-[0_30px_90px_rgba(0,0,0,0.65)]">
             <h3 className="text-xl font-bold text-white mb-4">Annuler l'abonnement ?</h3>
-            <p className="text-sm text-slate-400 mb-6">
+            <p className="text-sm text-white/55 mb-6">
               Êtes-vous sûr de vouloir annuler votre abonnement ? Vous conserverez l'accès jusqu'à la fin de votre période de facturation actuelle.
             </p>
             
             {error && (
-              <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+              <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/25 text-sm text-red-200">
                 {error}
               </div>
             )}
@@ -522,14 +534,14 @@ function DangerZone({ hasSubscription }: { hasSubscription: boolean }) {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowCancelModal(false)}
-                className="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700"
+                className="flex-1 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2 text-sm font-semibold text-white/90 hover:bg-white/[0.06]"
               >
                 Annuler
               </button>
               <button
                 onClick={handleCancelSubscription}
                 disabled={cancelLoading}
-                className="flex-1 rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-50"
+                className="flex-1 rounded-xl bg-orange-500 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-orange-400 disabled:opacity-50"
               >
                 {cancelLoading ? "Annulation..." : "Confirmer l'annulation"}
               </button>
@@ -541,12 +553,12 @@ function DangerZone({ hasSubscription }: { hasSubscription: boolean }) {
       {/* Modal Suppression compte */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-md rounded-xl bg-slate-900 border border-slate-800 p-6">
-            <h3 className="text-xl font-bold text-red-400 mb-4">⚠️ Supprimer le compte</h3>
-            <p className="text-sm text-slate-400 mb-4">
+          <div className="w-full max-w-md rounded-2xl bg-black/80 border border-white/10 backdrop-blur-xl p-6 shadow-[0_30px_90px_rgba(0,0,0,0.65)]">
+            <h3 className="text-xl font-bold text-red-200 mb-4">Supprimer le compte</h3>
+            <p className="text-sm text-white/55 mb-4">
               Cette action est <strong className="text-white">irréversible</strong>. Toutes vos données seront définitivement supprimées :
             </p>
-            <ul className="text-sm text-slate-400 mb-6 space-y-1">
+            <ul className="text-sm text-white/55 mb-6 space-y-1">
               <li>• Votre profil et portfolio</li>
               <li>• Vos missions et propositions</li>
               <li>• Vos messages et conversations</li>
@@ -554,20 +566,20 @@ function DangerZone({ hasSubscription }: { hasSubscription: boolean }) {
             </ul>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-white/70 mb-2">
                 Tapez <span className="text-red-400 font-bold">SUPPRIMER</span> pour confirmer
               </label>
               <input
                 type="text"
                 value={confirmText}
                 onChange={(e) => setConfirmText(e.target.value)}
-                className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm text-white placeholder-slate-500 focus:border-red-500 focus:outline-none"
+                className="w-full rounded-xl border border-white/10 bg-black/35 px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none focus:border-red-400/60 focus:ring-2 focus:ring-red-500/20"
                 placeholder="SUPPRIMER"
               />
             </div>
             
             {error && (
-              <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+              <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/25 text-sm text-red-200">
                 {error}
               </div>
             )}
@@ -578,14 +590,14 @@ function DangerZone({ hasSubscription }: { hasSubscription: boolean }) {
                   setShowDeleteModal(false);
                   setConfirmText("");
                 }}
-                className="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700"
+                className="flex-1 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2 text-sm font-semibold text-white/90 hover:bg-white/[0.06]"
               >
                 Annuler
               </button>
               <button
                 onClick={handleDeleteAccount}
                 disabled={deleteLoading || confirmText !== "SUPPRIMER"}
-                className="flex-1 rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 rounded-xl bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {deleteLoading ? "Suppression..." : "Supprimer définitivement"}
               </button>
@@ -651,7 +663,7 @@ function ChangePasswordSection() {
   }
 
   return (
-    <div className="mt-8 rounded-xl bg-slate-900/80 border border-slate-800 p-6">
+    <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]">
       <div className="flex items-center gap-3 mb-6">
         <div className="h-10 w-10 rounded-xl bg-cyan-500/20 flex items-center justify-center">
           <svg className="h-5 w-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -659,15 +671,15 @@ function ChangePasswordSection() {
           </svg>
         </div>
         <div>
-          <h2 className="text-lg font-semibold text-white">🔒 Modifier mon mot de passe</h2>
-          <p className="text-sm text-slate-400">Changez votre mot de passe de connexion</p>
+          <h2 className="text-lg font-semibold text-white">Modifier mon mot de passe</h2>
+          <p className="text-sm text-white/55">Changez votre mot de passe de connexion</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Mot de passe actuel */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1">
+          <label className="block text-sm font-medium text-white/70 mb-1">
             Mot de passe actuel *
           </label>
           <div className="relative">
@@ -676,7 +688,7 @@ function ChangePasswordSection() {
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               required
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none pr-10"
+              className="w-full rounded-xl border border-white/10 bg-black/35 px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20 pr-10"
               placeholder="Votre mot de passe actuel"
             />
           </div>
@@ -684,7 +696,7 @@ function ChangePasswordSection() {
 
         {/* Nouveau mot de passe */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1">
+          <label className="block text-sm font-medium text-white/70 mb-1">
             Nouveau mot de passe *
           </label>
           <input
@@ -693,17 +705,17 @@ function ChangePasswordSection() {
             onChange={(e) => setNewPassword(e.target.value)}
             required
             minLength={8}
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+            className="w-full rounded-xl border border-white/10 bg-black/35 px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20"
             placeholder="Minimum 8 caractères"
           />
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-white/35 mt-1">
             Le mot de passe doit contenir au moins 8 caractères
           </p>
         </div>
 
         {/* Confirmer le nouveau mot de passe */}
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-1">
+          <label className="block text-sm font-medium text-white/70 mb-1">
             Confirmer le nouveau mot de passe *
           </label>
           <input
@@ -712,7 +724,7 @@ function ChangePasswordSection() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
             minLength={8}
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+            className="w-full rounded-xl border border-white/10 bg-black/35 px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-500/20"
             placeholder="Retapez le nouveau mot de passe"
           />
         </div>
@@ -724,9 +736,9 @@ function ChangePasswordSection() {
             id="showPasswords"
             checked={showPasswords}
             onChange={(e) => setShowPasswords(e.target.checked)}
-            className="h-4 w-4 rounded border-slate-700 bg-slate-800 text-cyan-500 focus:ring-cyan-500"
+            className="h-4 w-4 rounded border-white/20 bg-black/40 text-cyan-500 focus:ring-cyan-500/30"
           />
-          <label htmlFor="showPasswords" className="text-sm text-slate-400">
+          <label htmlFor="showPasswords" className="text-sm text-white/55">
             Afficher les mots de passe
           </label>
         </div>
@@ -735,8 +747,8 @@ function ChangePasswordSection() {
         {message && (
           <div className={`p-3 rounded-lg text-sm ${
             message.type === "success"
-              ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"
-              : "bg-red-500/10 border border-red-500/20 text-red-400"
+              ? "bg-emerald-500/10 border border-emerald-500/25 text-emerald-200"
+              : "bg-red-500/10 border border-red-500/25 text-red-200"
           }`}>
             {message.text}
           </div>
@@ -746,7 +758,7 @@ function ChangePasswordSection() {
         <button
           type="submit"
           disabled={loading || !currentPassword || !newPassword || !confirmPassword}
-          className="w-full sm:w-auto rounded-lg bg-cyan-500 px-6 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full sm:w-auto rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-6 py-2.5 text-sm font-bold text-slate-900 shadow-lg shadow-cyan-500/20 transition hover:from-cyan-400 hover:to-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
             <span className="flex items-center gap-2">
@@ -795,20 +807,20 @@ function PaymentSettingsSection() {
 
   if (loading) {
     return (
-      <div className="rounded-xl bg-slate-900/80 border border-slate-800 p-6">
+      <div className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]">
         <div className="flex items-center gap-3">
           <div className="h-5 w-5 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
-          <span className="text-slate-400">Chargement...</span>
+          <span className="text-white/55">Chargement...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`rounded-xl border p-6 ${
+    <div className={`rounded-2xl border p-6 backdrop-blur-xl shadow-[0_30px_90px_rgba(0,0,0,0.55)] ${
       bankInfo?.isConfigured 
-        ? "bg-emerald-500/5 border-emerald-500/20" 
-        : "bg-orange-500/5 border-orange-500/20"
+        ? "bg-emerald-500/5 border-emerald-500/25" 
+        : "bg-orange-500/5 border-orange-500/25"
     }`}>
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
@@ -820,9 +832,9 @@ function PaymentSettingsSection() {
             </svg>
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-white">💳 Paramètres de paiement</h2>
+            <h2 className="text-lg font-semibold text-white">Paramètres de paiement</h2>
             <p className={`text-sm ${bankInfo?.isConfigured ? "text-emerald-400" : "text-orange-400"}`}>
-              {bankInfo?.isConfigured ? "✓ Compte bancaire configuré" : "⚠️ Configuration requise"}
+              {bankInfo?.isConfigured ? "Compte bancaire configuré" : "Configuration requise"}
             </p>
           </div>
         </div>
@@ -830,27 +842,27 @@ function PaymentSettingsSection() {
 
       {bankInfo?.isConfigured ? (
         <div className="space-y-3 mb-4">
-          <div className="bg-slate-900/50 rounded-lg p-3">
-            <p className="text-xs text-slate-500 mb-1">Titulaire</p>
+          <div className="rounded-xl border border-white/10 bg-black/30 p-3">
+            <p className="text-xs text-white/35 mb-1">Titulaire</p>
             <p className="text-sm text-white font-medium">{bankInfo.bankAccountHolder || "—"}</p>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div className="bg-slate-900/50 rounded-lg p-3">
-              <p className="text-xs text-slate-500 mb-1">Banque</p>
+            <div className="rounded-xl border border-white/10 bg-black/30 p-3">
+              <p className="text-xs text-white/35 mb-1">Banque</p>
               <p className="text-sm text-white">{bankInfo.bankName || "—"}</p>
             </div>
-            <div className="bg-slate-900/50 rounded-lg p-3">
-              <p className="text-xs text-slate-500 mb-1">IBAN</p>
+            <div className="rounded-xl border border-white/10 bg-black/30 p-3">
+              <p className="text-xs text-white/35 mb-1">IBAN</p>
               <p className="text-sm text-white font-mono">****</p>
             </div>
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-white/35">
             Vos informations bancaires sont sécurisées et chiffrées.
           </p>
         </div>
       ) : (
         <div className="mb-4">
-          <p className="text-sm text-slate-400 mb-3">
+          <p className="text-sm text-white/55 mb-3">
             Configurez vos informations bancaires pour recevoir vos paiements lorsque vos travaux sont acceptés et payés par les créateurs.
           </p>
           <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-3">
@@ -863,10 +875,10 @@ function PaymentSettingsSection() {
 
       <a
         href="/settings/bank"
-        className={`inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition ${
+        className={`inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition ${
           bankInfo?.isConfigured 
-            ? "border border-slate-700 bg-slate-800 text-white hover:bg-slate-700" 
-            : "bg-gradient-to-r from-cyan-500 to-emerald-500 text-black hover:opacity-90"
+            ? "border border-white/10 bg-white/[0.03] text-white/90 hover:bg-white/[0.06]" 
+            : "bg-gradient-to-r from-cyan-500 to-emerald-500 text-slate-900 hover:from-cyan-400 hover:to-emerald-400 shadow-lg shadow-cyan-500/15"
         }`}
       >
         {bankInfo?.isConfigured ? (
@@ -933,7 +945,7 @@ function SubscriptionSection({ hasSubscription }: { hasSubscription: boolean }) 
   }
 
   return (
-    <div className="mt-8 rounded-xl bg-slate-900/80 border border-slate-800 p-6">
+    <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-6 shadow-[0_30px_90px_rgba(0,0,0,0.55)]">
       <h2 className="text-lg font-semibold text-white mb-4">Abonnement</h2>
 
       {hasSubscription && subscription ? (
@@ -971,7 +983,7 @@ function SubscriptionSection({ hasSubscription }: { hasSubscription: boolean }) 
           )}
 
           {subscription.isTrial && (
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-white/55">
               Votre période d'essai se termine le{" "}
               <span className="text-white font-medium">
                 {new Date(subscription.currentPeriodEnd).toLocaleDateString("fr-FR", {
@@ -984,7 +996,7 @@ function SubscriptionSection({ hasSubscription }: { hasSubscription: boolean }) 
           )}
 
           {!subscription.isTrial && (
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-white/55">
               Prochain renouvellement le{" "}
               <span className="text-white font-medium">
                 {new Date(subscription.currentPeriodEnd).toLocaleDateString("fr-FR", {
@@ -999,19 +1011,19 @@ function SubscriptionSection({ hasSubscription }: { hasSubscription: boolean }) 
           <button
             onClick={handleManageSubscription}
             disabled={loading}
-            className="rounded-lg border border-slate-700 bg-slate-800 px-6 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:opacity-50"
+            className="rounded-xl border border-white/10 bg-white/[0.03] px-6 py-2.5 text-sm font-semibold text-white/90 transition hover:bg-white/[0.06] disabled:opacity-50"
           >
             {loading ? "Chargement..." : "Gérer mon abonnement"}
           </button>
         </div>
       ) : (
         <div className="space-y-4">
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-white/55">
             Vous n'avez pas d'abonnement actif. Souscrivez pour accéder à toutes les fonctionnalités.
           </p>
           <a
             href="/pricing"
-            className="inline-block rounded-lg bg-cyan-500 px-6 py-2 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+            className="inline-block rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-6 py-2.5 text-sm font-bold text-slate-900 shadow-lg shadow-cyan-500/15 transition hover:from-cyan-400 hover:to-emerald-400"
           >
             Voir les offres
           </a>
