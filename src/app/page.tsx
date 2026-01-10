@@ -205,7 +205,7 @@ export default function HomePage() {
               <h2 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.05] tracking-tight text-white">
                 Montrez votre talent,
                 <br />
-                <span className="text-cyan-400">trouvez des clients</span>
+                <span className="text-creix-blue">trouvez des clients</span>
               </h2>
 
               <p className="mt-4 max-w-lg text-base sm:text-lg leading-relaxed text-white/55">
@@ -234,7 +234,7 @@ export default function HomePage() {
 
               <a
                 href="/signup?role=DESIGNER"
-                className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-cyan-500 px-8 py-4 text-base font-bold text-black transition hover:bg-cyan-400"
+                className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-creix-blue px-8 py-4 text-base font-bold text-black transition hover:bg-creix-blue/90"
               >
                 Je suis graphiste / monteur
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
