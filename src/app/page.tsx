@@ -104,12 +104,12 @@ export default function HomePage() {
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.03] border border-white/10 px-4 py-2 mb-6">
               <span className="text-lg">🎬</span>
-              <span className="text-xs font-medium uppercase tracking-widest text-creix-blue/80">Pour les créateurs</span>
+              <span className="text-xs font-medium uppercase tracking-widest text-creix-blue">Pour les créateurs</span>
             </div>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
             Vous créez du contenu ?
           </h2>
-          <p className="max-w-xl mx-auto text-creix-blue/60 text-lg">
+          <p className="max-w-xl mx-auto text-creix-blue text-lg">
             Miniatures, montages, visuels... Publiez ce dont vous avez besoin, les pros répondent.
           </p>
           </div>
@@ -304,7 +304,7 @@ export default function HomePage() {
               <svg className="w-4 h-4 text-creix-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
-              <span className="text-xs font-medium uppercase tracking-widest text-creix-blue/80">Simple & rapide</span>
+              <span className="text-xs font-medium uppercase tracking-widest text-creix-blue">Simple & rapide</span>
             </span>
             <h2 className="text-4xl sm:text-5xl font-bold text-white">
               Comment ça marche ?
@@ -359,7 +359,7 @@ export default function HomePage() {
                   <h3 className="text-xl font-bold text-white mb-3 group-hover:text-creix-blue transition-colors">
                     {step.title}
                   </h3>
-                  <p className="text-creix-blue/60 leading-relaxed max-w-xs">
+                  <p className="text-creix-blue leading-relaxed max-w-xs">
                     {step.desc}
                 </p>
               </div>
