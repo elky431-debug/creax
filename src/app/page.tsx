@@ -123,9 +123,13 @@ export default async function HomePage() {
 
       {/* Platforms Section - Pour les créateurs */}
       <section className="relative py-20 md:py-32 px-4 overflow-hidden">
-        {/* Background - simplified on mobile */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-creix-blue/[0.02] to-transparent pointer-events-none" />
-        <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-creix-blue/5 rounded-full blur-3xl pointer-events-none" />
+        {/* Background glow */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute left-1/2 top-14 h-[700px] w-[700px] -translate-x-1/2 rounded-full bg-cyan-500/10 blur-[110px]" />
+          <div className="absolute left-[8%] top-[35%] h-[560px] w-[560px] rounded-full bg-emerald-500/10 blur-[110px]" />
+          <div className="absolute right-[10%] top-[45%] h-[720px] w-[720px] rounded-full bg-cyan-500/10 blur-[120px]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_50%)]" />
+        </div>
         
         <div className="relative z-10 max-w-6xl mx-auto">
           {/* Header */}
@@ -136,12 +140,16 @@ export default async function HomePage() {
                 Pour les créateurs
               </span>
             </div>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
-            Vous créez du contenu ?
-          </h2>
-          <p className="max-w-xl mx-auto text-lg bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-            Miniatures, montages, visuels... Publiez ce dont vous avez besoin, les pros répondent.
-          </p>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-6">
+              Vous créez{" "}
+              <span className="bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+                du contenu
+              </span>{" "}
+              ?
+            </h2>
+            <p className="max-w-2xl mx-auto text-base sm:text-lg text-white/55">
+              Miniatures, montages, visuels… Publiez ce dont vous avez besoin, les pros répondent.
+            </p>
           </div>
           
           {/* Platform cards - Modern grid */}
@@ -150,56 +158,52 @@ export default async function HomePage() {
               {
                 name: "YouTube",
                 icon: "M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z",
-                desc: "Miniatures, intros, montages",
-                color: "red",
-                gradient: "from-red-500 to-rose-600"
+                desc: "Miniatures, intros, montages"
               },
               {
                 name: "TikTok",
                 icon: "M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z",
-                desc: "Montages courts, effets, trends",
-                color: "pink",
-                gradient: "from-pink-500 via-fuchsia-500 to-cyan-400"
+                desc: "Montages courts, effets, trends"
               },
               {
                 name: "Twitch",
                 icon: "M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z",
-                desc: "Overlays, alertes, emotes",
-                color: "purple",
-                gradient: "from-purple-500 to-violet-600"
+                desc: "Overlays, alertes, emotes"
               },
               {
                 name: "Instagram",
                 icon: "M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z",
-                desc: "Reels, stories, posts",
-                color: "orange",
-                gradient: "from-orange-500 via-pink-500 to-purple-600"
+                desc: "Reels, stories, posts"
               }
             ].map((platform, i) => (
               <div
                 key={i}
-                className="group relative rounded-2xl bg-white/[0.02] border border-white/[0.05] p-6 md:p-8 hover:bg-white/[0.04] hover:border-white/10 transition-all duration-200 cursor-default overflow-hidden"
+                className="group relative rounded-2xl bg-gradient-to-r from-cyan-400/20 via-emerald-400/15 to-cyan-400/20 p-[1px] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_60px_rgba(0,0,0,0.55)]"
               >
-                {/* Hover glow */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${platform.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-150 blur-xl`} />
-                
-                <div className="relative flex flex-col items-center text-center space-y-4">
-                  {/* Icon container */}
-                  <div className={`relative w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br ${platform.gradient} p-[2px] group-hover:scale-110 transition-transform duration-150`}>
-                    <div className="w-full h-full rounded-2xl bg-creix-black flex items-center justify-center">
-                      <svg className="w-8 h-8 md:w-10 md:h-10 text-white" viewBox="0 0 24 24" fill="currentColor">
-                        <path d={platform.icon}/>
-                  </svg>
-              </div>
-            </div>
-            
-                  {/* Text */}
-                  <div>
-                    <h3 className={`text-lg font-bold text-white mb-1 group-hover:bg-gradient-to-r group-hover:${platform.gradient} group-hover:bg-clip-text group-hover:text-transparent transition-all`}>
-                      {platform.name}
-                    </h3>
-                    <p className="text-xs md:text-sm text-white/40">{platform.desc}</p>
-            </div>
+                <div className="relative h-full rounded-2xl border border-white/[0.06] bg-white/[0.03] p-6 md:p-8 backdrop-blur overflow-hidden">
+                  {/* Hover glow */}
+                  <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <div className="absolute -inset-12 bg-gradient-to-r from-cyan-400/10 via-emerald-400/10 to-cyan-400/10 blur-2xl" />
+                  </div>
+
+                  <div className="relative flex flex-col items-center text-center gap-4">
+                    {/* Icon container */}
+                    <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 p-[1px] group-hover:scale-110 transition-transform duration-150">
+                      <div className="w-full h-full rounded-2xl bg-[#0b0b0b] flex items-center justify-center">
+                        <svg className="w-8 h-8 md:w-10 md:h-10 text-white/90 group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor">
+                          <path d={platform.icon} />
+                        </svg>
+                      </div>
+                    </div>
+
+                    {/* Text */}
+                    <div>
+                      <h3 className="text-lg font-bold text-white mb-1 transition-all group-hover:bg-gradient-to-r group-hover:from-cyan-400 group-hover:via-emerald-400 group-hover:to-cyan-400 group-hover:bg-clip-text group-hover:text-transparent">
+                        {platform.name}
+                      </h3>
+                      <p className="text-xs md:text-sm text-white/45">{platform.desc}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -210,7 +214,7 @@ export default async function HomePage() {
             {!isLoggedIn && (
               <a
                 href="/signup?role=CREATOR"
-                className="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 via-emerald-400 to-cyan-500 px-8 py-4 text-base font-bold text-slate-900 shadow-lg shadow-cyan-500/20 hover:opacity-90 hover:shadow-cyan-500/30 hover:scale-105 transition-all duration-150"
+                className="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 px-8 py-4 text-base font-bold text-slate-900 shadow-lg shadow-cyan-500/20 hover:brightness-110 hover:shadow-cyan-500/30 hover:scale-105 transition-all duration-150"
               >
                 <span>Je suis créateur</span>
                 <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
