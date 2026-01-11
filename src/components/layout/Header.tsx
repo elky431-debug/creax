@@ -175,7 +175,7 @@ export function Header() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                   {proposalCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold text-slate-900 shadow-lg shadow-amber-500/30 ring-2 ring-creix-black">
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-lg shadow-red-500/30 ring-2 ring-creix-black">
                       {proposalCount > 9 ? "9+" : proposalCount}
                     </span>
                   )}
@@ -198,7 +198,10 @@ export function Header() {
                         </Link>
                         <Link
                           href="/proposals"
-                          onClick={() => setMissionsMenuOpen(false)}
+                          onClick={() => {
+                            setMissionsMenuOpen(false);
+                            setProposalCount(0); // hide immediately on click
+                          }}
                           className="relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
                         >
                           <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -206,7 +209,7 @@ export function Header() {
                           </svg>
                           Propositions reçues
                           {proposalCount > 0 && (
-                            <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-amber-500 px-1.5 text-[10px] font-bold text-slate-900">
+                            <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
                               {proposalCount > 9 ? "9+" : proposalCount}
                             </span>
                           )}
@@ -247,7 +250,10 @@ export function Header() {
                         </Link>
                         <Link
                           href="/my-proposals"
-                          onClick={() => setMissionsMenuOpen(false)}
+                          onClick={() => {
+                            setMissionsMenuOpen(false);
+                            setProposalCount(0); // hide immediately on click
+                          }}
                           className="relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
                         >
                           <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -255,7 +261,7 @@ export function Header() {
                           </svg>
                           Mes propositions
                           {proposalCount > 0 && (
-                            <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-emerald-500 px-1.5 text-[10px] font-bold text-slate-900">
+                            <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
                               {proposalCount > 9 ? "9+" : proposalCount}
                             </span>
                           )}
@@ -280,6 +286,7 @@ export function Header() {
               {/* Bouton Messagerie avec notification */}
               <Link
                 href="/messages"
+                onClick={() => setUnreadCount(0)} // hide immediately on click
                 className={`relative flex items-center gap-1 sm:gap-2 px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 rounded-full border ${
                   isActive("/messages")
                     ? "text-creix-blue bg-creix-blue/10 border-creix-blue/25"
@@ -291,7 +298,7 @@ export function Header() {
                 </svg>
                 <span className={`hidden sm:inline ${navGradientText}`}>Messages</span>
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white shadow-lg shadow-rose-500/30 ring-2 ring-creix-black">
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-lg shadow-red-500/30 ring-2 ring-creix-black">
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}
@@ -407,7 +414,7 @@ export function Header() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
             {(unreadCount > 0 || proposalCount > 0) && (
-              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white">
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
                 {(unreadCount + proposalCount) > 9 ? "9+" : unreadCount + proposalCount}
               </span>
             )}
@@ -469,7 +476,10 @@ export function Header() {
                       </Link>
                       <Link
                         href="/proposals"
-                        onClick={() => setMobileMenuOpen(false)}
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          setProposalCount(0); // hide immediately on click
+                        }}
                         className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
                       >
                         <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -477,7 +487,7 @@ export function Header() {
                         </svg>
                         Propositions reçues
                         {proposalCount > 0 && (
-                          <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-amber-500 px-1.5 text-[10px] font-bold text-slate-900">
+                          <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
                             {proposalCount}
                           </span>
                         )}
@@ -507,7 +517,10 @@ export function Header() {
                       </Link>
                       <Link
                         href="/my-proposals"
-                        onClick={() => setMobileMenuOpen(false)}
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          setProposalCount(0); // hide immediately on click
+                        }}
                         className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
                       >
                         <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -515,7 +528,7 @@ export function Header() {
                         </svg>
                         Mes propositions
                         {proposalCount > 0 && (
-                          <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-emerald-500 px-1.5 text-[10px] font-bold text-slate-900">
+                          <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
                             {proposalCount}
                           </span>
                         )}
@@ -538,7 +551,10 @@ export function Header() {
 
                   <Link
                     href="/messages"
-                    onClick={() => setMobileMenuOpen(false)}
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setUnreadCount(0); // hide immediately on click
+                    }}
                     className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
                   >
                     <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -546,7 +562,7 @@ export function Header() {
                     </svg>
                     Messages
                     {unreadCount > 0 && (
-                      <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-rose-500 px-1.5 text-[10px] font-bold text-white">
+                      <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
                         {unreadCount}
                       </span>
                     )}
