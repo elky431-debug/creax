@@ -104,6 +104,8 @@ const BUDGET_LABELS: Record<string, string> = {
 export default function MissionsPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const gradientText =
+    "bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent";
 
   // États
   const [missions, setMissions] = useState<Mission[]>([]);
@@ -301,18 +303,33 @@ export default function MissionsPage() {
 
   return (
     <SubscriptionGuard allowedRoles={["DESIGNER"]}>
-    <div className="min-h-screen bg-slate-950">
-      <div className="mx-auto max-w-7xl px-4 py-10">
+    <div className="relative min-h-screen bg-slate-950">
+      {/* Background glow */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute left-1/2 top-16 h-[560px] w-[560px] -translate-x-1/2 rounded-full bg-cyan-500/10 blur-[110px]" />
+        <div className="absolute left-[12%] top-[30%] h-[520px] w-[520px] rounded-full bg-emerald-500/10 blur-[110px]" />
+        <div className="absolute right-[12%] top-[40%] h-[560px] w-[560px] rounded-full bg-cyan-500/10 blur-[120px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.06),transparent_50%)]" />
+      </div>
+
+      <div className="relative mx-auto max-w-7xl px-4 py-10">
         {/* ============================================
             HEADER
             ============================================ */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white">Missions disponibles</h1>
-          <p className="mt-2 text-slate-400">
+          <p className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white/55">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            Missions
+          </p>
+          <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-white">
+            Missions{" "}
+            <span className={gradientText}>disponibles</span>
+          </h1>
+          <p className="mt-2 text-sm text-white/45">
             Découvrez les missions postées par les créateurs et proposez vos services.
           </p>
           {missions.length > 0 && (
-            <p className="mt-1 text-sm text-cyan-400">
+            <p className={`mt-2 text-sm font-semibold ${gradientText}`}>
               {missions.length} mission{missions.length > 1 ? "s" : ""} trouvée{missions.length > 1 ? "s" : ""}
             </p>
           )}
@@ -321,56 +338,78 @@ export default function MissionsPage() {
         {/* ============================================
             FILTRES ET RECHERCHE
             ============================================ */}
-        <div className="mb-8 rounded-xl bg-slate-900/80 border border-slate-800 p-6">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-8 rounded-2xl bg-gradient-to-r from-cyan-400/20 via-emerald-400/15 to-cyan-400/20 p-[1px] shadow-[0_18px_60px_rgba(0,0,0,0.55)]">
+          <div className="rounded-2xl border border-white/[0.06] bg-[#0b0b0b]/80 p-6 backdrop-blur-xl">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {/* Recherche textuelle */}
             <div className="lg:col-span-2">
-              <label className="block text-xs font-medium text-slate-400 mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-white/55 mb-2">
                 Rechercher
               </label>
-              <input
-                type="text"
-                value={filters.query}
-                onChange={(e) => setFilters((f) => ({ ...f, query: e.target.value }))}
-                placeholder="Rechercher une mission (titre, description…)"
-                className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
-              />
+              <div className="relative">
+                <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
+                  <svg className="h-5 w-5 text-white/35" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m1.1-4.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  value={filters.query}
+                  onChange={(e) => setFilters((f) => ({ ...f, query: e.target.value }))}
+                  placeholder="Rechercher une mission (titre, description…)"
+                  className="w-full rounded-xl border border-white/[0.10] bg-white/[0.02] pl-11 pr-4 py-3 text-sm text-white placeholder-white/30 outline-none transition focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20"
+                />
+              </div>
             </div>
 
             {/* Filtre par type */}
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-white/55 mb-2">
                 Type de mission
               </label>
-              <select
-                value={filters.type}
-                onChange={(e) => setFilters((f) => ({ ...f, type: e.target.value }))}
-                className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white focus:border-cyan-500 focus:outline-none"
-              >
-                {MISSION_TYPES.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  value={filters.type}
+                  onChange={(e) => setFilters((f) => ({ ...f, type: e.target.value }))}
+                  className="w-full appearance-none rounded-xl border border-white/[0.10] bg-white/[0.02] px-4 py-3 pr-10 text-sm text-white outline-none transition focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20"
+                >
+                  {MISSION_TYPES.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                  <svg className="h-4 w-4 text-white/35" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </div>
 
             {/* Filtre par budget */}
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-white/55 mb-2">
                 Budget
               </label>
-              <select
-                value={filters.budget}
-                onChange={(e) => setFilters((f) => ({ ...f, budget: e.target.value }))}
-                className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white focus:border-cyan-500 focus:outline-none"
-              >
-                {BUDGET_RANGES.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  value={filters.budget}
+                  onChange={(e) => setFilters((f) => ({ ...f, budget: e.target.value }))}
+                  className="w-full appearance-none rounded-xl border border-white/[0.10] bg-white/[0.02] px-4 py-3 pr-10 text-sm text-white outline-none transition focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20"
+                >
+                  {BUDGET_RANGES.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                  <svg className="h-4 w-4 text-white/35" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -378,20 +417,27 @@ export default function MissionsPage() {
           <div className="mt-4 flex flex-wrap items-end gap-4">
             {/* Tri par date */}
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-white/55 mb-2">
                 Trier par
               </label>
-              <select
-                value={filters.sort}
-                onChange={(e) => setFilters((f) => ({ ...f, sort: e.target.value }))}
-                className="rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white focus:border-cyan-500 focus:outline-none"
-              >
-                {SORT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  value={filters.sort}
+                  onChange={(e) => setFilters((f) => ({ ...f, sort: e.target.value }))}
+                  className="appearance-none rounded-xl border border-white/[0.10] bg-white/[0.02] px-4 py-3 pr-10 text-sm text-white outline-none transition focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20"
+                >
+                  {SORT_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                  <svg className="h-4 w-4 text-white/35" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </div>
 
             <div className="flex gap-3 ml-auto">
@@ -399,7 +445,7 @@ export default function MissionsPage() {
               <button
                 type="button"
                 onClick={resetFilters}
-                className="rounded-lg border border-slate-700 bg-slate-800 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+                className="rounded-xl border border-white/[0.10] bg-white/[0.02] px-6 py-3 text-sm font-semibold text-white/80 transition hover:border-white/[0.18] hover:bg-white/[0.04]"
               >
                 Réinitialiser
               </button>
@@ -409,11 +455,12 @@ export default function MissionsPage() {
                 type="button"
                 onClick={fetchMissions}
                 disabled={searching}
-                className="rounded-lg bg-cyan-500 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400 disabled:opacity-50"
+                className="rounded-xl bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 px-6 py-3 text-sm font-bold text-slate-900 transition hover:brightness-110 disabled:opacity-50"
               >
                 {searching ? "Recherche..." : "Appliquer"}
               </button>
             </div>
+          </div>
           </div>
         </div>
 
@@ -434,22 +481,22 @@ export default function MissionsPage() {
           </div>
         ) : (
           /* État vide */
-          <div className="rounded-xl bg-slate-900/50 border border-slate-800 p-12 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-800">
-              <svg className="h-8 w-8 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-12 text-center backdrop-blur">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400/15 to-emerald-400/10 ring-1 ring-white/[0.06]">
+              <svg className="h-8 w-8 text-white/55" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
             </div>
             <h3 className="text-lg font-semibold text-white">
               Aucune mission ne correspond à vos critères
             </h3>
-            <p className="mt-2 text-sm text-slate-400">
+            <p className="mt-2 text-sm text-white/45">
               Essayez d'élargir vos filtres ou revenez plus tard
             </p>
             <button
               type="button"
               onClick={resetFilters}
-              className="mt-6 rounded-lg bg-cyan-500 px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+              className="mt-6 rounded-xl bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 px-6 py-3 text-sm font-bold text-slate-900 transition hover:brightness-110"
             >
               Réinitialiser les filtres
             </button>
@@ -495,16 +542,19 @@ type MissionCardProps = {
 
 function MissionCard({ mission, onPropose, formatBudget, formatDeadline }: MissionCardProps) {
   return (
-    <div className="group rounded-xl bg-slate-900/80 border border-slate-800 p-6 transition-all hover:border-cyan-500/40 flex flex-col">
+    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.03] p-6 backdrop-blur transition-all hover:-translate-y-0.5 hover:border-cyan-400/30 hover:shadow-[0_18px_60px_rgba(0,0,0,0.55)]">
+      <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+        <div className="absolute -inset-12 bg-gradient-to-r from-cyan-400/10 via-emerald-400/10 to-cyan-400/10 blur-2xl" />
+      </div>
       {/* Header avec créateur */}
-      <div className="flex items-center gap-3 mb-4">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-emerald-500 text-sm font-bold text-slate-900 overflow-hidden">
+      <div className="relative flex items-center gap-3 mb-4">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 via-emerald-400 to-cyan-400 text-sm font-bold text-slate-900 overflow-hidden ring-2 ring-black/20">
           {mission.creator.avatarUrl ? (
             <Image
               src={mission.creator.avatarUrl}
               alt={mission.creator.displayName}
-              width={40}
-              height={40}
+              width={44}
+              height={44}
               className="h-full w-full object-cover"
             />
           ) : (
@@ -515,40 +565,40 @@ function MissionCard({ mission, onPropose, formatBudget, formatDeadline }: Missi
           <p className="text-sm font-medium text-white truncate">
             {mission.creator.displayName}
           </p>
-          <p className="text-xs text-slate-500">Créateur</p>
+          <p className="text-xs text-white/40">Créateur</p>
         </div>
         {/* Badge type */}
-        <span className="shrink-0 rounded-full bg-slate-800 px-3 py-1 text-xs font-medium text-cyan-400">
+        <span className="shrink-0 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-xs font-semibold text-white/75">
           {TYPE_LABELS[mission.type] || mission.type}
         </span>
       </div>
 
       {/* Titre */}
-      <h3 className="text-lg font-semibold text-white mb-2 line-clamp-2">
+      <h3 className="relative text-lg font-semibold text-white mb-2 line-clamp-2">
         {mission.title}
       </h3>
 
       {/* Description (extrait) */}
-      <p className="text-sm text-slate-400 line-clamp-3 mb-4 flex-1">
+      <p className="relative text-sm text-white/45 line-clamp-3 mb-4 flex-1">
         {mission.description}
       </p>
 
       {/* Images de référence (si présentes) */}
       {mission.referenceImages.length > 0 && (
-        <div className="flex gap-2 mb-4">
+        <div className="relative flex gap-2 mb-4">
           {mission.referenceImages.slice(0, 3).map((url, index) => (
-            <div key={index} className="relative h-16 w-16 rounded-lg overflow-hidden bg-slate-800">
+            <div key={index} className="relative h-16 w-16 rounded-xl overflow-hidden bg-black/30 ring-1 ring-white/[0.06]">
               <Image
                 src={url}
                 alt={`Référence ${index + 1}`}
                 fill
-                className="object-cover"
+                className="object-cover transition-transform duration-200 group-hover:scale-[1.02]"
                 sizes="64px"
               />
             </div>
           ))}
           {mission.referenceImages.length > 3 && (
-            <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-slate-800 text-xs text-slate-400">
+            <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06] text-xs font-semibold text-white/55">
               +{mission.referenceImages.length - 3}
             </div>
           )}
@@ -556,21 +606,21 @@ function MissionCard({ mission, onPropose, formatBudget, formatDeadline }: Missi
       )}
 
       {/* Infos : Budget + Deadline */}
-      <div className="flex flex-wrap gap-3 mb-4 text-sm">
-        <div className="flex items-center gap-1.5 text-emerald-400">
+      <div className="relative flex flex-wrap gap-3 mb-4 text-sm">
+        <div className="flex items-center gap-1.5 text-emerald-300">
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span>{formatBudget(mission)}</span>
         </div>
-        <div className="flex items-center gap-1.5 text-slate-400">
+        <div className="flex items-center gap-1.5 text-white/45">
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
           <span>{formatDeadline(mission.deadline)}</span>
         </div>
         {mission.proposalCount > 0 && (
-          <div className="flex items-center gap-1.5 text-slate-500">
+          <div className="flex items-center gap-1.5 text-white/40">
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
@@ -580,10 +630,10 @@ function MissionCard({ mission, onPropose, formatBudget, formatDeadline }: Missi
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3 mt-auto pt-4 border-t border-slate-800">
+      <div className="relative flex gap-3 mt-auto pt-4 border-t border-white/[0.06]">
         <Link
           href={`/missions/${mission.id}`}
-          className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700"
+          className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-white/[0.10] bg-white/[0.02] px-4 py-2.5 text-sm font-semibold text-white/80 transition hover:border-white/[0.18] hover:bg-white/[0.04]"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -613,7 +663,7 @@ function MissionCard({ mission, onPropose, formatBudget, formatDeadline }: Missi
           <button
             type="button"
             onClick={onPropose}
-            className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-cyan-500 px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400"
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 px-4 py-2.5 text-sm font-bold text-slate-900 transition hover:brightness-110"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
