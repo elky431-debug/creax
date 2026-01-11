@@ -16,12 +16,47 @@ export function Header() {
   const pathname = usePathname();
   const [unreadCount, setUnreadCount] = useState(0);
   const [proposalCount, setProposalCount] = useState(0);
+  const [dismissedUnreadBaseline, setDismissedUnreadBaseline] = useState(0);
+  const [dismissedProposalBaseline, setDismissedProposalBaseline] = useState(0);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [missionsMenuOpen, setMissionsMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const missionsMenuRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Restore dismissed baselines (client-only)
+  useEffect(() => {
+    try {
+      const storedUnread = Number(localStorage.getItem("creix:dismissedUnreadBaseline") || "0");
+      const storedProposals = Number(localStorage.getItem("creix:dismissedProposalBaseline") || "0");
+      setDismissedUnreadBaseline(Number.isFinite(storedUnread) ? storedUnread : 0);
+      setDismissedProposalBaseline(Number.isFinite(storedProposals) ? storedProposals : 0);
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const displayedUnreadCount = Math.max(0, unreadCount - dismissedUnreadBaseline);
+  const displayedProposalCount = Math.max(0, proposalCount - dismissedProposalBaseline);
+
+  function dismissUnreadNow() {
+    try {
+      localStorage.setItem("creix:dismissedUnreadBaseline", String(unreadCount));
+    } catch {
+      // ignore
+    }
+    setDismissedUnreadBaseline(unreadCount);
+  }
+
+  function dismissProposalsNow() {
+    try {
+      localStorage.setItem("creix:dismissedProposalBaseline", String(proposalCount));
+    } catch {
+      // ignore
+    }
+    setDismissedProposalBaseline(proposalCount);
+  }
 
   // Fermer le menu quand on clique ailleurs
   useEffect(() => {
@@ -47,7 +82,20 @@ export function Header() {
         const unreadRes = await fetch("/api/messages/unread");
         if (unreadRes.ok) {
           const data = await unreadRes.json();
-          setUnreadCount(data.unreadCount || 0);
+          const nextUnread = data.unreadCount || 0;
+          setUnreadCount(nextUnread);
+          // If counts decreased (read elsewhere), keep baseline in sync
+          setDismissedUnreadBaseline((prev) => {
+            const next = Math.min(prev, nextUnread);
+            if (next !== prev) {
+              try {
+                localStorage.setItem("creix:dismissedUnreadBaseline", String(next));
+              } catch {
+                // ignore
+              }
+            }
+            return next;
+          });
         }
 
         // Récupérer le profil pour l'avatar et le rôle
@@ -62,7 +110,20 @@ export function Header() {
         const proposalRes = await fetch("/api/proposals/count");
         if (proposalRes.ok) {
           const data = await proposalRes.json();
-          setProposalCount(data.count || 0);
+          const nextCount = data.count || 0;
+          setProposalCount(nextCount);
+          // If counts decreased (handled/accepted elsewhere), keep baseline in sync
+          setDismissedProposalBaseline((prev) => {
+            const next = Math.min(prev, nextCount);
+            if (next !== prev) {
+              try {
+                localStorage.setItem("creix:dismissedProposalBaseline", String(next));
+              } catch {
+                // ignore
+              }
+            }
+            return next;
+          });
         }
       } catch {
         // Silently fail
@@ -81,11 +142,35 @@ export function Header() {
         
         if (unreadRes.ok) {
           const data = await unreadRes.json();
-          setUnreadCount(data.unreadCount || 0);
+          const nextUnread = data.unreadCount || 0;
+          setUnreadCount(nextUnread);
+          setDismissedUnreadBaseline((prev) => {
+            const next = Math.min(prev, nextUnread);
+            if (next !== prev) {
+              try {
+                localStorage.setItem("creix:dismissedUnreadBaseline", String(next));
+              } catch {
+                // ignore
+              }
+            }
+            return next;
+          });
         }
         if (proposalRes.ok) {
           const data = await proposalRes.json();
-          setProposalCount(data.count || 0);
+          const nextCount = data.count || 0;
+          setProposalCount(nextCount);
+          setDismissedProposalBaseline((prev) => {
+            const next = Math.min(prev, nextCount);
+            if (next !== prev) {
+              try {
+                localStorage.setItem("creix:dismissedProposalBaseline", String(next));
+              } catch {
+                // ignore
+              }
+            }
+            return next;
+          });
         }
       } catch {
         // Silently fail
@@ -174,9 +259,9 @@ export function Header() {
                   <svg className={`h-3.5 w-3.5 transition-transform duration-200 ${missionsMenuOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
-                  {proposalCount > 0 && (
+                  {displayedProposalCount > 0 && (
                     <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-lg shadow-red-500/30 ring-2 ring-creix-black">
-                      {proposalCount > 9 ? "9+" : proposalCount}
+                      {displayedProposalCount > 9 ? "9+" : displayedProposalCount}
                     </span>
                   )}
                 </button>
@@ -200,7 +285,7 @@ export function Header() {
                           href="/proposals"
                           onClick={() => {
                             setMissionsMenuOpen(false);
-                            setProposalCount(0); // hide immediately on click
+                            dismissProposalsNow(); // hide immediately on click (and persist)
                           }}
                           className="relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
                         >
@@ -208,9 +293,9 @@ export function Header() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                           </svg>
                           Propositions reçues
-                          {proposalCount > 0 && (
+                          {displayedProposalCount > 0 && (
                             <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
-                              {proposalCount > 9 ? "9+" : proposalCount}
+                              {displayedProposalCount > 9 ? "9+" : displayedProposalCount}
                             </span>
                           )}
                         </Link>
@@ -252,7 +337,7 @@ export function Header() {
                           href="/my-proposals"
                           onClick={() => {
                             setMissionsMenuOpen(false);
-                            setProposalCount(0); // hide immediately on click
+                            dismissProposalsNow(); // hide immediately on click (and persist)
                           }}
                           className="relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
                         >
@@ -260,9 +345,9 @@ export function Header() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                           </svg>
                           Mes propositions
-                          {proposalCount > 0 && (
+                          {displayedProposalCount > 0 && (
                             <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
-                              {proposalCount > 9 ? "9+" : proposalCount}
+                              {displayedProposalCount > 9 ? "9+" : displayedProposalCount}
                             </span>
                           )}
                         </Link>
@@ -286,7 +371,7 @@ export function Header() {
               {/* Bouton Messagerie avec notification */}
               <Link
                 href="/messages"
-                onClick={() => setUnreadCount(0)} // hide immediately on click
+                onClick={dismissUnreadNow} // hide immediately on click (and persist)
                 className={`relative flex items-center gap-1 sm:gap-2 px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 rounded-full border ${
                   isActive("/messages")
                     ? "text-creix-blue bg-creix-blue/10 border-creix-blue/25"
@@ -297,9 +382,9 @@ export function Header() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
                 <span className={`hidden sm:inline ${navGradientText}`}>Messages</span>
-                {unreadCount > 0 && (
+                {displayedUnreadCount > 0 && (
                   <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-lg shadow-red-500/30 ring-2 ring-creix-black">
-                    {unreadCount > 9 ? "9+" : unreadCount}
+                    {displayedUnreadCount > 9 ? "9+" : displayedUnreadCount}
                   </span>
                 )}
               </Link>
@@ -413,9 +498,9 @@ export function Header() {
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
-            {(unreadCount > 0 || proposalCount > 0) && (
+            {(displayedUnreadCount > 0 || displayedProposalCount > 0) && (
               <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
-                {(unreadCount + proposalCount) > 9 ? "9+" : unreadCount + proposalCount}
+                {(displayedUnreadCount + displayedProposalCount) > 9 ? "9+" : displayedUnreadCount + displayedProposalCount}
               </span>
             )}
           </button>
@@ -478,7 +563,7 @@ export function Header() {
                         href="/proposals"
                         onClick={() => {
                           setMobileMenuOpen(false);
-                          setProposalCount(0); // hide immediately on click
+                          dismissProposalsNow(); // hide immediately on click (and persist)
                         }}
                         className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
                       >
@@ -486,9 +571,9 @@ export function Header() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                         </svg>
                         Propositions reçues
-                        {proposalCount > 0 && (
+                        {displayedProposalCount > 0 && (
                           <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
-                            {proposalCount}
+                            {displayedProposalCount > 9 ? "9+" : displayedProposalCount}
                           </span>
                         )}
                       </Link>
@@ -519,7 +604,7 @@ export function Header() {
                         href="/my-proposals"
                         onClick={() => {
                           setMobileMenuOpen(false);
-                          setProposalCount(0); // hide immediately on click
+                          dismissProposalsNow(); // hide immediately on click (and persist)
                         }}
                         className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
                       >
@@ -527,9 +612,9 @@ export function Header() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                         </svg>
                         Mes propositions
-                        {proposalCount > 0 && (
+                        {displayedProposalCount > 0 && (
                           <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
-                            {proposalCount}
+                            {displayedProposalCount > 9 ? "9+" : displayedProposalCount}
                           </span>
                         )}
                       </Link>
@@ -553,7 +638,7 @@ export function Header() {
                     href="/messages"
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      setUnreadCount(0); // hide immediately on click
+                      dismissUnreadNow(); // hide immediately on click (and persist)
                     }}
                     className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
                   >
@@ -561,9 +646,9 @@ export function Header() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
                     Messages
-                    {unreadCount > 0 && (
+                    {displayedUnreadCount > 0 && (
                       <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
-                        {unreadCount}
+                        {displayedUnreadCount > 9 ? "9+" : displayedUnreadCount}
                       </span>
                     )}
                   </Link>
