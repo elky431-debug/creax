@@ -479,11 +479,12 @@ export function Header() {
           {/* Mobile menu button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-creix-blue/10 text-creix-blue transition-colors hover:bg-creix-blue/15"
+            className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-r from-cyan-400/25 via-emerald-400/20 to-cyan-400/25 p-[1px] text-white shadow-lg shadow-black/40"
             aria-label="Menu"
           >
+            <div className="absolute inset-[1px] rounded-[11px] bg-[#0b0b0b]/90 backdrop-blur-xl" />
             <svg 
-              className={`h-5 w-5 transition-transform duration-200 ${mobileMenuOpen ? "rotate-90 opacity-0" : ""}`}
+              className={`relative h-5 w-5 transition-transform duration-200 ${mobileMenuOpen ? "rotate-90 opacity-0" : ""}`}
               fill="none" 
               viewBox="0 0 24 24" 
               stroke="currentColor"
@@ -507,13 +508,15 @@ export function Header() {
 
           {/* Mobile menu dropdown */}
           {mobileMenuOpen && (
-            <div className="absolute top-full left-0 right-0 mt-2 mx-4 origin-top animate-slide-in-from-top-2 rounded-2xl border border-creix-blue/20 bg-creix-black p-2 shadow-2xl shadow-black/60">
+            <div className="absolute top-full left-0 right-0 mt-2 mx-4 origin-top animate-slide-in-from-top-2 rounded-3xl bg-gradient-to-r from-cyan-400/25 via-emerald-400/20 to-cyan-400/25 p-[1px] shadow-2xl shadow-black/70">
+              <div className="rounded-3xl border border-white/[0.06] bg-[#0b0b0b]/92 backdrop-blur-xl p-2.5">
               {isLoggedIn ? (
                 <>
                   {/* User profile header */}
-                  <div className="flex items-center gap-3 px-3 py-3 mb-2 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+                  <div className="mb-2 rounded-2xl bg-white/[0.03] border border-white/[0.06] px-3.5 py-3.5">
+                    <div className="flex items-center gap-3">
                     {profile?.avatarUrl ? (
-                      <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-creix-blue/30">
+                      <div className="relative h-10 w-10 rounded-full overflow-hidden ring-2 ring-cyan-400/30">
                         <Image
                           src={profile.avatarUrl}
                           alt="Mon profil"
@@ -523,38 +526,39 @@ export function Header() {
                         />
                       </div>
                     ) : (
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-creix-blue/20 text-sm font-bold text-creix-blue">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/[0.05] text-sm font-bold text-white">
                         {(profile?.displayName || session?.user?.email || "U").charAt(0).toUpperCase()}
                       </div>
                     )}
                     <div>
-                      <p className="text-sm font-semibold text-creix-blue">{profile?.displayName || "Mon compte"}</p>
-                      <p className="text-xs text-creix-blue/50">{session?.user?.email}</p>
+                      <p className={`text-sm font-bold ${navGradientText}`}>{profile?.displayName || "Mon compte"}</p>
+                      <p className="text-xs text-white/40">{session?.user?.email}</p>
+                    </div>
                     </div>
                   </div>
 
                   <Link
                     href="/dashboard"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                    className="flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-semibold text-white/85 transition-all duration-150 hover:bg-white/[0.05]"
                   >
-                    <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="h-5 w-5 text-white/45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
                     Dashboard
                   </Link>
 
-                  <div className="my-2 border-t border-creix-blue/10" />
-                  <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-creix-blue/50">Missions</p>
+                  <div className="my-2 border-t border-white/[0.06]" />
+                  <p className="px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-white/35">Missions</p>
                   
                   {userRole === "CREATOR" ? (
                     <>
                       <Link
                         href="/missions/my"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                        className="flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-semibold text-white/85 transition-all duration-150 hover:bg-white/[0.05]"
                       >
-                        <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="h-5 w-5 text-white/45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                         Mes missions
@@ -565,9 +569,9 @@ export function Header() {
                           setMobileMenuOpen(false);
                           dismissProposalsNow(); // hide immediately on click (and persist)
                         }}
-                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                        className="flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-semibold text-white/85 transition-all duration-150 hover:bg-white/[0.05]"
                       >
-                        <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="h-5 w-5 text-white/45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                         </svg>
                         Propositions reçues
@@ -583,9 +587,9 @@ export function Header() {
                       <Link
                         href="/missions"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                        className="flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-semibold text-white/85 transition-all duration-150 hover:bg-white/[0.05]"
                       >
-                        <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="h-5 w-5 text-white/45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
                         Missions disponibles
@@ -593,9 +597,9 @@ export function Header() {
                       <Link
                         href="/missions/assigned"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                        className="flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-semibold text-white/85 transition-all duration-150 hover:bg-white/[0.05]"
                       >
-                        <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="h-5 w-5 text-white/45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         Mes missions assignées
@@ -606,9 +610,9 @@ export function Header() {
                           setMobileMenuOpen(false);
                           dismissProposalsNow(); // hide immediately on click (and persist)
                         }}
-                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                        className="flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-semibold text-white/85 transition-all duration-150 hover:bg-white/[0.05]"
                       >
-                        <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="h-5 w-5 text-white/45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                         </svg>
                         Mes propositions
@@ -624,15 +628,15 @@ export function Header() {
                   <Link
                     href="/deliveries"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                    className="flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-semibold text-white/85 transition-all duration-150 hover:bg-white/[0.05]"
                   >
-                    <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="h-5 w-5 text-white/45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
                     Livraisons
                   </Link>
 
-                  <div className="my-2 border-t border-creix-blue/10" />
+                  <div className="my-2 border-t border-white/[0.06]" />
 
                   <Link
                     href="/messages"
@@ -640,9 +644,9 @@ export function Header() {
                       setMobileMenuOpen(false);
                       dismissUnreadNow(); // hide immediately on click (and persist)
                     }}
-                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                    className="flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-semibold text-white/85 transition-all duration-150 hover:bg-white/[0.05]"
                   >
-                    <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="h-5 w-5 text-white/45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
                     Messages
@@ -656,9 +660,9 @@ export function Header() {
                   <Link
                     href="/profile"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                    className="flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-semibold text-white/85 transition-all duration-150 hover:bg-white/[0.05]"
                   >
-                    <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="h-5 w-5 text-white/45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                     Mon profil
@@ -667,9 +671,9 @@ export function Header() {
                   <Link
                     href="/settings"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                    className="flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-semibold text-white/85 transition-all duration-150 hover:bg-white/[0.05]"
                   >
-                    <svg className="h-5 w-5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="h-5 w-5 text-white/45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.983 13.321a1.341 1.341 0 100-2.683 1.341 1.341 0 000 2.683z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.6 13.321a8.2 8.2 0 00.05-1.321 8.2 8.2 0 00-.05-1.321l-1.89-.311a6.67 6.67 0 00-.745-1.795l1.114-1.57a8.32 8.32 0 00-1.87-1.87l-1.57 1.114a6.67 6.67 0 00-1.795-.745l-.311-1.89A8.2 8.2 0 0012 3.35a8.2 8.2 0 00-1.321.05l-.311 1.89a6.67 6.67 0 00-1.795.745L7.003 4.92a8.32 8.32 0 00-1.87 1.87l1.114 1.57a6.67 6.67 0 00-.745 1.795l-1.89.311A8.2 8.2 0 003.35 12c0 .45.02.89.05 1.321l1.89.311c.17.63.424 1.23.745 1.795l-1.114 1.57c.54.72 1.15 1.33 1.87 1.87l1.57-1.114c.565.321 1.165.575 1.795.745l.311 1.89c.431.03.87.05 1.321.05.45 0 .89-.02 1.321-.05l.311-1.89a6.67 6.67 0 001.795-.745l1.57 1.114c.72-.54 1.33-1.15 1.87-1.87l-1.114-1.57c.321-.565.575-1.165.745-1.795l1.89-.311z" />
                     </svg>
@@ -685,9 +689,9 @@ export function Header() {
                         await signOut({ callbackUrl: "/login" });
                       })();
                     }}
-                    className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold text-red-400 transition-all duration-150 hover:bg-red-500/10"
+                    className="flex items-center gap-3 rounded-2xl px-3.5 py-3 text-sm font-semibold text-red-300 transition-all duration-150 hover:bg-red-500/10"
                   >
-                    <svg className="h-5 w-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="h-5 w-5 text-red-300/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 11-4 0v-1m0-8V7a2 2 0 114 0v1" />
                     </svg>
                     Se déconnecter
@@ -711,6 +715,7 @@ export function Header() {
                   </Link>
                 </>
               )}
+              </div>
             </div>
           )}
         </div>
