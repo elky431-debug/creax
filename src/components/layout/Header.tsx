@@ -508,8 +508,17 @@ export function Header() {
 
           {/* Mobile menu dropdown */}
           {mobileMenuOpen && (
-            <div className="absolute top-full left-0 right-0 mt-2 mx-4 origin-top animate-slide-in-from-top-2 rounded-3xl bg-gradient-to-r from-cyan-400/25 via-emerald-400/20 to-cyan-400/25 p-[1px] shadow-2xl shadow-black/70">
-              <div className="rounded-3xl border border-white/[0.06] bg-[#0b0b0b]/92 backdrop-blur-xl p-2.5">
+            <>
+              {/* Opaque overlay to prevent background bleed-through */}
+              <button
+                type="button"
+                aria-label="Fermer le menu"
+                onClick={() => setMobileMenuOpen(false)}
+                className="fixed inset-0 z-40 bg-black/80"
+              />
+
+              <div className="absolute top-full left-0 right-0 mt-2 mx-4 z-50 origin-top animate-slide-in-from-top-2 rounded-3xl bg-gradient-to-r from-cyan-400/25 via-emerald-400/20 to-cyan-400/25 p-[1px] shadow-2xl shadow-black/80">
+                <div className="rounded-3xl border border-white/[0.06] bg-[#070707] p-2.5">
               {isLoggedIn ? (
                 <>
                   {/* User profile header */}
@@ -715,8 +724,9 @@ export function Header() {
                   </Link>
                 </>
               )}
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
       </div>
