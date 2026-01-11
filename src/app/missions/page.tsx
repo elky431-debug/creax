@@ -120,6 +120,7 @@ export default function MissionsPage() {
   const [selectedMission, setSelectedMission] = useState<Mission | null>(null);
   const [proposalMessage, setProposalMessage] = useState("");
   const [proposalPrice, setProposalPrice] = useState("");
+  const [hasAcceptedPayoutPolicy, setHasAcceptedPayoutPolicy] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [proposalError, setProposalError] = useState<string | null>(null);
   const [proposalSuccess, setProposalSuccess] = useState(false);
@@ -192,6 +193,7 @@ export default function MissionsPage() {
     setSelectedMission(mission);
     setProposalMessage("");
     setProposalPrice("");
+    setHasAcceptedPayoutPolicy(false);
     setProposalError(null);
     setProposalSuccess(false);
   }
@@ -201,6 +203,7 @@ export default function MissionsPage() {
     setSelectedMission(null);
     setProposalMessage("");
     setProposalPrice("");
+    setHasAcceptedPayoutPolicy(false);
     setProposalError(null);
     setProposalSuccess(false);
   }
@@ -210,6 +213,10 @@ export default function MissionsPage() {
     if (!selectedMission) return;
     if (proposalMessage.length < 10) {
       setProposalError("Votre message doit contenir au moins 10 caractères");
+      return;
+    }
+    if (!hasAcceptedPayoutPolicy) {
+      setProposalError("Vous devez accepter les conditions avant d'envoyer votre proposition.");
       return;
     }
 
@@ -223,7 +230,8 @@ export default function MissionsPage() {
         body: JSON.stringify({
           missionId: selectedMission.id,
           message: proposalMessage,
-          price: proposalPrice ? parseInt(proposalPrice) : null
+          price: proposalPrice ? parseInt(proposalPrice) : null,
+          acceptedPayoutPolicy: true
         })
       });
 
@@ -458,6 +466,8 @@ export default function MissionsPage() {
             setMessage={setProposalMessage}
             price={proposalPrice}
             setPrice={setProposalPrice}
+            hasAcceptedPayoutPolicy={hasAcceptedPayoutPolicy}
+            setHasAcceptedPayoutPolicy={setHasAcceptedPayoutPolicy}
             onClose={closeProposalModal}
             onSubmit={submitProposal}
             submitting={submitting}
@@ -626,6 +636,8 @@ type ProposalModalProps = {
   setMessage: (msg: string) => void;
   price: string;
   setPrice: (price: string) => void;
+  hasAcceptedPayoutPolicy: boolean;
+  setHasAcceptedPayoutPolicy: (v: boolean) => void;
   onClose: () => void;
   onSubmit: () => void;
   submitting: boolean;
@@ -640,6 +652,8 @@ function ProposalModal({
   setMessage,
   price,
   setPrice,
+  hasAcceptedPayoutPolicy,
+  setHasAcceptedPayoutPolicy,
   onClose,
   onSubmit,
   submitting,
@@ -692,6 +706,44 @@ function ProposalModal({
 
             {/* Formulaire */}
             <div className="space-y-4">
+              {/* Conditions (obligatoire) */}
+              <div className="rounded-xl border border-amber-500/25 bg-amber-500/10 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/15">
+                    <svg className="h-5 w-5 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v4m0 4h.01M10.29 3.86l-8.02 14A2 2 0 004.0 21h16a2 2 0 001.73-3.14l-8.02-14a2 2 0 00-3.46 0z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-amber-200">
+                      Important — confirmation de réception du virement
+                    </p>
+                    <p className="mt-1 text-xs text-amber-200/70 leading-relaxed">
+                      Après avoir envoyé votre travail et reçu le virement, vous devez vous reconnecter sur CREIX pour confirmer la réception du paiement.
+                      Sans confirmation dans les 24h suivant la réception, la version finale ne sera pas envoyée et vous risquez un bannissement.
+                    </p>
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setHasAcceptedPayoutPolicy(true)}
+                        className={`rounded-lg px-3 py-2 text-xs font-bold transition ${
+                          hasAcceptedPayoutPolicy
+                            ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                            : "bg-amber-500 text-slate-900 hover:bg-amber-400"
+                        }`}
+                      >
+                        {hasAcceptedPayoutPolicy ? "✓ Accepté" : "J'accepte"}
+                      </button>
+                      {!hasAcceptedPayoutPolicy && (
+                        <span className="text-[11px] text-amber-200/60">
+                          Obligatoire pour envoyer la proposition
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Message */}
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -748,7 +800,7 @@ function ProposalModal({
                 <button
                   type="button"
                   onClick={onSubmit}
-                  disabled={submitting || message.length < 10}
+                  disabled={submitting || message.length < 10 || !hasAcceptedPayoutPolicy}
                   className="flex-1 rounded-lg bg-cyan-500 py-3 text-sm font-semibold text-slate-900 transition hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {submitting ? "Envoi..." : "Envoyer ma proposition"}

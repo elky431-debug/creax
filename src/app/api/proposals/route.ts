@@ -17,7 +17,13 @@ import { z } from "zod";
 const proposalSchema = z.object({
   missionId: z.string().min(1, "ID de mission requis"),
   message: z.string().min(10, "Le message doit contenir au moins 10 caractères").max(2000, "Le message ne peut pas dépasser 2000 caractères"),
-  price: z.number().positive("Le prix doit être positif").optional().nullable()
+  price: z.number().positive("Le prix doit être positif").optional().nullable(),
+  acceptedPayoutPolicy: z.literal(true, {
+    errorMap: () => ({
+      message:
+        "Vous devez accepter la confirmation de réception du virement (obligatoire) avant d'envoyer votre proposition."
+    })
+  })
 });
 
 /**
