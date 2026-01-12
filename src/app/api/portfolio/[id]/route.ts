@@ -2,8 +2,15 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { unlink } from "fs/promises";
-import { join } from "path";
+import { supabase } from "@/lib/supabase";
+
+function extractSupabaseKeyFromPublicUrl(url: string): string | null {
+  // Format attendu: https://<project>.supabase.co/storage/v1/object/public/uploads/<key>
+  const marker = "/storage/v1/object/public/uploads/";
+  const idx = url.indexOf(marker);
+  if (idx === -1) return null;
+  return url.slice(idx + marker.length);
+}
 
 // DELETE - Supprimer une image du portfolio
 export async function DELETE(
@@ -37,12 +44,14 @@ export async function DELETE(
       return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
     }
 
-    // Supprimer le fichier physique
-    try {
-      const filepath = join(process.cwd(), "public", image.url);
-      await unlink(filepath);
-    } catch {
-      // Le fichier n'existe peut-être plus, on continue
+    // Best-effort: supprimer le fichier sur Supabase si possible
+    const key = image.filename?.startsWith("portfolio/") ? image.filename : extractSupabaseKeyFromPublicUrl(image.url);
+    if (key) {
+      try {
+        await supabase.storage.from("uploads").remove([key]);
+      } catch {
+        // ignore
+      }
     }
 
     // Supprimer l'entrée en base
@@ -106,6 +115,7 @@ export async function PATCH(
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
+
 
 
 

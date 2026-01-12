@@ -2,13 +2,19 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
-import { existsSync } from "fs";
+import { supabase } from "@/lib/supabase";
 
 // Taille max : 5MB
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+
+function extFromMime(mime: string): string {
+  if (mime === "image/jpeg") return "jpg";
+  if (mime === "image/png") return "png";
+  if (mime === "image/webp") return "webp";
+  if (mime === "image/gif") return "gif";
+  return "bin";
+}
 
 // GET - Récupérer les images du portfolio
 export async function GET() {
@@ -44,6 +50,14 @@ export async function POST(req: Request) {
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    }
+
+    // Guard: éviter un crash silencieux si Supabase n'est pas configuré en prod
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      return NextResponse.json(
+        { error: "Stockage non configuré. Contactez le support." },
+        { status: 500 }
+      );
     }
 
     // Vérifier que l'utilisateur est un designer
@@ -107,31 +121,30 @@ export async function POST(req: Request) {
       );
     }
 
-    // Créer le dossier uploads s'il n'existe pas
-    const uploadsDir = join(process.cwd(), "public", "uploads", "portfolio");
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
+    // Upload vers Supabase Storage (bucket "uploads")
+    const ext = extFromMime(file.type);
+    const key = `portfolio/${session.user.id}/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const bytes = await file.arrayBuffer();
+
+    const { error: uploadError } = await supabase.storage.from("uploads").upload(key, bytes, {
+      contentType: file.type,
+      upsert: false
+    });
+
+    if (uploadError) {
+      console.error("Erreur Supabase Storage (portfolio):", uploadError);
+      return NextResponse.json({ error: "Erreur lors de l'upload" }, { status: 500 });
     }
 
-    // Générer un nom de fichier unique
-    const ext = file.name.split(".").pop();
-    const filename = `${session.user.id}-${Date.now()}.${ext}`;
-    const filepath = join(uploadsDir, filename);
-
-    // Sauvegarder le fichier
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    await writeFile(filepath, buffer);
-
-    // URL publique
-    const url = `/uploads/portfolio/${filename}`;
+    const { data: urlData } = supabase.storage.from("uploads").getPublicUrl(key);
+    const url = urlData.publicUrl;
 
     // Créer l'entrée en base
     const image = await prisma.portfolioImage.create({
       data: {
         profileId: profile.id,
         url,
-        filename,
+        filename: key,
         title: title || null,
         description: description || null,
         order: imageCount
@@ -144,6 +157,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
+
 
 
 
