@@ -21,8 +21,10 @@ export function Header() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [missionsMenuOpen, setMissionsMenuOpen] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const missionsMenuRef = useRef<HTMLDivElement>(null);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   // Restore dismissed baselines (client-only)
@@ -63,6 +65,9 @@ export function Header() {
     function handleClickOutside(event: MouseEvent) {
       if (missionsMenuRef.current && !missionsMenuRef.current.contains(event.target as Node)) {
         setMissionsMenuOpen(false);
+      }
+      if (accountMenuRef.current && !accountMenuRef.current.contains(event.target as Node)) {
+        setAccountMenuOpen(false);
       }
       if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
         setMobileMenuOpen(false);
@@ -221,6 +226,7 @@ export function Header() {
   }
 
   const missionsActive = pathname.startsWith("/missions") || pathname.startsWith("/proposals") || pathname.startsWith("/deliveries");
+  const accountActive = pathname.startsWith("/profile") || pathname.startsWith("/settings");
   const navGradientText =
     "bg-gradient-to-r from-cyan-400 via-emerald-400 to-cyan-400 bg-clip-text text-transparent";
 
@@ -427,46 +433,88 @@ export function Header() {
                 </svg>
               </Link>
 
-              <Link
-                href="/settings"
-                className={`px-2.5 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold transition-all duration-200 rounded-full border ${
-                  isActive("/settings")
-                    ? "text-creix-blue bg-creix-blue/10 border-creix-blue/25"
-                    : "text-creix-blue/90 border-transparent hover:text-creix-blue hover:bg-creix-blue/10"
-                }`}
-              >
-                <span className={`hidden sm:inline ${navGradientText}`}>Réglages</span>
-                <svg className="h-4 w-4 sm:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.983 13.321a1.341 1.341 0 100-2.683 1.341 1.341 0 000 2.683z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.6 13.321a8.2 8.2 0 00.05-1.321 8.2 8.2 0 00-.05-1.321l-1.89-.311a6.67 6.67 0 00-.745-1.795l1.114-1.57a8.32 8.32 0 00-1.87-1.87l-1.57 1.114a6.67 6.67 0 00-1.795-.745l-.311-1.89A8.2 8.2 0 0012 3.35a8.2 8.2 0 00-1.321.05l-.311 1.89a6.67 6.67 0 00-1.795.745L7.003 4.92a8.32 8.32 0 00-1.87 1.87l1.114 1.57a6.67 6.67 0 00-.745 1.795l-1.89.311A8.2 8.2 0 003.35 12c0 .45.02.89.05 1.321l1.89.311c.17.63.424 1.23.745 1.795l-1.114 1.57c.54.72 1.15 1.33 1.87 1.87l1.57-1.114c.565.321 1.165.575 1.795.745l.311 1.89c.431.03.87.05 1.321.05.45 0 .89-.02 1.321-.05l.311-1.89a6.67 6.67 0 001.795-.745l1.57 1.114c.72-.54 1.33-1.15 1.87-1.87l-1.114-1.57c.321-.565.575-1.165.745-1.795l1.89-.311z" />
-                </svg>
-              </Link>
+              {/* Menu compte: Réglages + Profil */}
+              <div className="relative ml-1 sm:ml-2" ref={accountMenuRef}>
+                <button
+                  type="button"
+                  onClick={() => setAccountMenuOpen(!accountMenuOpen)}
+                  className={`group flex items-center gap-2 rounded-full pl-1 pr-2 sm:pr-3 py-1 text-[10px] sm:text-xs font-semibold uppercase tracking-wide transition-all duration-300 hover:scale-[1.02] ${
+                    accountActive
+                      ? "bg-creix-blue/10 text-creix-blue shadow-lg shadow-creix-blue/10 ring-1 ring-creix-blue/25"
+                      : "bg-creix-blue/10 text-creix-blue shadow-lg shadow-creix-blue/10 ring-1 ring-creix-blue/20 hover:bg-creix-blue/15"
+                  }`}
+                  aria-expanded={accountMenuOpen}
+                  aria-label="Réglages et profil"
+                >
+                  {profile?.avatarUrl ? (
+                    <div className="relative h-6 w-6 sm:h-7 sm:w-7 rounded-full overflow-hidden ring-2 ring-creix-black/25 shadow-sm">
+                      <Image
+                        src={profile.avatarUrl}
+                        alt="Mon profil"
+                        fill
+                        className="object-cover"
+                        sizes="28px"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-creix-black/20 text-[10px] sm:text-[11px] font-bold ring-2 ring-creix-black/25">
+                      {(profile?.displayName || session?.user?.email || "U").charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <span className={`hidden sm:inline ${navGradientText}`}>Réglages et profil</span>
+                  <svg
+                    className={`hidden sm:block h-3.5 w-3.5 transition-transform duration-200 ${accountMenuOpen ? "rotate-180" : ""}`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
 
-              <Link
-                href="/profile"
-                className={`group ml-1 sm:ml-2 flex items-center gap-2 rounded-full pl-1 pr-2 sm:pr-3 py-1 text-[10px] sm:text-xs font-semibold uppercase tracking-wide transition-all duration-300 hover:scale-[1.02] ${
-                  isActive("/profile")
-                    ? "bg-creix-blue/10 text-creix-blue shadow-lg shadow-creix-blue/10 ring-1 ring-creix-blue/25"
-                    : "bg-creix-blue/10 text-creix-blue shadow-lg shadow-creix-blue/10 ring-1 ring-creix-blue/20 hover:bg-creix-blue/15"
-                }`}
-              >
-                {profile?.avatarUrl ? (
-                  <div className="relative h-6 w-6 sm:h-7 sm:w-7 rounded-full overflow-hidden ring-2 ring-creix-black/25 shadow-sm">
-                    <Image
-                      src={profile.avatarUrl}
-                      alt="Mon profil"
-                      fill
-                      className="object-cover"
-                      sizes="28px"
-                    />
-                  </div>
-                ) : (
-                  <div className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full bg-creix-black/20 text-[10px] sm:text-[11px] font-bold ring-2 ring-creix-black/25">
-                    {(profile?.displayName || session?.user?.email || "U").charAt(0).toUpperCase()}
+                {accountMenuOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-64 origin-top-right animate-slide-in-from-top-2 rounded-2xl border border-creix-blue/20 bg-creix-black p-1.5 shadow-2xl shadow-black/60">
+                    <Link
+                      href="/profile"
+                      onClick={() => setAccountMenuOpen(false)}
+                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                    >
+                      <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      Profil
+                    </Link>
+                    <Link
+                      href="/settings"
+                      onClick={() => setAccountMenuOpen(false)}
+                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-creix-blue/90 transition-all duration-150 hover:bg-creix-blue/10 hover:text-creix-blue"
+                    >
+                      <svg className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.983 13.321a1.341 1.341 0 100-2.683 1.341 1.341 0 000 2.683z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.6 13.321a8.2 8.2 0 00.05-1.321 8.2 8.2 0 00-.05-1.321l-1.89-.311a6.67 6.67 0 00-.745-1.795l1.114-1.57a8.32 8.32 0 00-1.87-1.87l-1.57 1.114a6.67 6.67 0 00-1.795-.745l-.311-1.89A8.2 8.2 0 0012 3.35a8.2 8.2 0 00-1.321.05l-.311 1.89a6.67 6.67 0 00-1.795.745L7.003 4.92a8.32 8.32 0 00-1.87 1.87l1.114 1.57a6.67 6.67 0 00-.745 1.795l-1.89.311A8.2 8.2 0 003.35 12c0 .45.02.89.05 1.321l1.89.311c.17.63.424 1.23.745 1.795l-1.114 1.57c.54.72 1.15 1.33 1.87 1.87l1.57-1.114c.565.321 1.165.575 1.795.745l.311 1.89c.431.03.87.05 1.321.05.45 0 .89-.02 1.321-.05l.311-1.89a6.67 6.67 0 001.795-.745l1.57 1.114c.72-.54 1.33-1.15 1.87-1.87l-1.114-1.57c.321-.565.575-1.165.745-1.795l1.89-.311z" />
+                      </svg>
+                      Réglages
+                    </Link>
+                    <div className="my-1.5 border-t border-creix-blue/10" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAccountMenuOpen(false);
+                        void (async () => {
+                          const { signOut } = await import("next-auth/react");
+                          await signOut({ callbackUrl: "/login" });
+                        })();
+                      }}
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-300 transition-all duration-150 hover:bg-red-500/10"
+                    >
+                      <svg className="h-4 w-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 11-4 0v-1m0-8V7a2 2 0 114 0v1" />
+                      </svg>
+                      Se déconnecter
+                    </button>
                   </div>
                 )}
-                <span className={`hidden sm:inline ${navGradientText}`}>Profil</span>
-              </Link>
+              </div>
             </>
           ) : (
             <>
