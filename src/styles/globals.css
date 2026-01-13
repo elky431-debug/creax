@@ -27,10 +27,20 @@ html {
     filter: none !important;
     backdrop-filter: none !important;
   }
+
+  /* Also disable arbitrary Tailwind blur classes like blur-[110px] (very expensive on mobile) */
+  :where([class*="blur-["]) {
+    filter: none !important;
+  }
   
   .backdrop-blur-sm,
   .backdrop-blur,
   .backdrop-blur-xl {
+    backdrop-filter: none !important;
+  }
+
+  /* Also disable arbitrary/variant backdrop-blur classes */
+  :where([class*="backdrop-blur"]) {
     backdrop-filter: none !important;
   }
   

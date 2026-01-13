@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, startTransition } from "react";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
@@ -78,13 +78,40 @@ export function Header() {
 
     async function fetchData() {
       try {
-        // Récupérer les messages non lus
-        const unreadRes = await fetch("/api/messages/unread");
+        // Parallelize requests to reduce time-to-interactive
+        const [unreadRes, profileRes, proposalRes] = await Promise.all([
+          fetch("/api/messages/unread", { cache: "no-store" }),
+          fetch("/api/profile", { cache: "no-store" }),
+          fetch("/api/proposals/count", { cache: "no-store" })
+        ]);
+
+        let nextUnread = unreadCount;
         if (unreadRes.ok) {
           const data = await unreadRes.json();
-          const nextUnread = data.unreadCount || 0;
+          nextUnread = data.unreadCount || 0;
+        }
+
+        let nextCount = proposalCount;
+        if (proposalRes.ok) {
+          const data = await proposalRes.json();
+          nextCount = data.count || 0;
+        }
+
+        let nextProfile: UserProfile | null = profile;
+        let nextRole: string | null = userRole;
+        if (profileRes.ok) {
+          const data = await profileRes.json();
+          nextProfile = data.user?.profile || null;
+          nextRole = data.user?.role || null;
+        }
+
+        // Mark updates as non-urgent to keep UI responsive
+        startTransition(() => {
           setUnreadCount(nextUnread);
-          // If counts decreased (read elsewhere), keep baseline in sync
+          setProposalCount(nextCount);
+          setProfile(nextProfile);
+          setUserRole(nextRole);
+
           setDismissedUnreadBaseline((prev) => {
             const next = Math.min(prev, nextUnread);
             if (next !== prev) {
@@ -96,23 +123,6 @@ export function Header() {
             }
             return next;
           });
-        }
-
-        // Récupérer le profil pour l'avatar et le rôle
-        const profileRes = await fetch("/api/profile");
-        if (profileRes.ok) {
-          const data = await profileRes.json();
-          setProfile(data.user?.profile || null);
-          setUserRole(data.user?.role || null);
-        }
-
-        // Récupérer le nombre de propositions en attente
-        const proposalRes = await fetch("/api/proposals/count");
-        if (proposalRes.ok) {
-          const data = await proposalRes.json();
-          const nextCount = data.count || 0;
-          setProposalCount(nextCount);
-          // If counts decreased (handled/accepted elsewhere), keep baseline in sync
           setDismissedProposalBaseline((prev) => {
             const next = Math.min(prev, nextCount);
             if (next !== prev) {
@@ -124,52 +134,65 @@ export function Header() {
             }
             return next;
           });
-        }
+        });
       } catch {
         // Silently fail
       }
     }
 
-    fetchData();
+    // Defer initial network work until browser is idle (helps mobile smoothness)
+    const idle =
+      typeof window !== "undefined" && "requestIdleCallback" in window
+        ? (window as any).requestIdleCallback
+        : (cb: () => void) => window.setTimeout(cb, 0);
+    const cancelIdle =
+      typeof window !== "undefined" && "cancelIdleCallback" in window
+        ? (window as any).cancelIdleCallback
+        : (id: number) => window.clearTimeout(id);
+    const idleId = idle(fetchData);
 
     // Fonction pour rafraîchir les compteurs
     async function refreshCounts() {
       try {
         const [unreadRes, proposalRes] = await Promise.all([
-          fetch("/api/messages/unread"),
-          fetch("/api/proposals/count")
+          fetch("/api/messages/unread", { cache: "no-store" }),
+          fetch("/api/proposals/count", { cache: "no-store" })
         ]);
         
         if (unreadRes.ok) {
           const data = await unreadRes.json();
           const nextUnread = data.unreadCount || 0;
-          setUnreadCount(nextUnread);
-          setDismissedUnreadBaseline((prev) => {
-            const next = Math.min(prev, nextUnread);
-            if (next !== prev) {
-              try {
-                localStorage.setItem("creix:dismissedUnreadBaseline", String(next));
-              } catch {
-                // ignore
+          startTransition(() => {
+            setUnreadCount(nextUnread);
+            setDismissedUnreadBaseline((prev) => {
+              const next = Math.min(prev, nextUnread);
+              if (next !== prev) {
+                try {
+                  localStorage.setItem("creix:dismissedUnreadBaseline", String(next));
+                } catch {
+                  // ignore
+                }
               }
-            }
-            return next;
+              return next;
+            });
           });
         }
         if (proposalRes.ok) {
           const data = await proposalRes.json();
           const nextCount = data.count || 0;
-          setProposalCount(nextCount);
-          setDismissedProposalBaseline((prev) => {
-            const next = Math.min(prev, nextCount);
-            if (next !== prev) {
-              try {
-                localStorage.setItem("creix:dismissedProposalBaseline", String(next));
-              } catch {
-                // ignore
+          startTransition(() => {
+            setProposalCount(nextCount);
+            setDismissedProposalBaseline((prev) => {
+              const next = Math.min(prev, nextCount);
+              if (next !== prev) {
+                try {
+                  localStorage.setItem("creix:dismissedProposalBaseline", String(next));
+                } catch {
+                  // ignore
+                }
               }
-            }
-            return next;
+              return next;
+            });
           });
         }
       } catch {
@@ -184,6 +207,7 @@ export function Header() {
     const interval = setInterval(refreshCounts, 30000);
 
     return () => {
+      cancelIdle(idleId);
       clearInterval(interval);
       window.removeEventListener("refresh-notifications", refreshCounts);
     };

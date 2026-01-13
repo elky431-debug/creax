@@ -284,16 +284,37 @@ function MessagesContent() {
     if (!selectedConversation) return;
 
     async function fetchMessages() {
-      const res = await fetch(`/api/messages?conversationId=${encodeURIComponent(selectedConversation!.id)}`);
-      if (res.ok) {
-        const data = await res.json();
-        setMessages(data.messages || []);
+      // Avoid polling when tab is hidden (saves CPU/network and reduces perceived jank)
+      if (typeof document !== "undefined" && document.visibilityState !== "visible") return;
+
+      try {
+        const res = await fetch(
+          `/api/messages?conversationId=${encodeURIComponent(selectedConversation!.id)}`,
+          { cache: "no-store" }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setMessages(data.messages || []);
+        }
+      } catch {
+        // ignore
       }
     }
     fetchMessages();
 
-    const interval = setInterval(fetchMessages, 5000);
-    return () => clearInterval(interval);
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") {
+        fetchMessages();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    // Polling less frequently keeps the UI smoother on mobile/low-end devices
+    const interval = setInterval(fetchMessages, 15000);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
   }, [selectedConversation]);
 
   useEffect(() => {
